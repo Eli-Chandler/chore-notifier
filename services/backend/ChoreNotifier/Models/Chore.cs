@@ -58,7 +58,7 @@ public class Chore
                 NextAssigneeIndex++;
         }
 
-        var assignee = new ChoreAssignee { User = user, Chore = this, Order = insertIndex};
+        var assignee = new ChoreAssignee { User = user, Chore = this, Order = insertIndex };
         _assignees.Add(assignee);
 
         ordered.Insert(insertIndex, assignee);
@@ -88,7 +88,7 @@ public class Chore
             NextAssigneeIndex = 0;
             return;
         }
-        
+
         if (removeIndex < NextAssigneeIndex)
             NextAssigneeIndex--;
 
@@ -131,15 +131,15 @@ public sealed class ChoreSchedule
     public required DateTimeOffset Start { get; init; }
     public DateTimeOffset? Until { get; init; }
     public required int IntervalDays { get; init; }
-    
+
     public DateTimeOffset? NextAfter(DateTimeOffset after)
     {
         if (IntervalDays <= 0)
             throw new InvalidOperationException("IntervalDays must be > 0.");
-        
+
         if (after < Start)
             return Start;
-        
+
         var elapsedDays = (after - Start).TotalDays;
         var intervalsElapsed = (long)Math.Floor(elapsedDays / IntervalDays);
 

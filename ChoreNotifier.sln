@@ -1,4 +1,4 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChoreNotifier", "services\backend\ChoreNotifier\ChoreNotifier.csproj", "{E39A85CA-3D78-42F1-B819-8D9FFB154A37}"
 EndProject
@@ -41,9 +41,5 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{AA747C77-33B3-6B76-46C3-AB447B339386} = {5854FF58-B8C5-05C6-5BF2-ACE42193F22B}
-		{E5544C9F-44F3-47E9-973C-07F3802663EA} = {AA747C77-33B3-6B76-46C3-AB447B339386}
 	EndGlobalSection
 EndGlobal

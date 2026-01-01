@@ -6,7 +6,7 @@ namespace ChoreNotifier.Features.Chores.CreateChore;
 
 public sealed record CreateChoreRequest
 {
-    [MinLength(1), MaxLength(100)] 
+    [MinLength(1), MaxLength(100)]
     public required string Title { get; init; }
     [MaxLength(1000)]
     public string? Description { get; init; }
@@ -35,12 +35,12 @@ public sealed class CreateChoreRequestValidator : AbstractValidator<CreateChoreR
 
         RuleFor(x => x.SnoozeDuration)
             .GreaterThan(TimeSpan.Zero).WithMessage("Snooze duration must be greater than zero");
-        
+
         RuleFor(x => x.AssigneeUserIds)
             .NotNull().WithMessage("Assignee user IDs are required")
             .Must(ids => ids.Distinct().Count() == ids.Count()).WithMessage("Assignee user IDs must be unique")
             .Must(ids => ids.Count() <= 50).WithMessage("Cannot have more than 50 assignees");
-        
+
     }
 }
 

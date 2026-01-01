@@ -11,7 +11,7 @@ public class DatabaseFixture : IAsyncLifetime
     private static readonly PostgreSqlContainer SharedContainer;
     private static readonly SemaphoreSlim ContainerLock = new(1, 1);
     private static bool _containerStarted;
-    
+
     private readonly string _databaseName;
     private Respawner _respawner = null!;
     private NpgsqlConnection _connection = null!;
@@ -87,12 +87,12 @@ public class DatabaseFixture : IAsyncLifetime
     public async Task DisposeAsync()
     {
         await _connection.DisposeAsync();
-        
+
         // Drop the database when the fixture is disposed
         var adminConnectionString = SharedContainer.GetConnectionString();
         await using var adminConnection = new NpgsqlConnection(adminConnectionString);
         await adminConnection.OpenAsync();
-        
+
         // Terminate existing connections to the database
         await using (var terminateCmd = adminConnection.CreateCommand())
         {
@@ -104,14 +104,14 @@ public class DatabaseFixture : IAsyncLifetime
                 """;
             await terminateCmd.ExecuteNonQueryAsync();
         }
-        
+
         await using (var dropCmd = adminConnection.CreateCommand())
         {
             dropCmd.CommandText = $"DROP DATABASE IF EXISTS \"{_databaseName}\"";
             await dropCmd.ExecuteNonQueryAsync();
         }
     }
-    
+
     public ChoreDbContext CreateDbContext()
     {
         var options = new DbContextOptionsBuilder<ChoreDbContext>()

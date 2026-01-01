@@ -22,7 +22,7 @@ public sealed class CreateUserRequestValidator : AbstractValidator<CreateUserReq
 
 public sealed class CreateUserHandler(ChoreDbContext db, IValidator<CreateUserRequest> validator)
 {
-    
+
     public async Task<CreateUserResponse> Handle(CreateUserRequest req, CancellationToken ct)
     {
         await validator.ValidateAndThrowAsync(req, ct);

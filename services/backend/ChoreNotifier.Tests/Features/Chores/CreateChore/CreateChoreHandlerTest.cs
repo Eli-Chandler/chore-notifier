@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 namespace ChoreNotifier.Tests.Features.Chores.CreateChore;
 
 [TestSubject(typeof(CreateChoreHandler))]
-public class CreateChoreHandlerTest: DatabaseTestBase, IClassFixture<DatabaseFixture>
+public class CreateChoreHandlerTest : DatabaseTestBase, IClassFixture<DatabaseFixture>
 {
     private readonly CreateChoreHandler _handler;
 
@@ -28,7 +28,7 @@ public class CreateChoreHandlerTest: DatabaseTestBase, IClassFixture<DatabaseFix
         SnoozeDuration = TimeSpan.FromDays(2),
         AssigneeUserIds = new List<int>()
     };
-    
+
     [Theory]
     [InlineData(0)]
     [InlineData(2)]
@@ -72,7 +72,7 @@ public class CreateChoreHandlerTest: DatabaseTestBase, IClassFixture<DatabaseFix
             await _handler.Handle(request, CancellationToken.None);
         });
     }
-    
+
     [Fact]
     public async Task Handle_WhenNonExistentAssignee_ThrowsNotFoundException()
     {
@@ -85,6 +85,6 @@ public class CreateChoreHandlerTest: DatabaseTestBase, IClassFixture<DatabaseFix
             await _handler.Handle(request, CancellationToken.None);
         });
     }
-    
-    
+
+
 }

@@ -9,7 +9,7 @@ public class KeysetPage<T>
     public bool HasNextPage { get; set; }
     public object? NextCursor { get; set; }
     public int PageSize { get; set; }
-    
+
     public KeysetPage<TResult> Select<TResult>(Func<T, TResult> selector)
     {
         return new KeysetPage<TResult>
@@ -33,25 +33,25 @@ public static class KeysetPaginationExtensions
         CancellationToken cancellationToken = default)
         where TKey : struct, IComparable<TKey>
     {
-        if (pageSize < 1) 
+        if (pageSize < 1)
             throw new ArgumentException("Page size must be at least 1", nameof(pageSize));
-        
+
         if (pageSize > maxPageSize)
             throw new ArgumentException(
                 $"Page size ({pageSize}) cannot exceed maximum page size ({maxPageSize}). " +
                 $"If you need more than {maxPageSize} items, explicitly set a higher maxPageSize.",
                 nameof(pageSize));
-        
+
         var keySelectorFunc = keySelector.Compile();
-        
+
         IQueryable<T> filteredQuery = query;
         if (afterKey.HasValue)
         {
             var parameter = keySelector.Parameters[0];
             var comparison = Expression.GreaterThan(
-                keySelector.Body, 
+                keySelector.Body,
                 Expression.Constant(afterKey.Value, typeof(TKey)));
-            
+
             var lambda = Expression.Lambda<Func<T, bool>>(comparison, parameter);
             filteredQuery = query.Where(lambda);
         }

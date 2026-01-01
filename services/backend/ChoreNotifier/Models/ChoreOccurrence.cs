@@ -7,11 +7,11 @@ public class ChoreOccurrence
     public int Id { get; private set; }
     public required Chore Chore { get; set; }
     public required User User { get; set; }
-    
+
     public required DateTimeOffset ScheduledFor { get; set; }
     public DateTimeOffset DueAt { get; private set; }
     public DateTimeOffset? CompletedAt { get; private set; }
-    
+
     private ChoreOccurrence() { } // For EF
 
     [SetsRequiredMembers]
@@ -23,7 +23,7 @@ public class ChoreOccurrence
         ScheduledFor = scheduledFor;
         DueAt = scheduledFor;
     }
-    
+
     public void Snooze(TimeSpan? duration = null)
     {
         if (!Chore.AllowSnooze)
@@ -33,7 +33,7 @@ public class ChoreOccurrence
 
         DueAt += duration ?? Chore.SnoozeDuration;
     }
-    
+
     public void Complete(DateTimeOffset? at = null)
     {
         CompletedAt = at ?? DateTimeOffset.UtcNow;

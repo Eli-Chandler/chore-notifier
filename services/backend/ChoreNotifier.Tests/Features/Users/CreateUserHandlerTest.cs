@@ -1,11 +1,10 @@
 using ChoreNotifier.Features.Users;
 using JetBrains.Annotations;
-using Microsoft.EntityFrameworkCore;
 
 namespace ChoreNotifier.Tests.Features.Users;
 
 [TestSubject(typeof(CreateUserHandler))]
-public class CreateUserHandlerTest: DatabaseTestBase, IClassFixture<DatabaseFixture>
+public class CreateUserHandlerTest : DatabaseTestBase
 {
     private readonly CreateUserHandler _handler;
 
@@ -13,7 +12,7 @@ public class CreateUserHandlerTest: DatabaseTestBase, IClassFixture<DatabaseFixt
     {
         _handler = new CreateUserHandler(dbFixture.CreateDbContext(), new CreateUserRequestValidator());
     }
-    
+
     [Fact]
     public async Task WhenValid_CreatesUser()
     {

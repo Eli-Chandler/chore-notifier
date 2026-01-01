@@ -15,7 +15,7 @@ public sealed class NotFoundException : AppException
 {
     public string Entity { get; }
     public object Key { get; }
-    
+
     public NotFoundException(string entity, object key)
         : base($"{entity} with key '{key}' was not found.")
     {

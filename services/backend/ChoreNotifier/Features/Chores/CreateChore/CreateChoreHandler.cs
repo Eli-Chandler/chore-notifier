@@ -13,11 +13,11 @@ public sealed class CreateChoreHandler(ChoreDbContext db, IValidator<CreateChore
     {
         await validator.ValidateAndThrowAsync(req, ct);
         var users = await db.Users.Where(u => req.AssigneeUserIds.Contains(u.Id)).ToListAsync(ct);
-        
+
         var missingUserIds = req.AssigneeUserIds.Except(users.Select(u => u.Id)).ToList();
         if (missingUserIds.Any())
             throw new NotFoundException("Users", string.Join(", ", missingUserIds));
-        
+
         var chore = new Chore
         {
             Title = req.Title,
