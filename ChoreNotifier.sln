@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChoreNotifier", "ChoreNotifier\ChoreNotifier.csproj", "{E39A85CA-3D78-42F1-B819-8D9FFB154A37}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChoreNotifier", "services\backend\ChoreNotifier\ChoreNotifier.csproj", "{E39A85CA-3D78-42F1-B819-8D9FFB154A37}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
