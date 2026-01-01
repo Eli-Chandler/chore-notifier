@@ -1,11 +1,12 @@
 using System.ComponentModel.DataAnnotations;
 using ChoreNotifier.Models;
+using FluentValidation;
 
 namespace ChoreNotifier.Features.Chores.CreateChore;
 
 public sealed record CreateChoreRequest
 {
-    [MinLength(1), MaxLength(100)] 
+    [MinLength(1), MaxLength(100)]
     public required string Title { get; init; }
     [MaxLength(1000)]
     public string? Description { get; init; }
@@ -16,28 +17,61 @@ public sealed record CreateChoreRequest
     public required IEnumerable<int> AssigneeUserIds { get; init; }
 }
 
-public abstract record CreateChoreScheduleRequest
+public sealed class CreateChoreRequestValidator : AbstractValidator<CreateChoreRequest>
+{
+    public CreateChoreRequestValidator()
+    {
+        RuleFor(x => x.Title)
+            .NotEmpty().WithMessage("Title is required")
+            .MaximumLength(100).WithMessage("Title cannot exceed 100 characters")
+            .MinimumLength(1).WithMessage("Title must be at least 1 character");
+
+        RuleFor(x => x.Description)
+            .MaximumLength(1000).WithMessage("Description cannot exceed 1000 characters");
+
+        RuleFor(x => x.ChoreSchedule)
+            .NotNull().WithMessage("Chore schedule is required")
+            .SetValidator(new CreateChoreScheduleRequestValidator());
+
+        RuleFor(x => x.SnoozeDuration)
+            .GreaterThan(TimeSpan.Zero).WithMessage("Snooze duration must be greater than zero");
+
+        RuleFor(x => x.AssigneeUserIds)
+            .NotNull().WithMessage("Assignee user IDs are required")
+            .Must(ids => ids.Distinct().Count() == ids.Count()).WithMessage("Assignee user IDs must be unique")
+            .Must(ids => ids.Count() <= 50).WithMessage("Cannot have more than 50 assignees");
+
+    }
+}
+
+public sealed class CreateChoreScheduleRequestValidator : AbstractValidator<CreateChoreScheduleRequest>
+{
+    public CreateChoreScheduleRequestValidator()
+    {
+        RuleFor(x => x.Start)
+            .NotEmpty().WithMessage("Start date is required");
+
+        RuleFor(x => x.IntervalDays)
+            .GreaterThan(0).WithMessage("Interval days must be greater than zero");
+
+        RuleFor(x => x.Until)
+            .GreaterThan(x => x.Start).When(x => x.Until.HasValue)
+            .WithMessage("Until date must be after start date");
+    }
+}
+
+public record CreateChoreScheduleRequest
 {
     public required DateTimeOffset Start { get; init; }
+    public required int IntervalDays { get; init; }
     public DateTimeOffset? Until { get; init; }
 }
 
-public sealed record WeekdayAndTimeCreateChoreScheduleRequest : CreateChoreScheduleRequest
-{
-    public required DayOfWeek Weekday { get; init; }
-    public required TimeOnly Time { get; init; }
-}
-
-public abstract class ChoreScheduleResponse
+public class ChoreScheduleResponse
 {
     public required DateTimeOffset Start { get; init; }
+    public required int IntervalDays { get; init; }
     public DateTimeOffset? Until { get; init; }
-}
-
-public sealed class WeekdayAndTimeChoreScheduleResponse : ChoreScheduleResponse
-{
-    public required DayOfWeek Weekday { get; init; }
-    public required TimeOnly Time { get; init; }
 }
 
 public class ChoreAssigneeResponse

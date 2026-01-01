@@ -13,7 +13,7 @@ public sealed class ListUsersHandler
 {
     private readonly ChoreDbContext _db;
     public ListUsersHandler(ChoreDbContext db) => _db = db;
-    
+
     public async Task<KeysetPage<ListUserResponseItem>> Handle(int pageSize, int? afterId, CancellationToken ct)
     {
         var result = await _db.Users

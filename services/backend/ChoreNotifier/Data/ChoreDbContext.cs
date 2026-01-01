@@ -7,7 +7,7 @@ public class ChoreDbContext : DbContext
 {
     public ChoreDbContext(DbContextOptions<ChoreDbContext> options)
         : base(options) { }
-    
+
     public DbSet<User> Users { get; set; }
     public DbSet<Chore> Chores { get; set; }
     public DbSet<ChoreAssignee> ChoreAssignees { get; set; }

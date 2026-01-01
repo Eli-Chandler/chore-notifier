@@ -1,28 +1,35 @@
 using System.ComponentModel.DataAnnotations;
 using ChoreNotifier.Data;
 using ChoreNotifier.Models;
+using FluentValidation;
 
 namespace ChoreNotifier.Features.Users;
 
-public sealed record CreateUserRequest
-{
-    [MinLength(1), MaxLength(100)]
-    public required string Name { get; init; }
-}
+public sealed record CreateUserRequest(string Name);
 
 public sealed record CreateUserResponse(int Id, string Name);
 
-public sealed class CreateUserHandler
+public sealed class CreateUserRequestValidator : AbstractValidator<CreateUserRequest>
 {
-    private readonly ChoreDbContext _db;
-    public CreateUserHandler(ChoreDbContext db) => _db = db;
+    public CreateUserRequestValidator()
+    {
+        RuleFor(x => x.Name)
+            .NotEmpty().WithMessage("Name is required")
+            .MaximumLength(100).WithMessage("Name cannot exceed 100 characters")
+            .MinimumLength(1).WithMessage("Name must be at least 1 character");
+    }
+}
+
+public sealed class CreateUserHandler(ChoreDbContext db, IValidator<CreateUserRequest> validator)
+{
 
     public async Task<CreateUserResponse> Handle(CreateUserRequest req, CancellationToken ct)
     {
+        await validator.ValidateAndThrowAsync(req, ct);
         var user = new User { Name = req.Name };
 
-        _db.Users.Add(user);
-        await _db.SaveChangesAsync(ct);
+        db.Users.Add(user);
+        await db.SaveChangesAsync(ct);
 
         return new CreateUserResponse(user.Id, user.Name);
     }

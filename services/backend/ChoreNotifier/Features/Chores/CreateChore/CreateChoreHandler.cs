@@ -1,37 +1,42 @@
 using ChoreNotifier.Common;
 using ChoreNotifier.Data;
 using ChoreNotifier.Models;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
 namespace ChoreNotifier.Features.Chores.CreateChore;
 
-public sealed class CreateChoreHandler
+public sealed class CreateChoreHandler(ChoreDbContext db, IValidator<CreateChoreRequest> validator)
 {
-    private readonly ChoreDbContext _db;
-    public CreateChoreHandler(ChoreDbContext db) => _db = db;
 
     public async Task<CreateChoreResponse> Handle(CreateChoreRequest req, CancellationToken ct)
     {
-        var users = await _db.Users.Where(u => req.AssigneeUserIds.Contains(u.Id)).ToListAsync(ct);
-        
+        await validator.ValidateAndThrowAsync(req, ct);
+        var users = await db.Users.Where(u => req.AssigneeUserIds.Contains(u.Id)).ToListAsync(ct);
+
         var missingUserIds = req.AssigneeUserIds.Except(users.Select(u => u.Id)).ToList();
         if (missingUserIds.Any())
             throw new NotFoundException("Users", string.Join(", ", missingUserIds));
-        
+
         var chore = new Chore
         {
             Title = req.Title,
             Description = req.Description,
-            ChoreSchedule = req.ChoreSchedule.ToDomain(),
+            ChoreSchedule = new ChoreSchedule
+            {
+                IntervalDays = req.ChoreSchedule.IntervalDays,
+                Start = req.ChoreSchedule.Start,
+                Until = req.ChoreSchedule.Until
+            },
             AllowSnooze = req.AllowSnooze,
             SnoozeDuration = req.SnoozeDuration,
         };
-        _db.Chores.Add(chore);
+        db.Chores.Add(chore);
         foreach (var user in users)
         {
             chore.AddAssignee(user);
         }
-        await _db.SaveChangesAsync(ct);
+        await db.SaveChangesAsync(ct);
 
         return chore.ToResponse();
     }
@@ -46,7 +51,12 @@ public static class ChoreMappings
             Id = chore.Id,
             Title = chore.Title,
             Description = chore.Description,
-            ChoreSchedule = chore.ChoreSchedule.ToResponse(),
+            ChoreSchedule = new ChoreScheduleResponse
+            {
+                IntervalDays = chore.ChoreSchedule.IntervalDays,
+                Start = chore.ChoreSchedule.Start,
+                Until = chore.ChoreSchedule.Until
+            },
             AllowSnooze = chore.AllowSnooze,
             SnoozeDuration = chore.SnoozeDuration,
             Assignees = chore.Assignees
@@ -61,35 +71,3 @@ public static class ChoreMappings
     }
 }
 
-public static class ChoreScheduleMappings
-{
-    public static ChoreSchedule ToDomain(this CreateChoreScheduleRequest request)
-    {
-        return request switch
-        {
-            WeekdayAndTimeCreateChoreScheduleRequest weekdaySchedule => new WeekdayAndTimeChoreSchedule
-            {
-                Start = weekdaySchedule.Start,
-                Until = weekdaySchedule.Until,
-                Weekday = weekdaySchedule.Weekday,
-                Time = weekdaySchedule.Time
-            },
-            _ => throw new NotSupportedException($"Schedule type {request.GetType().Name} is not supported")
-        };
-    }
-
-    public static ChoreScheduleResponse ToResponse(this ChoreSchedule schedule)
-    {
-        return schedule switch
-        {
-            WeekdayAndTimeChoreSchedule weekday => new WeekdayAndTimeChoreScheduleResponse
-            {
-                Start = weekday.Start,
-                Until = weekday.Until,
-                Weekday = weekday.Weekday,
-                Time = weekday.Time
-            },
-            _ => throw new NotSupportedException($"Schedule type {schedule.GetType().Name} is not supported")
-        };
-    }
-}
