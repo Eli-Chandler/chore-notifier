@@ -1,23 +1,21 @@
-using ChoreNotifier.Data;
 using ChoreNotifier.Features.Users;
 using JetBrains.Annotations;
+using Microsoft.EntityFrameworkCore;
 
 namespace ChoreNotifier.Tests.Features.Users;
 
 [TestSubject(typeof(CreateUserHandler))]
 public class CreateUserHandlerTest: DatabaseTestBase, IClassFixture<DatabaseFixture>
 {
-    private readonly ChoreDbContext _context;
     private readonly CreateUserHandler _handler;
 
-    public CreateUserHandlerTest(DatabaseFixture fixture) : base(fixture)
+    public CreateUserHandlerTest(DatabaseFixture dbFixture) : base(dbFixture)
     {
-        _context = Fixture.CreateDbContext();
-        _handler = new CreateUserHandler(_context, new CreateUserRequestValidator());
+        _handler = new CreateUserHandler(dbFixture.CreateDbContext(), new CreateUserRequestValidator());
     }
     
     [Fact]
-    public async Task Handle_WhenValid_CreatesUser()
+    public async Task WhenValid_CreatesUser()
     {
         // Arrange
         var request = new CreateUserRequest("John Doe");
@@ -28,10 +26,14 @@ public class CreateUserHandlerTest: DatabaseTestBase, IClassFixture<DatabaseFixt
         // Assert
         Assert.NotEqual(0, response.Id);
         Assert.Equal("John Doe", response.Name);
+        using var context = DbFixture.CreateDbContext();
+        var userInDb = await context.Users.FindAsync(response.Id);
+        Assert.NotNull(userInDb);
+        Assert.Equal("John Doe", userInDb.Name);
     }
 
     [Fact]
-    public async Task Handle_WhenNameIsEmpty_ThrowsValidationException()
+    public async Task WhenNameIsEmpty_ThrowsValidationException()
     {
         // Arrange
         var request = new CreateUserRequest("");
@@ -44,7 +46,7 @@ public class CreateUserHandlerTest: DatabaseTestBase, IClassFixture<DatabaseFixt
     }
 
     [Fact]
-    public async Task Handle_WhenNameIsTooLong_ThrowsValidationException()
+    public async Task WhenNameIsTooLong_ThrowsValidationException()
     {
         // Arrange
         var longName = new string('A', 101);

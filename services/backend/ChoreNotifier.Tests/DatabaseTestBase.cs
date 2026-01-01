@@ -2,16 +2,18 @@ namespace ChoreNotifier.Tests;
 
 public abstract class DatabaseTestBase : IAsyncLifetime
 {
-    protected readonly DatabaseFixture Fixture;
+    protected readonly DatabaseFixture DbFixture;
+    protected readonly ModelFactory Factory;
 
-    protected DatabaseTestBase(DatabaseFixture fixture)
+    protected DatabaseTestBase(DatabaseFixture dbFixture)
     {
-        Fixture = fixture;
+        DbFixture = dbFixture;
+        Factory = new ModelFactory(dbFixture);
     }
 
     public async Task InitializeAsync()
     {
-        await Fixture.ResetDatabaseAsync();
+        await DbFixture.ResetDatabaseAsync();
     }
 
     public Task DisposeAsync() => Task.CompletedTask;

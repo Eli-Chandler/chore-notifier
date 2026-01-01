@@ -1,18 +1,18 @@
 using ChoreNotifier.Common;
 using ChoreNotifier.Data;
 using ChoreNotifier.Models;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
 namespace ChoreNotifier.Features.Chores.CreateChore;
 
-public sealed class CreateChoreHandler
+public sealed class CreateChoreHandler(ChoreDbContext db, IValidator<CreateChoreRequest> validator)
 {
-    private readonly ChoreDbContext _db;
-    public CreateChoreHandler(ChoreDbContext db) => _db = db;
 
     public async Task<CreateChoreResponse> Handle(CreateChoreRequest req, CancellationToken ct)
     {
-        var users = await _db.Users.Where(u => req.AssigneeUserIds.Contains(u.Id)).ToListAsync(ct);
+        await validator.ValidateAndThrowAsync(req, ct);
+        var users = await db.Users.Where(u => req.AssigneeUserIds.Contains(u.Id)).ToListAsync(ct);
         
         var missingUserIds = req.AssigneeUserIds.Except(users.Select(u => u.Id)).ToList();
         if (missingUserIds.Any())
@@ -31,12 +31,12 @@ public sealed class CreateChoreHandler
             AllowSnooze = req.AllowSnooze,
             SnoozeDuration = req.SnoozeDuration,
         };
-        _db.Chores.Add(chore);
+        db.Chores.Add(chore);
         foreach (var user in users)
         {
             chore.AddAssignee(user);
         }
-        await _db.SaveChangesAsync(ct);
+        await db.SaveChangesAsync(ct);
 
         return chore.ToResponse();
     }
