@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Diagnostics;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ChoreNotifier.Common;
@@ -46,5 +47,36 @@ public sealed class AppExceptionHandler : IExceptionHandler
         }
 
         return false;
+    }
+}
+
+public sealed class ValidationExceptionHandler : IExceptionHandler
+{
+    public async ValueTask<bool> TryHandleAsync(
+        HttpContext httpContext,
+        Exception exception,
+        CancellationToken cancellationToken)
+    {
+        if (exception is not ValidationException fv)
+            return false;
+
+        var errors = fv.Errors
+            .GroupBy(e => e.PropertyName)
+            .ToDictionary(
+                g => g.Key,
+                g => g.Select(e => e.ErrorMessage).ToArray()
+            );
+
+        var problem = new ValidationProblemDetails(errors)
+        {
+            Status = StatusCodes.Status400BadRequest,
+            Title = "One or more validation errors occurred.",
+            Type = "https://tools.ietf.org/html/rfc7231#section-6.5.1"
+        };
+
+        httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
+        await httpContext.Response.WriteAsJsonAsync(problem, cancellationToken);
+
+        return true;
     }
 }

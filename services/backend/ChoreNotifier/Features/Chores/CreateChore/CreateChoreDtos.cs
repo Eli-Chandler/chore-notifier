@@ -16,28 +16,18 @@ public sealed record CreateChoreRequest
     public required IEnumerable<int> AssigneeUserIds { get; init; }
 }
 
-public abstract record CreateChoreScheduleRequest
+public record CreateChoreScheduleRequest
 {
     public required DateTimeOffset Start { get; init; }
+    public required int IntervalDays { get; init; }
     public DateTimeOffset? Until { get; init; }
 }
 
-public sealed record WeekdayAndTimeCreateChoreScheduleRequest : CreateChoreScheduleRequest
-{
-    public required DayOfWeek Weekday { get; init; }
-    public required TimeOnly Time { get; init; }
-}
-
-public abstract class ChoreScheduleResponse
+public class ChoreScheduleResponse
 {
     public required DateTimeOffset Start { get; init; }
+    public required int IntervalDays { get; init; }
     public DateTimeOffset? Until { get; init; }
-}
-
-public sealed class WeekdayAndTimeChoreScheduleResponse : ChoreScheduleResponse
-{
-    public required DayOfWeek Weekday { get; init; }
-    public required TimeOnly Time { get; init; }
 }
 
 public class ChoreAssigneeResponse

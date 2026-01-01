@@ -22,7 +22,12 @@ public sealed class CreateChoreHandler
         {
             Title = req.Title,
             Description = req.Description,
-            ChoreSchedule = req.ChoreSchedule.ToDomain(),
+            ChoreSchedule = new ChoreSchedule
+            {
+                IntervalDays = req.ChoreSchedule.IntervalDays,
+                Start = req.ChoreSchedule.Start,
+                Until = req.ChoreSchedule.Until
+            },
             AllowSnooze = req.AllowSnooze,
             SnoozeDuration = req.SnoozeDuration,
         };
@@ -46,7 +51,12 @@ public static class ChoreMappings
             Id = chore.Id,
             Title = chore.Title,
             Description = chore.Description,
-            ChoreSchedule = chore.ChoreSchedule.ToResponse(),
+            ChoreSchedule = new ChoreScheduleResponse
+            {
+                IntervalDays = chore.ChoreSchedule.IntervalDays,
+                Start = chore.ChoreSchedule.Start,
+                Until = chore.ChoreSchedule.Until
+            },
             AllowSnooze = chore.AllowSnooze,
             SnoozeDuration = chore.SnoozeDuration,
             Assignees = chore.Assignees
@@ -61,35 +71,3 @@ public static class ChoreMappings
     }
 }
 
-public static class ChoreScheduleMappings
-{
-    public static ChoreSchedule ToDomain(this CreateChoreScheduleRequest request)
-    {
-        return request switch
-        {
-            WeekdayAndTimeCreateChoreScheduleRequest weekdaySchedule => new WeekdayAndTimeChoreSchedule
-            {
-                Start = weekdaySchedule.Start,
-                Until = weekdaySchedule.Until,
-                Weekday = weekdaySchedule.Weekday,
-                Time = weekdaySchedule.Time
-            },
-            _ => throw new NotSupportedException($"Schedule type {request.GetType().Name} is not supported")
-        };
-    }
-
-    public static ChoreScheduleResponse ToResponse(this ChoreSchedule schedule)
-    {
-        return schedule switch
-        {
-            WeekdayAndTimeChoreSchedule weekday => new WeekdayAndTimeChoreScheduleResponse
-            {
-                Start = weekday.Start,
-                Until = weekday.Until,
-                Weekday = weekday.Weekday,
-                Time = weekday.Time
-            },
-            _ => throw new NotSupportedException($"Schedule type {schedule.GetType().Name} is not supported")
-        };
-    }
-}

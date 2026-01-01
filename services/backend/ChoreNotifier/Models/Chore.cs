@@ -1,5 +1,7 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using ChoreNotifier.Common;
+using Microsoft.EntityFrameworkCore;
 
 namespace ChoreNotifier.Models;
 
@@ -123,41 +125,25 @@ public class ChoreAssignee
     public required int Order { get; set; }
 }
 
-public abstract class ChoreSchedule
+[Owned]
+public sealed class ChoreSchedule
 {
     public required DateTimeOffset Start { get; init; }
     public DateTimeOffset? Until { get; init; }
+    public required int IntervalDays { get; init; }
     
-    public abstract DateTimeOffset? NextAfter(DateTimeOffset after);
-}
-
-public sealed class WeekdayAndTimeChoreSchedule : ChoreSchedule
-{
-    public required DayOfWeek Weekday { get; init; }
-    public required TimeOnly Time { get; init; }
-
-    public override DateTimeOffset? NextAfter(DateTimeOffset after)
+    public DateTimeOffset? NextAfter(DateTimeOffset after)
     {
-        var offset = Start.Offset;
+        if (IntervalDays <= 0)
+            throw new InvalidOperationException("IntervalDays must be > 0.");
+        
+        if (after < Start)
+            return Start;
+        
+        var elapsedDays = (after - Start).TotalDays;
+        var intervalsElapsed = (long)Math.Floor(elapsedDays / IntervalDays);
 
-        var afterLocal = after.ToOffset(offset).DateTime;
-        var startLocal = Start.DateTime;
-
-        if (afterLocal < startLocal)
-            afterLocal = startLocal;
-
-        var today = afterLocal.Date;
-
-        int daysUntil =
-            ((int)Weekday - (int)today.DayOfWeek + 7) % 7;
-
-        var candidateLocal =
-            today.AddDays(daysUntil) + Time.ToTimeSpan();
-
-        if (candidateLocal <= afterLocal)
-            candidateLocal = candidateLocal.AddDays(7);
-
-        var next = new DateTimeOffset(candidateLocal, offset);
+        var next = Start.AddDays((intervalsElapsed + 1) * IntervalDays);
 
         if (Until is not null && next > Until.Value)
             return null;
@@ -165,3 +151,4 @@ public sealed class WeekdayAndTimeChoreSchedule : ChoreSchedule
         return next;
     }
 }
+
