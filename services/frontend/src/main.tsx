@@ -5,6 +5,7 @@ import './index.css';
 import App from "./App.tsx";
 import HomePage from "@/HomePage.tsx";
 import User from "@/User.tsx";
+import ChoreManager from "@/ChoreManager.tsx";
 
 
 const router = createBrowserRouter([
@@ -19,6 +20,10 @@ const router = createBrowserRouter([
             {
                 path: "/:userId",
                 element: <User/>
+            },
+            {
+                path: "/choreManagement",
+                element: <ChoreManager/>
             }
         ]
     },
