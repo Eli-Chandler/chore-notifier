@@ -6,6 +6,7 @@ namespace ChoreNotifier.Models;
 public class ChoreOccurrence
 {
     public int Id { get; private set; }
+    public int ChoreId { get; private set; }
     public required Chore Chore { get; set; }
     public required User User { get; set; }
 

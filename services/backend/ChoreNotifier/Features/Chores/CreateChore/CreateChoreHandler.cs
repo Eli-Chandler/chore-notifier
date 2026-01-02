@@ -1,5 +1,6 @@
 using ChoreNotifier.Common;
 using ChoreNotifier.Data;
+using ChoreNotifier.Features.Chores.Scheduling;
 using ChoreNotifier.Models;
 using FluentResults;
 using FluentValidation;
@@ -7,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ChoreNotifier.Features.Chores.CreateChore;
 
-public sealed class CreateChoreHandler(ChoreDbContext db)
+public sealed class CreateChoreHandler(ChoreDbContext db, ChoreSchedulingService choreSchedulingService, IClock clock)
 {
     public async Task<Result<CreateChoreResponse>> Handle(CreateChoreRequest req, CancellationToken ct = default)
     {
@@ -22,7 +23,7 @@ public sealed class CreateChoreHandler(ChoreDbContext db)
             req.ChoreSchedule.IntervalDays,
             req.ChoreSchedule.Until
         );
-        
+
         if (choreScheduleResult.IsFailed)
             return Result.Fail(choreScheduleResult.Errors);
 
@@ -45,9 +46,10 @@ public sealed class CreateChoreHandler(ChoreDbContext db)
             chore.AddAssignee(user);
         }
 
+        await choreSchedulingService.ScheduleNextOccurrence(db, chore, clock.UtcNow);
+
         await db.SaveChangesAsync(ct);
 
         return chore.ToResponse();
     }
 }
-
