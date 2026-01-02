@@ -22,7 +22,7 @@ public class DeleteUserHandlerTest : DatabaseTestBase
         var user = await Factory.CreateUserAsync("Test User");
 
         // Act
-        var result = await _handler.Handle(user.Id, CancellationToken.None);
+        var result = await _handler.Handle(user.Id);
 
         // Assert
         result.IsSuccess.Should().BeTrue();
@@ -36,7 +36,7 @@ public class DeleteUserHandlerTest : DatabaseTestBase
     public async Task Handle_WhenUserDoesNotExist_ReturnsNotFoundError()
     {
         // Arrange & Act
-        var result = await _handler.Handle(9999, CancellationToken.None);
+        var result = await _handler.Handle(9999);
 
         // Assert
         result.IsFailed.Should().BeTrue();
@@ -61,7 +61,7 @@ public class DeleteUserHandlerTest : DatabaseTestBase
         var userToDelete = users[1];
 
         // Act
-        var result = await _handler.Handle(userToDelete.Id, CancellationToken.None);
+        var result = await _handler.Handle(userToDelete.Id);
 
         // Assert
         result.IsSuccess.Should().BeTrue();

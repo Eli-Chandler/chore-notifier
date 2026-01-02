@@ -12,7 +12,7 @@ public sealed class DeleteUserHandler
     private readonly ChoreDbContext _db;
     public DeleteUserHandler(ChoreDbContext db) => _db = db;
 
-    public async Task<Result> Handle(int userId, CancellationToken ct)
+    public async Task<Result> Handle(int userId, CancellationToken ct = default)
     {
         var user = await _db.Users.FirstOrDefaultAsync(u => u.Id == userId, ct);
         if (user is null)

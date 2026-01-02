@@ -18,7 +18,7 @@ public class ListUsersHandlerTest : DatabaseTestBase
     public async Task Handle_WhenNoUsers_ReturnsEmptyList()
     {
         // Arrange & Act
-        var result = await _handler.Handle(10, null, CancellationToken.None);
+        var result = await _handler.Handle(10, null);
 
         // Assert
         result.IsSuccess.Should().BeTrue();
@@ -37,7 +37,7 @@ public class ListUsersHandlerTest : DatabaseTestBase
         var users = await Factory.CreateUsersAsync(userCount, i => $"User {i}");
 
         // Act
-        var result = await _handler.Handle(20, null, CancellationToken.None);
+        var result = await _handler.Handle(20, null);
 
         // Assert
         result.IsSuccess.Should().BeTrue();
@@ -58,7 +58,7 @@ public class ListUsersHandlerTest : DatabaseTestBase
         var users = await Factory.CreateUsersAsync(10);
 
         // Act
-        var result = await _handler.Handle(5, null, CancellationToken.None);
+        var result = await _handler.Handle(5, null);
 
         // Assert
         result.IsSuccess.Should().BeTrue();
@@ -75,10 +75,10 @@ public class ListUsersHandlerTest : DatabaseTestBase
         var users = await Factory.CreateUsersAsync(10);
 
         // Act - Get first page
-        var firstPage = await _handler.Handle(5, null, CancellationToken.None);
+        var firstPage = await _handler.Handle(5, null);
 
         // Act - Get second page using cursor
-        var secondPage = await _handler.Handle(5, firstPage.Value.NextCursor, CancellationToken.None);
+        var secondPage = await _handler.Handle(5, firstPage.Value.NextCursor);
 
         // Assert
         firstPage.Value.Items.Should().HaveCount(5);
@@ -98,7 +98,7 @@ public class ListUsersHandlerTest : DatabaseTestBase
     public async Task Handle_WhenPageSizeIsZero_ReturnsError()
     {
         // Arrange & Act
-        var result = await _handler.Handle(0, null, CancellationToken.None);
+        var result = await _handler.Handle(0, null);
 
         // Assert
         result.IsFailed.Should().BeTrue();
@@ -113,7 +113,7 @@ public class ListUsersHandlerTest : DatabaseTestBase
     public async Task Handle_WhenPageSizeIsNegative_ReturnsError()
     {
         // Arrange & Act
-        var result = await _handler.Handle(-1, null, CancellationToken.None);
+        var result = await _handler.Handle(-1, null);
 
         // Assert
         result.IsFailed.Should().BeTrue();
@@ -128,7 +128,7 @@ public class ListUsersHandlerTest : DatabaseTestBase
     public async Task Handle_WhenPageSizeExceeds100_ReturnsError()
     {
         // Arrange & Act
-        var result = await _handler.Handle(101, null, CancellationToken.None);
+        var result = await _handler.Handle(101, null);
 
         // Assert
         result.IsFailed.Should().BeTrue();

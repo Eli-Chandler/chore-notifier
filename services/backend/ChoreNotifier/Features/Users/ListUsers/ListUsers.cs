@@ -15,7 +15,7 @@ public sealed class ListUsersHandler
     private readonly ChoreDbContext _db;
     public ListUsersHandler(ChoreDbContext db) => _db = db;
 
-    public async Task<Result<KeysetPage<ListUserResponseItem, int>>> Handle(int pageSize, int? afterId, CancellationToken ct)
+    public async Task<Result<KeysetPage<ListUserResponseItem, int>>> Handle(int pageSize, int? afterId, CancellationToken ct = default)
     {
         var validatePageSizeResult = ValidatePageSize(pageSize);
         if (validatePageSizeResult.IsFailed)

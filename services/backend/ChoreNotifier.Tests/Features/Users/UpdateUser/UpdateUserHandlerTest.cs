@@ -23,7 +23,7 @@ public class UpdateUserHandlerTest : DatabaseTestBase
         var request = new UpdateUserRequest { Name = "Updated Name" };
 
         // Act
-        var result = await _handler.Handle(user.Id, request, CancellationToken.None);
+        var result = await _handler.Handle(user.Id, request);
 
         // Assert
         result.IsSuccess.Should().BeTrue();
@@ -31,7 +31,7 @@ public class UpdateUserHandlerTest : DatabaseTestBase
         result.Value.Id.Should().Be(user.Id);
         result.Value.Name.Should().Be("Updated Name");
 
-        using var context = DbFixture.CreateDbContext();
+        await using var context = DbFixture.CreateDbContext();
         var userInDb = await context.Users.FindAsync(user.Id);
         userInDb.Should().NotBeNull();
         userInDb!.Name.Should().Be("Updated Name");
@@ -44,7 +44,7 @@ public class UpdateUserHandlerTest : DatabaseTestBase
         var request = new UpdateUserRequest { Name = "Test Name" };
 
         // Act
-        var result = await _handler.Handle(9999, request, CancellationToken.None);
+        var result = await _handler.Handle(9999, request);
 
         // Assert
         result.IsFailed.Should().BeTrue();
@@ -69,7 +69,7 @@ public class UpdateUserHandlerTest : DatabaseTestBase
         var request = new UpdateUserRequest { Name = "" };
 
         // Act
-        var result = await _handler.Handle(user.Id, request, CancellationToken.None);
+        var result = await _handler.Handle(user.Id, request);
 
         // Assert
         result.IsFailed.Should().BeTrue();
@@ -89,7 +89,7 @@ public class UpdateUserHandlerTest : DatabaseTestBase
         var request = new UpdateUserRequest { Name = longName };
 
         // Act
-        var result = await _handler.Handle(user.Id, request, CancellationToken.None);
+        var result = await _handler.Handle(user.Id, request);
 
         // Assert
         result.IsFailed.Should().BeTrue();

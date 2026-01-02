@@ -18,7 +18,7 @@ public sealed class UpdateUserHandler
     private readonly Data.ChoreDbContext _db;
     public UpdateUserHandler(Data.ChoreDbContext db) => _db = db;
 
-    public async Task<Result<UpdateUserResponse>> Handle(int userId, UpdateUserRequest req, CancellationToken ct)
+    public async Task<Result<UpdateUserResponse>> Handle(int userId, UpdateUserRequest req, CancellationToken ct = default)
     {
         var user = await _db.Users.FirstOrDefaultAsync(u => u.Id == userId, ct);
         if (user is null)
