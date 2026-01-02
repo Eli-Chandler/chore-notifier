@@ -1,9 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 using ChoreNotifier.Data;
 using ChoreNotifier.Models;
+using FluentResults;
 using FluentValidation;
 
-namespace ChoreNotifier.Features.Users;
+namespace ChoreNotifier.Features.Users.CreateUser;
 
 public sealed record CreateUserRequest(string Name);
 
@@ -20,17 +21,21 @@ public sealed class CreateUserRequestValidator : AbstractValidator<CreateUserReq
     }
 }
 
-public sealed class CreateUserHandler(ChoreDbContext db, IValidator<CreateUserRequest> validator)
+public sealed class CreateUserHandler(ChoreDbContext db)
 {
 
-    public async Task<CreateUserResponse> Handle(CreateUserRequest req, CancellationToken ct)
+    public async Task<Result<CreateUserResponse>> Handle(CreateUserRequest req, CancellationToken ct = default)
     {
-        await validator.ValidateAndThrowAsync(req, ct);
-        var user = new User { Name = req.Name };
+        
+        var createUserResult = User.Create(req.Name);
+        if (createUserResult.IsFailed)
+            return Result.Fail(createUserResult.Errors);
 
+        var user = createUserResult.Value;
+        
         db.Users.Add(user);
         await db.SaveChangesAsync(ct);
-
+        
         return new CreateUserResponse(user.Id, user.Name);
     }
 }

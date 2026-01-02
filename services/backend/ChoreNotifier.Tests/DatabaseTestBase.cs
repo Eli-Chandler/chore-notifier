@@ -1,6 +1,6 @@
 namespace ChoreNotifier.Tests;
 
-public abstract class DatabaseTestBase : IClassFixture<DatabaseFixture>
+public abstract class DatabaseTestBase : IClassFixture<DatabaseFixture>, IAsyncLifetime
 {
     protected readonly DatabaseFixture DbFixture;
     protected readonly ModelFactory Factory;

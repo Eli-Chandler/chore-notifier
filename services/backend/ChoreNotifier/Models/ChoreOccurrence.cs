@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using FluentResults;
 
 namespace ChoreNotifier.Models;
 
@@ -24,14 +25,15 @@ public class ChoreOccurrence
         DueAt = scheduledFor;
     }
 
-    public void Snooze(TimeSpan? duration = null)
+    public Result Snooze(TimeSpan? duration = null)
     {
-        if (!Chore.AllowSnooze)
+        if (Chore.SnoozeDuration is null)
         {
-            throw new InvalidOperationException($@"Chore {Chore.Id} does not allow snoozing.");
+            return Result.Fail(new InvalidOperationError("Snoozing is not allowed for this chore."));
         }
 
-        DueAt += duration ?? Chore.SnoozeDuration;
+        DueAt += duration ?? Chore.SnoozeDuration.Value;
+        return Result.Ok();
     }
 
     public void Complete(DateTimeOffset? at = null)
