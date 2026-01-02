@@ -1,18 +1,51 @@
-using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 
 namespace ChoreNotifier.Common;
 
-public class KeysetPage<T>
+public sealed class KeysetPage<T, TCursor>
 {
-    public List<T> Items { get; set; } = new();
-    public bool HasNextPage { get; set; }
-    public object? NextCursor { get; set; }
-    public int PageSize { get; set; }
+    public required List<T> Items { get; init; }
+    public required bool HasNextPage { get; init; }
+    public required TCursor? NextCursor { get; init; }
+    public required int PageSize { get; init; }
 
-    public KeysetPage<TResult> Select<TResult>(Func<T, TResult> selector)
+    /// <summary>
+    /// Canonical builder: expects a list that was fetched with pageSize + 1 items.
+    /// Keep this internal/private so callers don't pass the wrong thing.
+    /// </summary>
+    internal static KeysetPage<T, TCursor> FromOverfetchedResults(
+        IReadOnlyList<T> resultsPlusOne,
+        int pageSize,
+        Func<T, TCursor> cursorSelector)
     {
-        return new KeysetPage<TResult>
+        if (resultsPlusOne is null) throw new ArgumentNullException(nameof(resultsPlusOne));
+        if (cursorSelector is null) throw new ArgumentNullException(nameof(cursorSelector));
+        if (pageSize <= 0) throw new ArgumentOutOfRangeException(nameof(pageSize));
+
+        var hasNext = resultsPlusOne.Count > pageSize;
+
+        var items = hasNext
+            ? resultsPlusOne.Take(pageSize).ToList()
+            : resultsPlusOne.ToList();
+
+        var nextCursor = hasNext && items.Count > 0
+            ? cursorSelector(items[^1])
+            : default;
+
+        return new KeysetPage<T, TCursor>
+        {
+            Items = items,
+            HasNextPage = hasNext,
+            NextCursor = nextCursor,
+            PageSize = pageSize
+        };
+    }
+
+    public KeysetPage<TResult, TCursor> Select<TResult>(Func<T, TResult> selector)
+    {
+        if (selector is null) throw new ArgumentNullException(nameof(selector));
+
+        return new KeysetPage<TResult, TCursor>
         {
             Items = Items.Select(selector).ToList(),
             HasNextPage = HasNextPage,
@@ -22,63 +55,27 @@ public class KeysetPage<T>
     }
 }
 
-public static class KeysetPaginationExtensions
+public static class KeysetPagingExtensions
 {
-    public static async Task<KeysetPage<T>> ToKeysetPageAsync<T, TKey>(
-        this IOrderedQueryable<T> query,
-        Expression<Func<T, TKey>> keySelector,
-        TKey? afterKey = default,
-        int pageSize = 20,
-        int maxPageSize = 100,
-        CancellationToken cancellationToken = default)
-        where TKey : struct, IComparable<TKey>
+    /// <summary>
+    /// Best-practice extension: takes an IQueryable, performs the +1 overfetch internally,
+    /// and returns a KeysetPage without callers remembering anything.
+    ///
+    /// Requires EF Core for ToListAsync. If you're not using EF Core, remove this method.
+    /// </summary>
+    public static async Task<KeysetPage<T, TCursor>> ToKeysetPageAsync<T, TCursor>(
+        this IQueryable<T> query,
+        int pageSize,
+        Func<T, TCursor> cursorSelector,
+        CancellationToken ct = default)
     {
-        if (pageSize < 1)
-            throw new ArgumentException("Page size must be at least 1", nameof(pageSize));
+        if (query is null) throw new ArgumentNullException(nameof(query));
+        if (cursorSelector is null) throw new ArgumentNullException(nameof(cursorSelector));
+        if (pageSize <= 0) throw new ArgumentOutOfRangeException(nameof(pageSize));
 
-        if (pageSize > maxPageSize)
-            throw new ArgumentException(
-                $"Page size ({pageSize}) cannot exceed maximum page size ({maxPageSize}). " +
-                $"If you need more than {maxPageSize} items, explicitly set a higher maxPageSize.",
-                nameof(pageSize));
+        var resultsPlusOne = await query.Take(pageSize + 1).ToListAsync(ct);
+        
 
-        var keySelectorFunc = keySelector.Compile();
-
-        IQueryable<T> filteredQuery = query;
-        if (afterKey.HasValue)
-        {
-            var parameter = keySelector.Parameters[0];
-            var comparison = Expression.GreaterThan(
-                keySelector.Body,
-                Expression.Constant(afterKey.Value, typeof(TKey)));
-
-            var lambda = Expression.Lambda<Func<T, bool>>(comparison, parameter);
-            filteredQuery = query.Where(lambda);
-        }
-
-        // Fetch pageSize + 1 to determine if there are more results
-        var items = await filteredQuery
-            .Take(pageSize + 1)
-            .ToListAsync(cancellationToken);
-
-        var hasNextPage = items.Count > pageSize;
-        if (hasNextPage)
-        {
-            items = items.Take(pageSize).ToList();
-        }
-
-        TKey? nextCursor = default;
-        if (hasNextPage && items.Any())
-        {
-            nextCursor = keySelectorFunc(items.Last());
-        }
-
-        return new KeysetPage<T>
-        {
-            Items = items,
-            HasNextPage = hasNextPage,
-            NextCursor = nextCursor,
-            PageSize = pageSize
-        };
+        return KeysetPage<T, TCursor>.FromOverfetchedResults(resultsPlusOne, pageSize, cursorSelector);
     }
 }

@@ -1,4 +1,5 @@
 using ChoreNotifier.Features.Users;
+using FluentAssertions;
 using JetBrains.Annotations;
 
 namespace ChoreNotifier.Tests.Features.Users;
@@ -10,51 +11,64 @@ public class CreateUserHandlerTest : DatabaseTestBase
 
     public CreateUserHandlerTest(DatabaseFixture dbFixture) : base(dbFixture)
     {
-        _handler = new CreateUserHandler(dbFixture.CreateDbContext(), new CreateUserRequestValidator());
+        _handler = new CreateUserHandler(dbFixture.CreateDbContext());
     }
 
     [Fact]
-    public async Task WhenValid_CreatesUser()
+    public async Task Handle_WhenValid_CreatesUser()
     {
         // Arrange
         var request = new CreateUserRequest("John Doe");
 
         // Act
-        var response = await _handler.Handle(request, CancellationToken.None);
+        var result = await _handler.Handle(request);
 
         // Assert
-        Assert.NotEqual(0, response.Id);
-        Assert.Equal("John Doe", response.Name);
+        result.IsSuccess.Should().BeTrue();
+        result.Value.Should().NotBeNull();
+        result.Value.Id.Should().NotBe(0);
+        result.Value.Name.Should().Be("John Doe");
+
         using var context = DbFixture.CreateDbContext();
-        var userInDb = await context.Users.FindAsync(response.Id);
-        Assert.NotNull(userInDb);
-        Assert.Equal("John Doe", userInDb.Name);
+        var userInDb = await context.Users.FindAsync(result.Value.Id);
+        userInDb.Should().NotBeNull();
+        userInDb!.Name.Should().Be("John Doe");
     }
 
     [Fact]
-    public async Task WhenNameIsEmpty_ThrowsValidationException()
+    public async Task Handle_WhenNameIsEmpty_ReturnsError()
     {
         // Arrange
         var request = new CreateUserRequest("");
 
-        // Act & Assert
-        await Assert.ThrowsAsync<FluentValidation.ValidationException>(async () =>
-        {
-            await _handler.Handle(request, CancellationToken.None);
-        });
+        // Act
+        var result = await _handler.Handle(request);
+
+        // Assert
+        result.IsFailed.Should().BeTrue();
+        result.Errors
+            .Should()
+            .ContainSingle()
+            .Which
+            .Message.Should().Contain("Name is required");
     }
 
     [Fact]
-    public async Task WhenNameIsTooLong_ThrowsValidationException()
+    public async Task Handle_WhenNameIsTooLong_ReturnsError()
     {
         // Arrange
         var longName = new string('A', 101);
         var request = new CreateUserRequest(longName);
 
-        // Act & Assert
-        await Assert.ThrowsAsync<FluentValidation.ValidationException>(async () =>
-        {
-            await _handler.Handle(request, CancellationToken.None);
-        });
+        // Act
+        var result = await _handler.Handle(request);
+
+        // Assert
+        result.IsFailed.Should().BeTrue();
+        result.Errors
+            .Should()
+            .ContainSingle()
+            .Which
+            .Message.Should().Contain("Name cannot exceed 100 characters");
     }
 }

@@ -6,7 +6,6 @@ builder.Services.AddOpenApi();
 builder.Services.AddControllers();
 
 builder.Services.AddProblemDetails();
-builder.Services.AddExceptionHandler<AppExceptionHandler>();
 
 var app = builder.Build();
 

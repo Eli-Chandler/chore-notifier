@@ -14,14 +14,27 @@ public class ModelFactory
         _dbFixture = dbFixture;
     }
 
-    public async Task<User> CreateUserAsync(string? name = null)
+    public async Task<User> CreateUserAsync(
+        string? name = null,
+        ChoreDbContext? context = null)
     {
-        await using var context = _dbFixture.CreateDbContext();
-
-        var user = new User
+        if (context is null)
         {
-            Name = name ?? $"Test User {_userCounter++}"
-        };
+            await using var ctx = _dbFixture.CreateDbContext();
+            return await CreateUserAsync(name, ctx);
+        }
+
+        // var user = new User
+        // {
+        //     Name = name ?? $"Test User {_userCounter++}"
+        // };
+        
+        var createUserResult = User.Create(name ?? $"Test User {_userCounter++}");
+        
+        if (createUserResult.IsFailed)
+            throw new InvalidOperationException("Failed to create User for test user.");
+        
+        var user = createUserResult.Value;
 
         context.Users.Add(user);
         await context.SaveChangesAsync();
@@ -29,17 +42,65 @@ public class ModelFactory
         return user;
     }
 
-    public async Task<List<User>> CreateUsersAsync(int count, Func<int, string>? nameFactory = null)
+    public async Task<List<User>> CreateUsersAsync(
+        int count,
+        Func<int, string>? nameFactory = null,
+        ChoreDbContext? context = null)
     {
-        var users = new List<User>();
+        if (context is null)
+        {
+            await using var ctx = _dbFixture.CreateDbContext();
+            return await CreateUsersAsync(count, nameFactory, ctx);
+        }
+
+        var users = new List<User>(count);
 
         for (int i = 0; i < count; i++)
         {
             var name = nameFactory?.Invoke(i) ?? $"Test User {_userCounter++}";
-            var user = await CreateUserAsync(name);
+            var user = await CreateUserAsync(name, context);
             users.Add(user);
         }
 
         return users;
+    }
+
+    public async Task<Chore> CreateChoreAsync(string? title = null, int numAssignees = 0)
+    {
+        await using var context = _dbFixture.CreateDbContext();
+
+        var createChoreScheduleResult = ChoreSchedule.Create(
+            start: DateTime.UtcNow,
+            intervalDays: 7
+        );
+        
+        if (createChoreScheduleResult.IsFailed)
+            throw new InvalidOperationException("Failed to create ChoreSchedule for test chore.");
+        
+        var createChoreResult = Chore.Create(
+            title: title ?? $"Test Chore {_choreCounter++}",
+            description: "This is a test chore",
+            choreSchedule: createChoreScheduleResult.Value,
+            snoozeDuration: TimeSpan.FromDays(2)
+        );
+        
+        if (createChoreResult.IsFailed)
+            throw new InvalidOperationException("Failed to create Chore for test chore.");
+        
+        var chore = createChoreResult.Value;
+
+        if (numAssignees > 0)
+        {
+            var users = await CreateUsersAsync(numAssignees, context: context);
+            foreach (var user in users)
+            {
+                chore.AddAssignee(user);
+            }
+        }
+
+        context.Chores.Add(chore);
+        await context.SaveChangesAsync();
+
+        return chore;
     }
 }
