@@ -1,4 +1,5 @@
 using ChoreNotifier.Features.Chores.CreateChore;
+using ChoreNotifier.Features.Chores.Scheduling;
 using ChoreNotifier.Models;
 using FluentAssertions;
 using JetBrains.Annotations;
@@ -13,7 +14,11 @@ public class CreateChoreHandlerTest : DatabaseTestBase
 
     public CreateChoreHandlerTest(DatabaseFixture dbFixture) : base(dbFixture)
     {
-        _handler = new CreateChoreHandler(dbFixture.CreateDbContext());
+        _handler = new CreateChoreHandler(
+            dbFixture.CreateDbContext(),
+            new ChoreSchedulingService(),
+            TestClock
+        );
     }
 
     private static CreateChoreRequest CreateValidRequest() => new(
@@ -27,7 +32,6 @@ public class CreateChoreHandlerTest : DatabaseTestBase
         ),
         TimeSpan.FromDays(2),
         new List<int>()
-        
     );
 
     [Theory]
@@ -107,5 +111,43 @@ public class CreateChoreHandlerTest : DatabaseTestBase
             .Match<NotFoundError>(e =>
                 e.EntityName == "Users" &&
                 (string)e.EntityKey == "9999");
+    }
+
+    [Fact]
+    public async Task Handle_WhenHasAssignees_SetsUpNextOccurrence()
+    {
+        // Arrange
+        var users = await Factory.CreateUsersAsync(2);
+        var request = CreateValidRequest() with { AssigneeUserIds = users.Select(u => u.Id).ToList() };
+
+        // Act
+        var result = await _handler.Handle(request);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+
+        using var context = DbFixture.CreateDbContext();
+        var occuruence = await context.ChoreOccurrences
+            .FirstOrDefaultAsync(o => o.ChoreId == result.Value.Id);
+        occuruence.Should().NotBeNull();
+        occuruence.ScheduledFor.Should().BeAfter(TestClock.UtcNow);
+    }
+
+    [Fact]
+    public async Task Handle_WhenNoAssignees_DoesNotSetUpNextOccurrence()
+    {
+        // Arrange
+        var request = CreateValidRequest() with { AssigneeUserIds = new List<int>() };
+
+        // Act
+        var result = await _handler.Handle(request);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+
+        using var context = DbFixture.CreateDbContext();
+        var occuruence = await context.ChoreOccurrences
+            .FirstOrDefaultAsync(o => o.ChoreId == result.Value.Id);
+        occuruence.Should().BeNull();
     }
 }

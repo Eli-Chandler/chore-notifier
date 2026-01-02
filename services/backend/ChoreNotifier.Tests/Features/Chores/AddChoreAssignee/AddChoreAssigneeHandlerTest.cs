@@ -1,4 +1,5 @@
 using ChoreNotifier.Features.Chores.AddChoreAssignee;
+using ChoreNotifier.Features.Chores.Scheduling;
 using ChoreNotifier.Models;
 using FluentAssertions;
 using JetBrains.Annotations;
@@ -13,7 +14,7 @@ public class AddChoreAssigneeHandlerTest : DatabaseTestBase
 
     public AddChoreAssigneeHandlerTest(DatabaseFixture dbFixture) : base(dbFixture)
     {
-        _handler = new AddChoreAssigneeHandler(dbFixture.CreateDbContext());
+        _handler = new AddChoreAssigneeHandler(dbFixture.CreateDbContext(), new ChoreSchedulingService(), TestClock);
     }
 
     [Fact]
@@ -111,5 +112,24 @@ public class AddChoreAssigneeHandlerTest : DatabaseTestBase
             .FirstOrDefaultAsync(c => c.Id == chore.Id);
         choreInDb.Should().NotBeNull();
         choreInDb.Assignees.Should().ContainSingle().Which.User.Id.Should().Be(user.Id);
+    }
+    
+    [Fact]
+    public async Task Handle_WhenNoExistingAssigneesAndNoExistingOccurrences_SetsNextOccurrence()
+    {
+        // Arrange
+        var chore = await Factory.CreateChoreAsync();
+        var user = await Factory.CreateUserAsync();
+        var request = new AddChoreAssigneeRequest(user.Id);
+
+        // Act
+        var result = await _handler.Handle(chore.Id, request);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        await using var context = DbFixture.CreateDbContext();
+        var occurrenceInDb = await context.ChoreOccurrences
+            .FirstOrDefaultAsync(o => o.ChoreId == chore.Id);
+        occurrenceInDb.Should().NotBeNull();
     }
 }
