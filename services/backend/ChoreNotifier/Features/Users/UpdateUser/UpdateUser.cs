@@ -3,7 +3,7 @@ using ChoreNotifier.Models;
 using FluentResults;
 using Microsoft.EntityFrameworkCore;
 
-namespace ChoreNotifier.Features.Users;
+namespace ChoreNotifier.Features.Users.UpdateUser;
 
 public sealed record UpdateUserRequest
 {

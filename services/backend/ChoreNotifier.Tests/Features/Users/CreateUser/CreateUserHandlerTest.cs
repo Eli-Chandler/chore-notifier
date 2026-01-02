@@ -1,8 +1,8 @@
-using ChoreNotifier.Features.Users;
+using ChoreNotifier.Features.Users.CreateUser;
 using FluentAssertions;
 using JetBrains.Annotations;
 
-namespace ChoreNotifier.Tests.Features.Users;
+namespace ChoreNotifier.Tests.Features.Users.CreateUser;
 
 [TestSubject(typeof(CreateUserHandler))]
 public class CreateUserHandlerTest : DatabaseTestBase

@@ -4,7 +4,7 @@ using ChoreNotifier.Models;
 using FluentResults;
 using FluentValidation;
 
-namespace ChoreNotifier.Features.Users;
+namespace ChoreNotifier.Features.Users.CreateUser;
 
 public sealed record CreateUserRequest(string Name);
 

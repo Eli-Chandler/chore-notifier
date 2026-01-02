@@ -13,7 +13,7 @@ public class Chore
     public TimeSpan? SnoozeDuration { get; private set; } = TimeSpan.FromDays(1);
 
     private readonly List<ChoreAssignee> _assignees = [];
-    public IReadOnlyCollection<ChoreAssignee> Assignees => _assignees;
+    public IReadOnlyCollection<ChoreAssignee> Assignees => _assignees.OrderBy(a => a.Order).ThenBy(a => a.Id).ToList();
 
     public int NextAssigneeIndex { get; private set; } = 0;
 

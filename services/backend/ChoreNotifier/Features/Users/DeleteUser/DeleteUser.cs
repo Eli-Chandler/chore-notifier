@@ -4,7 +4,7 @@ using ChoreNotifier.Models;
 using FluentResults;
 using Microsoft.EntityFrameworkCore;
 
-namespace ChoreNotifier.Features.Users;
+namespace ChoreNotifier.Features.Users.DeleteUser;
 
 
 public sealed class DeleteUserHandler

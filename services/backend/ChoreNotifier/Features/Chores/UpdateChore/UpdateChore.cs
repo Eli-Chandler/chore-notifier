@@ -24,7 +24,7 @@ public sealed class UpdateChoreHandler
     private readonly ChoreDbContext _db;
     public UpdateChoreHandler(ChoreDbContext db) => _db = db;
 
-    public async Task<Result<UpdateChoreResponse>> Handle(int choreId, UpdateChoreRequest req, CancellationToken ct)
+    public async Task<Result<UpdateChoreResponse>> Handle(int choreId, UpdateChoreRequest req, CancellationToken ct = default)
     {
         var chore = await _db.Chores.FindAsync(new object?[] { choreId }, ct);
         if (chore == null)

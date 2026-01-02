@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 namespace ChoreNotifier.Common;
 
 public sealed class KeysetPage<T, TCursor>
+    where TCursor : struct
 {
     public required List<T> Items { get; init; }
     public required bool HasNextPage { get; init; }
@@ -29,8 +30,7 @@ public sealed class KeysetPage<T, TCursor>
             : resultsPlusOne.ToList();
 
         var nextCursor = hasNext && items.Count > 0
-            ? cursorSelector(items[^1])
-            : default;
+            ? cursorSelector(items[^1]) : (TCursor?)null;
 
         return new KeysetPage<T, TCursor>
         {
@@ -68,13 +68,14 @@ public static class KeysetPagingExtensions
         int pageSize,
         Func<T, TCursor> cursorSelector,
         CancellationToken ct = default)
+        where TCursor : struct
     {
         if (query is null) throw new ArgumentNullException(nameof(query));
         if (cursorSelector is null) throw new ArgumentNullException(nameof(cursorSelector));
         if (pageSize <= 0) throw new ArgumentOutOfRangeException(nameof(pageSize));
 
         var resultsPlusOne = await query.Take(pageSize + 1).ToListAsync(ct);
-        
+
 
         return KeysetPage<T, TCursor>.FromOverfetchedResults(resultsPlusOne, pageSize, cursorSelector);
     }

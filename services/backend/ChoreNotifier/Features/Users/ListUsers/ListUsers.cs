@@ -2,7 +2,7 @@ using ChoreNotifier.Data;
 using ChoreNotifier.Common;
 using FluentResults;
 
-namespace ChoreNotifier.Features.Users;
+namespace ChoreNotifier.Features.Users.ListUsers;
 
 public class ListUserResponseItem
 {

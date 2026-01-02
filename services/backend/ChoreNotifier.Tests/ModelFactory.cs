@@ -73,20 +73,20 @@ public class ModelFactory
             start: DateTime.UtcNow,
             intervalDays: 7
         );
-        
+
         if (createChoreScheduleResult.IsFailed)
             throw new InvalidOperationException("Failed to create ChoreSchedule for test chore.");
-        
+
         var createChoreResult = Chore.Create(
             title: title ?? $"Test Chore {_choreCounter++}",
             description: "This is a test chore",
             choreSchedule: createChoreScheduleResult.Value,
             snoozeDuration: TimeSpan.FromDays(2)
         );
-        
+
         if (createChoreResult.IsFailed)
             throw new InvalidOperationException("Failed to create Chore for test chore.");
-        
+
         var chore = createChoreResult.Value;
 
         if (numAssignees > 0)
@@ -102,5 +102,22 @@ public class ModelFactory
         await context.SaveChangesAsync();
 
         return chore;
+    }
+
+    public async Task<List<Chore>> CreateChoresAsync(
+        int count,
+        Func<int, string>? titleFactory = null,
+        int numAssignees = 0)
+    {
+        var chores = new List<Chore>(count);
+
+        for (int i = 0; i < count; i++)
+        {
+            var title = titleFactory?.Invoke(i) ?? $"Test Chore {_choreCounter++}";
+            var chore = await CreateChoreAsync(title, numAssignees);
+            chores.Add(chore);
+        }
+
+        return chores;
     }
 }
