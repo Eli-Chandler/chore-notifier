@@ -54,3 +54,11 @@ public sealed class ValidationError : DomainError
 {
     public ValidationError(string message) : base("validation", message) { }
 }
+
+public sealed class ForbiddenError : DomainError
+{
+    public ForbiddenError(string message)
+        : base("unauthorized", message)
+    {
+    }
+}

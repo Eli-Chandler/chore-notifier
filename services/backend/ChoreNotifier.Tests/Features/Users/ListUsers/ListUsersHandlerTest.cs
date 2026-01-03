@@ -9,7 +9,7 @@ public class ListUsersHandlerTest : DatabaseTestBase
 {
     private readonly ListUsersHandler _handler;
 
-    public ListUsersHandlerTest(DatabaseFixture dbFixture) : base(dbFixture)
+    public ListUsersHandlerTest(DatabaseFixture dbFixture, ClockFixture clockFixture) : base(dbFixture, clockFixture)
     {
         _handler = new ListUsersHandler(dbFixture.CreateDbContext());
     }

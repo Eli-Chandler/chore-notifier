@@ -1,5 +1,6 @@
 using ChoreNotifier.Data;
 using ChoreNotifier.Common;
+using ChoreNotifier.Models;
 using FluentResults;
 
 namespace ChoreNotifier.Features.Users.ListUsers;
@@ -20,7 +21,7 @@ public sealed class ListUsersHandler
         var validatePageSizeResult = ValidatePageSize(pageSize);
         if (validatePageSizeResult.IsFailed)
             return validatePageSizeResult;
-        
+
         var result = await _db.Users
             .OrderBy(u => u.Id)
             .Where(u => afterId == null || u.Id > afterId)
@@ -31,19 +32,19 @@ public sealed class ListUsersHandler
             );
 
         return result.Select(u => new ListUserResponseItem
-            {
-                Id = u.Id,
-                Name = u.Name
-            }
+        {
+            Id = u.Id,
+            Name = u.Name
+        }
         );
     }
-    
+
     private static Result ValidatePageSize(int pageSize)
     {
         if (pageSize <= 0)
-            return Result.Fail("Page size must be greater than 0");
+            return Result.Fail(new ValidationError("Page size must be greater than 0"));
         if (pageSize > 100)
-            return Result.Fail("Page size cannot exceed 100");
+            return Result.Fail(new ValidationError("Page size cannot exceed 100"));
         return Result.Ok();
     }
 }
