@@ -3,7 +3,7 @@ using ChoreNotifier.Data;
 using ChoreNotifier.Features.Chores.Scheduling;
 using ChoreNotifier.Models;
 
-namespace ChoreNotifier.Features.ChoreOccurences.CompleteChore;
+namespace ChoreNotifier.Features.ChoreOccurrences.CompleteChore;
 
 using FluentResults;
 using Microsoft.EntityFrameworkCore;

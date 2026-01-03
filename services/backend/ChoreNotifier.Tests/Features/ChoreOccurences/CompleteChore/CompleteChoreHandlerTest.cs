@@ -1,4 +1,4 @@
-using ChoreNotifier.Features.ChoreOccurences.CompleteChore;
+using ChoreNotifier.Features.ChoreOccurrences.CompleteChore;
 using ChoreNotifier.Features.Chores.Scheduling;
 using ChoreNotifier.Models;
 using FluentAssertions;

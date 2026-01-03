@@ -3,14 +3,14 @@ using ChoreNotifier.Data;
 using ChoreNotifier.Features.Chores.Scheduling;
 using ChoreNotifier.Models;
 
-namespace ChoreNotifier.Features.ChoreOccurences.SnoozeChore;
+namespace ChoreNotifier.Features.ChoreOccurrences.SnoozeChore;
 
 using FluentResults;
 using Microsoft.EntityFrameworkCore;
 
 public sealed record SnoozeChoreRequest(int UserId, int ChoreOccurrenceId);
 
-public class CompleteChoreHandler(ChoreDbContext db, IClock clock)
+public class SnoozeChoreHandler(ChoreDbContext db, IClock clock)
 {
     public async Task<Result> Handle(SnoozeChoreRequest req, CancellationToken ct = default)
     {
