@@ -1,5 +1,7 @@
+using ChoreNotifier.Common;
 using ChoreNotifier.Data;
 using ChoreNotifier.Features.Chores.CreateChore;
+using ChoreNotifier.Features.Chores.Scheduling;
 using ChoreNotifier.Models;
 using FluentResults;
 using Microsoft.EntityFrameworkCore;
@@ -15,7 +17,7 @@ public sealed record AddChoreAssigneeResponse(
     ChoreScheduleResponse ChoreSchedule,
     IEnumerable<ChoreAssigneeResponse> Assignees);
 
-public sealed class AddChoreAssigneeHandler(ChoreDbContext db)
+public sealed class AddChoreAssigneeHandler(ChoreDbContext db, ChoreSchedulingService choreSchedulingService, IClock clock)
 {
     public async Task<Result<AddChoreAssigneeResponse>> Handle(int choreId, AddChoreAssigneeRequest req,
         CancellationToken ct = default)
@@ -35,6 +37,9 @@ public sealed class AddChoreAssigneeHandler(ChoreDbContext db)
         var addResult = chore.AddAssignee(user);
         if (addResult.IsFailed)
             return Result.Fail(addResult.Errors);
+
+        if (chore.Assignees.Count == 1) // If there wasn't any assignees before this may not have been scheduled yet
+            await choreSchedulingService.ScheduleNextOccurrenceIfNeeded(db, chore, clock.UtcNow);
 
         await db.SaveChangesAsync(ct);
 

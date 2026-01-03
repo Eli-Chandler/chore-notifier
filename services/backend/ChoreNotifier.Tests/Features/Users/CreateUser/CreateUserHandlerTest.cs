@@ -9,7 +9,7 @@ public class CreateUserHandlerTest : DatabaseTestBase
 {
     private readonly CreateUserHandler _handler;
 
-    public CreateUserHandlerTest(DatabaseFixture dbFixture) : base(dbFixture)
+    public CreateUserHandlerTest(DatabaseFixture dbFixture, ClockFixture clockFixture) : base(dbFixture, clockFixture)
     {
         _handler = new CreateUserHandler(dbFixture.CreateDbContext());
     }

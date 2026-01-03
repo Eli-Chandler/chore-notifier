@@ -20,28 +20,28 @@ public sealed class ChoreSchedule
         Until = until;
         IntervalDays = intervalDays;
     }
-    
+
     public static Result<ChoreSchedule> Create(DateTimeOffset start, int intervalDays, DateTimeOffset? until = null)
     {
         var validationResult = Result.Merge(
             ValidateIntervalDays(intervalDays),
             ValidateUntil(start, until)
         );
-        
+
         if (validationResult.IsFailed)
             return validationResult;
 
         var schedule = new ChoreSchedule(start, intervalDays, until);
         return Result.Ok(schedule);
     }
-    
+
     private static Result ValidateIntervalDays(int intervalDays)
     {
         if (intervalDays <= 0)
             return Result.Fail(new ValidationError("IntervalDays must be > 0."));
         return Result.Ok();
     }
-    
+
     private static Result ValidateUntil(DateTimeOffset start, DateTimeOffset? until)
     {
         if (until is not null && until < start)

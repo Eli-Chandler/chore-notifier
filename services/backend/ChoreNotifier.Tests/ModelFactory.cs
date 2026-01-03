@@ -1,3 +1,4 @@
+using ChoreNotifier.Common;
 using ChoreNotifier.Data;
 using ChoreNotifier.Models;
 
@@ -6,12 +7,14 @@ namespace ChoreNotifier.Tests;
 public class ModelFactory
 {
     private readonly DatabaseFixture _dbFixture;
+    private readonly IClock _clock;
     private int _userCounter = 1;
     private int _choreCounter = 1;
 
-    public ModelFactory(DatabaseFixture dbFixture)
+    public ModelFactory(DatabaseFixture dbFixture, IClock clock)
     {
         _dbFixture = dbFixture;
+        _clock = clock;
     }
 
     public async Task<User> CreateUserAsync(
@@ -24,16 +27,11 @@ public class ModelFactory
             return await CreateUserAsync(name, ctx);
         }
 
-        // var user = new User
-        // {
-        //     Name = name ?? $"Test User {_userCounter++}"
-        // };
-        
         var createUserResult = User.Create(name ?? $"Test User {_userCounter++}");
-        
+
         if (createUserResult.IsFailed)
             throw new InvalidOperationException("Failed to create User for test user.");
-        
+
         var user = createUserResult.Value;
 
         context.Users.Add(user);
@@ -65,12 +63,19 @@ public class ModelFactory
         return users;
     }
 
-    public async Task<Chore> CreateChoreAsync(string? title = null, int numAssignees = 0)
+    public async Task<Chore> CreateChoreAsync(
+        string? title = null,
+        int numAssignees = 0,
+        ChoreDbContext? context = null)
     {
-        await using var context = _dbFixture.CreateDbContext();
+        if (context is null)
+        {
+            await using var ctx = _dbFixture.CreateDbContext();
+            return await CreateChoreAsync(title, numAssignees, ctx);
+        }
 
         var createChoreScheduleResult = ChoreSchedule.Create(
-            start: DateTime.UtcNow,
+            start: _clock.UtcNow,
             intervalDays: 7
         );
 
@@ -107,17 +112,48 @@ public class ModelFactory
     public async Task<List<Chore>> CreateChoresAsync(
         int count,
         Func<int, string>? titleFactory = null,
-        int numAssignees = 0)
+        int numAssignees = 0,
+        ChoreDbContext? context = null)
     {
+        if (context is null)
+        {
+            await using var ctx = _dbFixture.CreateDbContext();
+            return await CreateChoresAsync(count, titleFactory, numAssignees, ctx);
+        }
+
         var chores = new List<Chore>(count);
 
         for (int i = 0; i < count; i++)
         {
             var title = titleFactory?.Invoke(i) ?? $"Test Chore {_choreCounter++}";
-            var chore = await CreateChoreAsync(title, numAssignees);
+            var chore = await CreateChoreAsync(title, numAssignees, context);
             chores.Add(chore);
         }
 
         return chores;
+    }
+
+    public async Task<ChoreOccurrence> CreateChoreOccurrenceAsync(
+        Chore? chore = null,
+        User? user = null,
+        DateTimeOffset? scheduledAt = null,
+        ChoreDbContext? context = null
+    )
+    {
+        if (context is null)
+        {
+            await using var ctx = _dbFixture.CreateDbContext();
+            return await CreateChoreOccurrenceAsync(chore, user, scheduledAt, ctx);
+        }
+
+        chore ??= await CreateChoreAsync(numAssignees: 1, context: context);
+        scheduledAt ??= _clock.UtcNow;
+        user ??= chore.Assignees.First().User;
+        chore.AddAssignee(user);
+
+        var choreOccurence = new ChoreOccurrence(chore, user, scheduledAt.Value);
+        context.ChoreOccurrences.Add(choreOccurence);
+        await context.SaveChangesAsync();
+        return choreOccurence;
     }
 }

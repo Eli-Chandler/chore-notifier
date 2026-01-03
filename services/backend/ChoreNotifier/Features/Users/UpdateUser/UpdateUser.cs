@@ -25,7 +25,7 @@ public sealed class UpdateUserHandler
             return Result.Fail(new NotFoundError("User", userId.ToString()));
 
         var renameResult = user.Rename(req.Name);
-        
+
         if (renameResult.IsFailed)
             return Result.Fail(renameResult.Errors);
 
