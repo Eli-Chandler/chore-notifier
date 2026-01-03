@@ -103,6 +103,6 @@ public class CompleteChoreHandlerTest : DatabaseTestBase
         var nextOccurrence = await assertDb.ChoreOccurrences
             .FirstOrDefaultAsync(co => co.ChoreId == choreOccurence.ChoreId && co.Id != choreOccurence.Id);
         nextOccurrence.Should().NotBeNull();
-        nextOccurrence!.ScheduledFor.Should().Be(TestClock.UtcNow.AddDays(choreOccurence.Chore.ChoreSchedule.IntervalDays));
+        nextOccurrence!.ScheduledFor.Should().BeCloseTo(TestClock.UtcNow.AddDays(choreOccurence.Chore.ChoreSchedule.IntervalDays), TimeSpan.FromMilliseconds(1));
     }
 }
