@@ -7,7 +7,7 @@ namespace ChoreNotifier.Features.Chores.Scheduling;
 
 public class ChoreSchedulingService
 {
-    public async Task<Result<ChoreOccurrence>> ScheduleNextOccurrence(
+    public async Task<Result<ChoreOccurrence>> ScheduleNextOccurrenceIfNeeded(
         ChoreDbContext db,
         Chore chore,
         DateTimeOffset after

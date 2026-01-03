@@ -46,7 +46,7 @@ public sealed class CreateChoreHandler(ChoreDbContext db, ChoreSchedulingService
             chore.AddAssignee(user);
         }
 
-        await choreSchedulingService.ScheduleNextOccurrence(db, chore, clock.UtcNow);
+        await choreSchedulingService.ScheduleNextOccurrenceIfNeeded(db, chore, clock.UtcNow);
 
         await db.SaveChangesAsync(ct);
 

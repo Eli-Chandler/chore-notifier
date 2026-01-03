@@ -24,11 +24,6 @@ public class ModelFactory
             return await CreateUserAsync(name, ctx);
         }
 
-        // var user = new User
-        // {
-        //     Name = name ?? $"Test User {_userCounter++}"
-        // };
-
         var createUserResult = User.Create(name ?? $"Test User {_userCounter++}");
 
         if (createUserResult.IsFailed)
