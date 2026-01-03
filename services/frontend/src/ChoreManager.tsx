@@ -1,6 +1,6 @@
 import {Link} from "react-router";
 import {Button} from "@/components/ui/button.tsx";
-import {ArrowLeft, PlusIcon} from "lucide-react";
+import {ArrowLeft, Pencil, PlusIcon} from "lucide-react";
 import {
     Dialog,
     DialogClose,
@@ -22,6 +22,21 @@ import {
 import * as React from "react"
 import { ChevronDownIcon } from "lucide-react"
 import { Calendar } from "@/components/ui/calendar"
+import {
+    DropdownMenu,
+    DropdownMenuCheckboxItem,
+    DropdownMenuContent,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import {
+    Card,
+    CardAction,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from "@/components/ui/card"
 
 function ChoreManager() {
     return (
@@ -34,6 +49,9 @@ function ChoreManager() {
                     </Button>
                 </Link>
                 <h1 className="text-4xl">Chores</h1>
+            </div>
+            <div className="mt-6">
+                <ChoreCard />
                 <AddChore />
             </div>
         </>
@@ -78,6 +96,13 @@ function AddChore() {
                                 <DatePicker label="End" date={endDate} setDate={setEndDate} />
                             </div>
                         </div>
+                        <div className="grid gap-3">
+                            <Label htmlFor="interval-1">Intervals (Days)</Label>
+                            <Input id="interval-1" name="intervals" defaultValue="E.g. 2" />
+                        </div>
+                        <div>
+                            <Assignment />
+                        </div>
                     </div>
                     <DialogFooter>
                         <DialogClose asChild>
@@ -104,7 +129,7 @@ function DatePicker({ label, date, setDate }: { label: string, date: Date | unde
                     <Button
                         variant="outline"
                         id={label.toLowerCase()}
-                        className="w-48 justify-between font-normal"
+                        className="w-full justify-between font-normal"
                     >
                         {date ? date.toLocaleDateString() : "Select date"}
                         <ChevronDownIcon />
@@ -125,5 +150,79 @@ function DatePicker({ label, date, setDate }: { label: string, date: Date | unde
         </div>
     )
 }
+
+function Assignment(){
+    // List of users (what you would get from the API)
+    const users = ["Joy", "Eli", "Yana", "Chase"];
+
+    // Checked Map (Dictionary mapping username -> checked or not (true/false))
+    const [checkedMap, setCheckedMap] = React.useState<Record<string, boolean>>({});
+
+    // Set checked, looks at the pervious state of the checkedMap, and updates it with the new value for the given user
+    function setChecked(user: string, value: boolean) {
+        setCheckedMap((prev) => ({
+            ...prev,
+            [user]: value,
+        }));
+    }
+
+    // Just utility to check In dictionary? Get dictionary value, else false
+    function getChecked(user: string): boolean {
+        return checkedMap[user] || false;
+    }
+
+    return (
+        <DropdownMenu>
+            <div className="mb-3">
+                <Label htmlFor="assignment-1">Assign to</Label>
+            </div>
+            <DropdownMenuTrigger asChild>
+                <Button
+                    variant="outline"
+                    className="w-full justify-between">
+                    Select
+                    <ChevronDownIcon />
+                </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56">
+                <DropdownMenuLabel>Tenants</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {/* for each user in the list of users, make a compolnent like this: */}
+                {
+                    users.map((user) => (
+                        <DropdownMenuCheckboxItem
+                            key={user}
+                            checked={getChecked(user)}
+                            onCheckedChange={(value) => setChecked(user, value as boolean)}
+                        >
+                            {user}
+                        </DropdownMenuCheckboxItem>
+                    ))
+                }
+            </DropdownMenuContent>
+        </DropdownMenu>
+    )
+}
+
+function ChoreCard() {
+    return (
+        <Card>
+            <CardHeader className="flex flex-row gap-3">
+                <div className="text-left">
+                    <CardTitle>Empty Recycling</CardTitle>
+                    <CardDescription>
+                        Empty both the recycling bin and box to the communal bins outside.
+                    </CardDescription>
+                </div>
+                <CardAction>
+                    <Button variant="outline">
+                        <Pencil />
+                    </Button>
+                </CardAction>
+            </CardHeader>
+        </Card>
+    )
+}
+
 
 export default ChoreManager;
