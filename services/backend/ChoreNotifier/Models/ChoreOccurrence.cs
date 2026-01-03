@@ -7,14 +7,16 @@ public class ChoreOccurrence
 {
     public int Id { get; private set; }
     public int ChoreId { get; private set; }
-    public required Chore Chore { get; set; }
-    public required User User { get; set; }
+    public Chore Chore { get; private set; }
+    public User User { get; private set; }
 
     public required DateTimeOffset ScheduledFor { get; set; }
     public DateTimeOffset DueAt { get; private set; }
     public DateTimeOffset? CompletedAt { get; private set; }
 
-    private ChoreOccurrence() { } // For EF
+    private ChoreOccurrence()
+    {
+    } // For EF
 
     [SetsRequiredMembers]
     public ChoreOccurrence(Chore chore, User user, DateTimeOffset scheduledFor)
@@ -26,19 +28,26 @@ public class ChoreOccurrence
         DueAt = scheduledFor;
     }
 
-    public Result Snooze(TimeSpan? duration = null)
+    public Result Snooze(DateTimeOffset currentTime, TimeSpan? duration = null)
     {
         if (Chore.SnoozeDuration is null)
-        {
             return Result.Fail(new InvalidOperationError("Snoozing is not allowed for this chore."));
-        }
+        if (currentTime < DueAt)
+            return Result.Fail(new InvalidOperationError("Cannot snooze a chore occurrence before its due time."));
+        if (CompletedAt is not null)
+            return Result.Fail(new InvalidOperationError("Cannot snooze a completed chore occurrence"));
 
-        DueAt += duration ?? Chore.SnoozeDuration.Value;
+        DueAt = currentTime.Add(duration ?? Chore.SnoozeDuration.Value);
         return Result.Ok();
     }
 
-    public void Complete(DateTimeOffset? at = null)
+    public Result Complete(DateTimeOffset currentTime)
     {
-        CompletedAt = at ?? DateTimeOffset.UtcNow;
+        if (CompletedAt is not null)
+            return Result.Fail(new InvalidOperationError("Chore occurrence is already completed."));
+
+
+        CompletedAt = currentTime;
+        return Result.Ok();
     }
 }
