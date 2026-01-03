@@ -1,6 +1,7 @@
 using ChoreNotifier.Common;
 using ChoreNotifier.Data;
 using ChoreNotifier.Features.Chores.CreateChore;
+using ChoreNotifier.Models;
 using FluentResults;
 
 namespace ChoreNotifier.Features.Chores.ListChores;
@@ -50,9 +51,9 @@ public sealed class ListChoresHandler
     private static Result ValidatePageSize(int pageSize)
     {
         if (pageSize <= 0)
-            return Result.Fail("Page size must be greater than 0");
+            return Result.Fail(new ValidationError("Page size must be greater than 0"));
         if (pageSize > 100)
-            return Result.Fail("Page size cannot exceed 100");
+            return Result.Fail(new ValidationError("Page size cannot exceed 100"));
         return Result.Ok();
     }
 }

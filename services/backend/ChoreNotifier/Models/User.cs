@@ -29,9 +29,9 @@ public class User
     private static Result ValidateName(string name)
     {
         if (string.IsNullOrWhiteSpace(name))
-            return Result.Fail("Name is required.");
+            return Result.Fail(new ValidationError("Name is required."));
         if (name.Length > 100)
-            return Result.Fail("Name cannot exceed 100 characters.");
+            return Result.Fail(new ValidationError("Name cannot exceed 100 characters."));
         return Result.Ok();
     }
 

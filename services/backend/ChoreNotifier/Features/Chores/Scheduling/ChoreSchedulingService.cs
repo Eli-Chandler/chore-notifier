@@ -33,7 +33,7 @@ public class ChoreSchedulingService
 
         var nextTime = chore.ChoreSchedule.NextAfter(after);
         if (nextTime is null)
-            return Result.Fail("No next occurence is scheduled.");
+            return Result.Fail(new InvalidOperationError("No next occurence is scheduled."));
 
         var nextAssignee = chore.GetAndIncrementCurrentAssignee();
         if (nextAssignee.IsFailed)

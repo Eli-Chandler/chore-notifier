@@ -16,6 +16,7 @@ public class SnoozeChoreHandler(ChoreDbContext db, IClock clock)
     {
         var choreOccurence = await db.ChoreOccurrences
             .Include(co => co.User)
+            .Include(co => co.Chore)
             .FirstOrDefaultAsync(co => co.Id == req.ChoreOccurrenceId, ct);
 
         if (choreOccurence is null)

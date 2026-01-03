@@ -1,5 +1,6 @@
 using ChoreNotifier.Data;
 using ChoreNotifier.Common;
+using ChoreNotifier.Models;
 using FluentResults;
 
 namespace ChoreNotifier.Features.Users.ListUsers;
@@ -41,9 +42,9 @@ public sealed class ListUsersHandler
     private static Result ValidatePageSize(int pageSize)
     {
         if (pageSize <= 0)
-            return Result.Fail("Page size must be greater than 0");
+            return Result.Fail(new ValidationError("Page size must be greater than 0"));
         if (pageSize > 100)
-            return Result.Fail("Page size cannot exceed 100");
+            return Result.Fail(new ValidationError("Page size cannot exceed 100"));
         return Result.Ok();
     }
 }

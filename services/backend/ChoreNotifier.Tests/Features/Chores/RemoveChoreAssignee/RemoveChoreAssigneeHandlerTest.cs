@@ -2,6 +2,7 @@ using ChoreNotifier.Features.Chores.RemoveChoreAssignee;
 using ChoreNotifier.Models;
 using FluentAssertions;
 using JetBrains.Annotations;
+using Microsoft.EntityFrameworkCore;
 
 namespace ChoreNotifier.Tests.Features.Chores.RemoveChoreAssignee;
 
@@ -98,5 +99,25 @@ public class RemoveChoreAssigneeHandlerTest : DatabaseTestBase
             .Subject;
 
         error.Message.Should().Be("User is not assigned to this chore.");
+    }
+
+    [Fact]
+    public async Task Handle_WhenValidRequest_RemovesAssignee()
+    {
+        // Arrange
+        var chore = await Factory.CreateChoreAsync(numAssignees: 1);
+        var user = chore.Assignees.First().User;
+
+        // Act
+        var result = await _handler.Handle(chore.Id, user.Id);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        await using var assertDb = DbFixture.CreateDbContext();
+        var updatedChore = await assertDb.Chores
+            .Include(c => c.Assignees)
+            .FirstAsync();
+
+        updatedChore.Assignees.Should().BeEmpty();
     }
 }
