@@ -165,7 +165,7 @@ public class Chore
         for (var i = 0; i < assignees.Count; i++)
             assignees[i].Order = i;
     }
-    
+
     public Result UpdateTitle(string title)
     {
         var validationResult = ValidateTitle(title);
@@ -175,7 +175,7 @@ public class Chore
         Title = title;
         return Result.Ok();
     }
-    
+
     public Result UpdateDescription(string? description)
     {
         var validationResult = ValidateDescription(description);
@@ -185,7 +185,7 @@ public class Chore
         Description = description;
         return Result.Ok();
     }
-    
+
     public Result UpdateSnoozeDuration(TimeSpan? snoozeDuration)
     {
         var validationResult = ValidateSnoozeDuration(snoozeDuration ?? TimeSpan.FromDays(1));
@@ -195,7 +195,7 @@ public class Chore
         SnoozeDuration = snoozeDuration;
         return Result.Ok();
     }
-    
+
     public void UpdateChoreSchedule(ChoreSchedule choreSchedule)
     {
         ChoreSchedule = choreSchedule;

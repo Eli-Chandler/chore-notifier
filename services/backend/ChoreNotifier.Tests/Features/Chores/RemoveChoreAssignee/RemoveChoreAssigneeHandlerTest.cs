@@ -14,7 +14,7 @@ public class RemoveChoreAssigneeHandlerTest : DatabaseTestBase
     {
         _handler = new RemoveChoreAssigneeHandler(dbFixture.CreateDbContext());
     }
-    
+
     [Fact]
     public async Task Handle_WhenChoreNonExistent_ThrowsNotFoundException()
     {
@@ -58,7 +58,7 @@ public class RemoveChoreAssigneeHandlerTest : DatabaseTestBase
         error.EntityName.Should().Be("User");
         error.EntityKey.Should().Be("9999");
     }
-    
+
     [Fact]
     public async Task Handle_WhenUserAndChoreNonExistent_ThrowsNotFoundException()
     {

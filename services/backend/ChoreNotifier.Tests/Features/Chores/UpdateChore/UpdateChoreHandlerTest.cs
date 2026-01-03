@@ -33,10 +33,10 @@ public class UpdateChoreHandlerTest : DatabaseTestBase
     {
         // Arrange
         var req = CreateValidRequest();
-        
+
         // Act
         var result = await _handler.Handle(999, req);
-        
+
         // Assert
         result.IsFailed.Should().BeTrue();
         result.Errors.Should().HaveCount(1);
@@ -50,14 +50,14 @@ public class UpdateChoreHandlerTest : DatabaseTestBase
         var chore = await Factory.CreateChoreAsync();
         var req = CreateValidRequest() with
         {
-            Title = string.Empty, 
+            Title = string.Empty,
             Description = "A".PadLeft(1001, 'A'),
             SnoozeDuration = TimeSpan.Zero
         };
-        
+
         // Act
         var result = await _handler.Handle(chore.Id, req);
-        
+
         // Assert
         result.IsFailed.Should().BeTrue();
         result.Errors.Should().HaveCount(3);
@@ -70,10 +70,10 @@ public class UpdateChoreHandlerTest : DatabaseTestBase
         // Arrange
         var chore = await Factory.CreateChoreAsync();
         var req = CreateValidRequest();
-        
+
         // Act
         var result = await _handler.Handle(chore.Id, req);
-        
+
         // Assert
         result.IsSuccess.Should().BeTrue();
         var updatedChore = result.Value;
@@ -85,7 +85,7 @@ public class UpdateChoreHandlerTest : DatabaseTestBase
         updatedChore.ChoreSchedule.IntervalDays.Should().Be(req.ChoreSchedule.IntervalDays);
         updatedChore.ChoreSchedule.Until.Should().Be(req.ChoreSchedule.Until);
     }
-    
+
     [Fact]
     public async Task Handle_WhenChoreScheduleIsNull_DoesNotUpdateChoreSchedule()
     {
@@ -93,10 +93,10 @@ public class UpdateChoreHandlerTest : DatabaseTestBase
         var chore = await Factory.CreateChoreAsync();
         var originalSchedule = chore.ChoreSchedule;
         var req = CreateValidRequest() with { ChoreSchedule = null };
-        
+
         // Act
         var result = await _handler.Handle(chore.Id, req);
-        
+
         // Assert
         result.IsSuccess.Should().BeTrue();
         var updatedChore = result.Value;

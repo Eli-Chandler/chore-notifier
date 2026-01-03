@@ -40,7 +40,7 @@ public sealed class AddChoreAssigneeHandler(ChoreDbContext db, ChoreSchedulingSe
 
         if (chore.Assignees.Count == 1) // If there wasn't any assignees before this may not have been scheduled yet
             await choreSchedulingService.ScheduleNextOccurrence(db, chore, clock.UtcNow);
-        
+
         await db.SaveChangesAsync(ct);
 
         return new AddChoreAssigneeResponse(

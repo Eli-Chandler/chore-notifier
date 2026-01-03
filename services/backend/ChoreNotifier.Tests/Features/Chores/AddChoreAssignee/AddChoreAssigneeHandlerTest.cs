@@ -104,7 +104,7 @@ public class AddChoreAssigneeHandlerTest : DatabaseTestBase
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().NotBeNull();
         result.Value.Assignees.Should().ContainSingle().Which.Id.Should().Be(user.Id);
-        
+
         await using var context = DbFixture.CreateDbContext();
         var choreInDb = await context.Chores
             .Include(c => c.Assignees)
@@ -113,7 +113,7 @@ public class AddChoreAssigneeHandlerTest : DatabaseTestBase
         choreInDb.Should().NotBeNull();
         choreInDb.Assignees.Should().ContainSingle().Which.User.Id.Should().Be(user.Id);
     }
-    
+
     [Fact]
     public async Task Handle_WhenNoExistingAssigneesAndNoExistingOccurrences_SetsNextOccurrence()
     {

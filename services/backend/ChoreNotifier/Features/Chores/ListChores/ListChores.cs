@@ -23,7 +23,7 @@ public sealed class ListChoresHandler
         var validatePageSizeResult = ValidatePageSize(pageSize);
         if (validatePageSizeResult.IsFailed)
             return validatePageSizeResult;
-        
+
         var result = await _db.Chores
             .OrderBy(c => c.Id)
             .Where(c => afterId == null || c.Id > afterId)
@@ -46,7 +46,7 @@ public sealed class ListChoresHandler
             )
         );
     }
-    
+
     private static Result ValidatePageSize(int pageSize)
     {
         if (pageSize <= 0)

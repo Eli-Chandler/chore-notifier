@@ -20,7 +20,7 @@ public sealed class ListUsersHandler
         var validatePageSizeResult = ValidatePageSize(pageSize);
         if (validatePageSizeResult.IsFailed)
             return validatePageSizeResult;
-        
+
         var result = await _db.Users
             .OrderBy(u => u.Id)
             .Where(u => afterId == null || u.Id > afterId)
@@ -31,13 +31,13 @@ public sealed class ListUsersHandler
             );
 
         return result.Select(u => new ListUserResponseItem
-            {
-                Id = u.Id,
-                Name = u.Name
-            }
+        {
+            Id = u.Id,
+            Name = u.Name
+        }
         );
     }
-    
+
     private static Result ValidatePageSize(int pageSize)
     {
         if (pageSize <= 0)

@@ -17,7 +17,7 @@ public sealed class DeleteUserHandler
         var user = await _db.Users.FirstOrDefaultAsync(u => u.Id == userId, ct);
         if (user is null)
             return Result.Fail(new NotFoundError("User", userId.ToString()));
-        
+
         _db.Users.Remove(user);
         await _db.SaveChangesAsync(ct);
         return Result.Ok();

@@ -28,12 +28,12 @@ public class ModelFactory
         // {
         //     Name = name ?? $"Test User {_userCounter++}"
         // };
-        
+
         var createUserResult = User.Create(name ?? $"Test User {_userCounter++}");
-        
+
         if (createUserResult.IsFailed)
             throw new InvalidOperationException("Failed to create User for test user.");
-        
+
         var user = createUserResult.Value;
 
         context.Users.Add(user);
