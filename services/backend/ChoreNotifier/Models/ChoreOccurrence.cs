@@ -7,8 +7,8 @@ public class ChoreOccurrence
 {
     public int Id { get; private set; }
     public int ChoreId { get; private set; }
-    public Chore Chore { get; private set; }
-    public User User { get; private set; }
+    public Chore Chore { get; private set; } = null!; // EF
+    public User User { get; private set; } = null!; // EF
 
     public required DateTimeOffset ScheduledFor { get; set; }
     public DateTimeOffset DueAt { get; private set; }

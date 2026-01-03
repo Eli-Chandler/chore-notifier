@@ -7,9 +7,9 @@ namespace ChoreNotifier.Models;
 public class Chore
 {
     public int Id { get; private set; }
-    [MaxLength(100)] public string Title { get; private set; }
+    [MaxLength(100)] public string Title { get; private set; } = null!; // EF
     [MaxLength(1000)] public string? Description { get; private set; }
-    public ChoreSchedule ChoreSchedule { get; private set; }
+    public ChoreSchedule ChoreSchedule { get; private set; } = null!; // EF
     public TimeSpan? SnoozeDuration { get; private set; } = TimeSpan.FromDays(1);
 
     private readonly List<ChoreAssignee> _assignees = [];

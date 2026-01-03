@@ -7,7 +7,7 @@ public class User
 {
     public int Id { get; private set; }
     [MaxLength(100)]
-    public string Name { get; private set; }
+    public string Name { get; private set; } = null!; // EF
     private readonly List<ChoreAssignee> _assignments = [];
     public IReadOnlyCollection<ChoreAssignee> Assignments => _assignments;
 
