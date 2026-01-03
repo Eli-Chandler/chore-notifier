@@ -11,7 +11,7 @@ public class UpdateChoreHandlerTest : DatabaseTestBase
 {
     private readonly UpdateChoreHandler _handler;
 
-    public UpdateChoreHandlerTest(DatabaseFixture dbFixture) : base(dbFixture)
+    public UpdateChoreHandlerTest(DatabaseFixture dbFixture, ClockFixture clockFixture) : base(dbFixture, clockFixture)
     {
         _handler = new UpdateChoreHandler(dbFixture.CreateDbContext());
     }

@@ -12,7 +12,7 @@ public class AddChoreAssigneeHandlerTest : DatabaseTestBase
 {
     private readonly AddChoreAssigneeHandler _handler;
 
-    public AddChoreAssigneeHandlerTest(DatabaseFixture dbFixture) : base(dbFixture)
+    public AddChoreAssigneeHandlerTest(DatabaseFixture dbFixture, ClockFixture clockFixture) : base(dbFixture, clockFixture)
     {
         _handler = new AddChoreAssigneeHandler(dbFixture.CreateDbContext(), new ChoreSchedulingService(), TestClock);
     }

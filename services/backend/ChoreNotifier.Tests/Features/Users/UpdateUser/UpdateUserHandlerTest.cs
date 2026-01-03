@@ -10,7 +10,7 @@ public class UpdateUserHandlerTest : DatabaseTestBase
 {
     private readonly UpdateUserHandler _handler;
 
-    public UpdateUserHandlerTest(DatabaseFixture dbFixture) : base(dbFixture)
+    public UpdateUserHandlerTest(DatabaseFixture dbFixture, ClockFixture clockFixture) : base(dbFixture, clockFixture)
     {
         _handler = new UpdateUserHandler(dbFixture.CreateDbContext());
     }

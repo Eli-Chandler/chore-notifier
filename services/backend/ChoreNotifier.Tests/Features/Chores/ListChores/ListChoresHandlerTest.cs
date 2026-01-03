@@ -9,7 +9,7 @@ public class ListChoresHandlerTest : DatabaseTestBase
 {
     private readonly ListChoresHandler _handler;
 
-    public ListChoresHandlerTest(DatabaseFixture dbFixture) : base(dbFixture)
+    public ListChoresHandlerTest(DatabaseFixture dbFixture, ClockFixture clockFixture) : base(dbFixture, clockFixture)
     {
         _handler = new ListChoresHandler(dbFixture.CreateDbContext());
     }

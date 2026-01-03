@@ -10,7 +10,7 @@ public class RemoveChoreAssigneeHandlerTest : DatabaseTestBase
 {
     private readonly RemoveChoreAssigneeHandler _handler;
 
-    public RemoveChoreAssigneeHandlerTest(DatabaseFixture dbFixture) : base(dbFixture)
+    public RemoveChoreAssigneeHandlerTest(DatabaseFixture dbFixture, ClockFixture clockFixture) : base(dbFixture, clockFixture)
     {
         _handler = new RemoveChoreAssigneeHandler(dbFixture.CreateDbContext());
     }

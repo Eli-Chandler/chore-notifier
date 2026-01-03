@@ -10,7 +10,7 @@ public class DeleteUserHandlerTest : DatabaseTestBase
 {
     private readonly DeleteUserHandler _handler;
 
-    public DeleteUserHandlerTest(DatabaseFixture dbFixture) : base(dbFixture)
+    public DeleteUserHandlerTest(DatabaseFixture dbFixture, ClockFixture clockFixture) : base(dbFixture, clockFixture)
     {
         _handler = new DeleteUserHandler(dbFixture.CreateDbContext());
     }

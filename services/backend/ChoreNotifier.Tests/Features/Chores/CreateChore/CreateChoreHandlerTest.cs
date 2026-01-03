@@ -12,7 +12,7 @@ public class CreateChoreHandlerTest : DatabaseTestBase
 {
     private readonly CreateChoreHandler _handler;
 
-    public CreateChoreHandlerTest(DatabaseFixture dbFixture) : base(dbFixture)
+    public CreateChoreHandlerTest(DatabaseFixture dbFixture, ClockFixture clockFixture) : base(dbFixture, clockFixture)
     {
         _handler = new CreateChoreHandler(
             dbFixture.CreateDbContext(),

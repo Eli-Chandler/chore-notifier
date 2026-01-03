@@ -10,25 +10,35 @@ public class ChoreSchedulingService
     public async Task<Result<ChoreOccurrence>> ScheduleNextOccurrenceIfNeeded(
         ChoreDbContext db,
         Chore chore,
-        DateTimeOffset after
+        DateTimeOffset after,
+        ChoreOccurrence? lastOccurrence = null
     )
     {
-        var hasPendingOccurrence = await db.ChoreOccurrences
-            .AnyAsync(co => co.Chore.Id == chore.Id && co.CompletedAt == null);
+        bool hasPendingOccurrence;
+        if (lastOccurrence is null)
+        {
+            hasPendingOccurrence = await db.ChoreOccurrences
+                .AnyAsync(co => co.Chore.Id == chore.Id && co.CompletedAt == null);
+        }
+        else
+        {
+            hasPendingOccurrence = lastOccurrence.CompletedAt is null;
+        }
+
 
         if (hasPendingOccurrence)
         {
-            return Result.Fail(new ValidationError("There is already an active occurrence for this chore."));
+            return Result.Fail(new ValidationError("There is already a pending occurrence for this chore."));
         }
 
         var nextTime = chore.ChoreSchedule.NextAfter(after);
         if (nextTime is null)
-            return Result.Fail(new ValidationError("No next occurrence time could be determined."));
+            return Result.Fail("No next occurence is scheduled.");
 
         var nextAssignee = chore.GetAndIncrementCurrentAssignee();
         if (nextAssignee.IsFailed)
             return Result.Fail(nextAssignee.Errors)
-                .WithError("No next assignee could be determined.");
+                .WithError(new InvalidOperationError("No next assignee could be determined for the chore."));
 
         var occurrence = new ChoreOccurrence(chore, nextAssignee.Value, nextTime.Value);
         db.ChoreOccurrences.Add(occurrence);

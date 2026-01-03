@@ -17,6 +17,8 @@ public class CompleteChoreHandler(ChoreDbContext db, ChoreSchedulingService chor
         var choreOccurence = await db.ChoreOccurrences
             .Include(co => co.User)
             .Include(co => co.Chore)
+            .ThenInclude(co => co.Assignees)
+            .ThenInclude(co => co.User)
             .FirstOrDefaultAsync(co => co.Id == req.ChoreOccurrenceId, ct);
 
         if (choreOccurence is null)
@@ -28,7 +30,10 @@ public class CompleteChoreHandler(ChoreDbContext db, ChoreSchedulingService chor
         if (completeResult.IsFailed)
             return completeResult;
 
-        await choreSchedulingService.ScheduleNextOccurrenceIfNeeded(db, choreOccurence.Chore, completeAt);
+        var scheduleNextResult =
+            await choreSchedulingService.ScheduleNextOccurrenceIfNeeded(db, choreOccurence.Chore, completeAt,
+                choreOccurence);
+
         await db.SaveChangesAsync(ct);
         return Result.Ok();
     }
