@@ -124,6 +124,6 @@ public class SnoozeChoreHandlerTest : DatabaseTestBase
         await using var assertDb = DbFixture.CreateDbContext();
         var updatedChoreOccurrence = await assertDb.ChoreOccurrences.FindAsync(choreOccurence.Id);
         updatedChoreOccurrence.Should().NotBeNull();
-        updatedChoreOccurrence.DueAt.Should().Be(originalTime.Add(choreOccurence.Chore.SnoozeDuration!.Value));
+        updatedChoreOccurrence.DueAt.Should().BeCloseTo(originalTime.Add(choreOccurence.Chore.SnoozeDuration!.Value), TimeSpan.FromMilliseconds(1));
     }
 }

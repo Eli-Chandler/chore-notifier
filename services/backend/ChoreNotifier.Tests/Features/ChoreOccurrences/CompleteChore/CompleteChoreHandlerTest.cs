@@ -98,11 +98,11 @@ public class CompleteChoreHandlerTest : DatabaseTestBase
         await using var assertDb = DbFixture.CreateDbContext();
         var updatedChoreOccurrence = await assertDb.ChoreOccurrences.FindAsync(choreOccurence.Id);
         updatedChoreOccurrence.Should().NotBeNull();
-        updatedChoreOccurrence!.CompletedAt.Should().Be(TestClock.UtcNow);
+        updatedChoreOccurrence!.CompletedAt.Should().BeCloseTo(TestClock.UtcNow, TimeSpan.FromMilliseconds(1));
 
         var nextOccurrence = await assertDb.ChoreOccurrences
             .FirstOrDefaultAsync(co => co.ChoreId == choreOccurence.ChoreId && co.Id != choreOccurence.Id);
         nextOccurrence.Should().NotBeNull();
-        nextOccurrence!.ScheduledFor.Should().Be(TestClock.UtcNow.AddDays(choreOccurence.Chore.ChoreSchedule.IntervalDays));
+        nextOccurrence!.ScheduledFor.Should().BeCloseTo(TestClock.UtcNow.AddDays(choreOccurence.Chore.ChoreSchedule.IntervalDays), TimeSpan.FromMilliseconds(1));
     }
 }

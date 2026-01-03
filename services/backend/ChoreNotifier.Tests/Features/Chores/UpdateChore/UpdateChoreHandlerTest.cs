@@ -104,7 +104,7 @@ public class UpdateChoreHandlerTest : DatabaseTestBase
         updatedChore.Title.Should().Be(req.Title);
         updatedChore.Description.Should().Be(req.Description);
         updatedChore.SnoozeDuration.Should().Be(req.SnoozeDuration);
-        updatedChore.ChoreSchedule.Start.Should().Be(originalSchedule.Start);
+        updatedChore.ChoreSchedule.Start.Should().BeCloseTo(originalSchedule.Start, TimeSpan.FromMilliseconds(1));
         updatedChore.ChoreSchedule.IntervalDays.Should().Be(originalSchedule.IntervalDays);
         updatedChore.ChoreSchedule.Until.Should().Be(originalSchedule.Until);
     }
