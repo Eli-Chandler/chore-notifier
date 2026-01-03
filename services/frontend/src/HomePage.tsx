@@ -29,7 +29,7 @@ function HomePage() {
 
                 {
                     users.map((user) => (
-                        <Link to={`/${user}`} className="w-full">
+                        <Link key={user} to={`/${user}`} className="w-full">
                             <Button variant="secondary" className={buttonFormat}>
                                 {user}
                             </Button>

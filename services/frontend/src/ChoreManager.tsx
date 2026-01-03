@@ -39,6 +39,14 @@ import {
 } from "@/components/ui/card"
 
 function ChoreManager() {
+    const chores = [
+        {
+            id: 1,
+            name: "Empty Recycling",
+            description: "Empty both the recycling bin and box to the communal bins outside."
+        }
+    ]
+
     return (
         <>
             <div className="flex flex-row gap-6">
@@ -51,7 +59,13 @@ function ChoreManager() {
                 <h1 className="text-4xl">Chores</h1>
             </div>
             <div className="mt-6">
-                <ChoreCard />
+                {
+                    chores.map((chore) => (
+                        <div key={chore.id} className="mb-4">
+                            <ChoreCard title={chore.name} description={chore.description} />
+                        </div>
+                    ))
+                }
                 <AddChore />
             </div>
         </>
@@ -204,14 +218,16 @@ function Assignment(){
     )
 }
 
-function ChoreCard() {
+function ChoreCard({title, description}: {title: string, description: string}) {
     return (
         <Card>
             <CardHeader className="flex flex-row gap-3">
                 <div className="text-left">
-                    <CardTitle>Empty Recycling</CardTitle>
+                    <CardTitle>
+                        {title}
+                    </CardTitle>
                     <CardDescription>
-                        Empty both the recycling bin and box to the communal bins outside.
+                        {description}
                     </CardDescription>
                 </div>
                 <CardAction>
