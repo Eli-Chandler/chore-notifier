@@ -20,6 +20,7 @@ public class DatabaseFixture : IAsyncLifetime
             .WithUsername("test")
             .WithPassword("test")
             .WithReuse(true)
+            .WithLabel("chore-notifier-tests", "true")
             .Build();
     }
 
