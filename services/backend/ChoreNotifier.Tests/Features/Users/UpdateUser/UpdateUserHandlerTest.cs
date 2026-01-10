@@ -20,10 +20,10 @@ public class UpdateUserHandlerTest : DatabaseTestBase
     {
         // Arrange
         var user = await Factory.CreateUserAsync("Original Name");
-        var request = new UpdateUserRequest { Name = "Updated Name" };
+        var request = new UpdateUserRequest { UserId = user.Id, Name = "Updated Name" };
 
         // Act
-        var result = await _handler.Handle(user.Id, request);
+        var result = await _handler.Handle(request);
 
         // Assert
         result.IsSuccess.Should().BeTrue();
@@ -41,10 +41,10 @@ public class UpdateUserHandlerTest : DatabaseTestBase
     public async Task Handle_WhenUserDoesNotExist_ReturnsNotFoundError()
     {
         // Arrange
-        var request = new UpdateUserRequest { Name = "Test Name" };
+        var request = new UpdateUserRequest { UserId = 9999, Name = "Test Name" };
 
         // Act
-        var result = await _handler.Handle(9999, request);
+        var result = await _handler.Handle(request);
 
         // Assert
         result.IsFailed.Should().BeTrue();
@@ -66,10 +66,10 @@ public class UpdateUserHandlerTest : DatabaseTestBase
     {
         // Arrange
         var user = await Factory.CreateUserAsync("Original Name");
-        var request = new UpdateUserRequest { Name = "" };
+        var request = new UpdateUserRequest { UserId = user.Id, Name = "" };
 
         // Act
-        var result = await _handler.Handle(user.Id, request);
+        var result = await _handler.Handle(request);
 
         // Assert
         result.IsFailed.Should().BeTrue();
@@ -86,10 +86,10 @@ public class UpdateUserHandlerTest : DatabaseTestBase
         // Arrange
         var user = await Factory.CreateUserAsync("Original Name");
         var longName = new string('A', 101);
-        var request = new UpdateUserRequest { Name = longName };
+        var request = new UpdateUserRequest { UserId = user.Id, Name = longName };
 
         // Act
-        var result = await _handler.Handle(user.Id, request);
+        var result = await _handler.Handle(request);
 
         // Assert
         result.IsFailed.Should().BeTrue();

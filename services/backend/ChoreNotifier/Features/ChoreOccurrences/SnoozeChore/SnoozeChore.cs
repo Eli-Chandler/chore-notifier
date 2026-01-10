@@ -6,11 +6,13 @@ using ChoreNotifier.Models;
 namespace ChoreNotifier.Features.ChoreOccurrences.SnoozeChore;
 
 using FluentResults;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-public sealed record SnoozeChoreRequest(int UserId, int ChoreOccurrenceId);
+public sealed record SnoozeChoreRequest(int UserId, int ChoreOccurrenceId) : IRequest<Result>;
 
 public class SnoozeChoreHandler(ChoreDbContext db, IClock clock)
+    : IRequestHandler<SnoozeChoreRequest, Result>
 {
     public async Task<Result> Handle(SnoozeChoreRequest req, CancellationToken ct = default)
     {

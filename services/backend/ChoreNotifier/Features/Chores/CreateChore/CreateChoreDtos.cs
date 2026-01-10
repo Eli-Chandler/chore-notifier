@@ -1,5 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using ChoreNotifier.Models;
+using FluentResults;
+using MediatR;
 
 namespace ChoreNotifier.Features.Chores.CreateChore;
 
@@ -8,7 +10,7 @@ public sealed record CreateChoreRequest(
     string? Description,
     CreateChoreScheduleRequest ChoreSchedule,
     TimeSpan SnoozeDuration,
-    IEnumerable<int> AssigneeUserIds);
+    IEnumerable<int> AssigneeUserIds) : IRequest<Result<CreateChoreResponse>>;
 
 public sealed record CreateChoreScheduleRequest(DateTimeOffset Start, int IntervalDays, DateTimeOffset? Until);
 

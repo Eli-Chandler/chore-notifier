@@ -22,10 +22,10 @@ public class AddChoreAssigneeHandlerTest : DatabaseTestBase
     {
         // Arrange
         var user = await Factory.CreateUserAsync();
-        var request = new AddChoreAssigneeRequest(user.Id);
+        var request = new AddChoreAssigneeRequest(9999, user.Id);
 
         // Act
-        var result = await _handler.Handle(9999, request);
+        var result = await _handler.Handle(request);
 
         // Assert
         result.Errors
@@ -46,10 +46,10 @@ public class AddChoreAssigneeHandlerTest : DatabaseTestBase
     {
         // Arrange
         var chore = await Factory.CreateChoreAsync();
-        var request = new AddChoreAssigneeRequest(9999);
+        var request = new AddChoreAssigneeRequest(chore.Id, 9999);
 
         // Act
-        var result = await _handler.Handle(chore.Id, request);
+        var result = await _handler.Handle(request);
 
         // Assert
         result.Errors
@@ -71,10 +71,10 @@ public class AddChoreAssigneeHandlerTest : DatabaseTestBase
         // Arrange
         var chore = await Factory.CreateChoreAsync(numAssignees: 1);
         var user = chore.Assignees.First().User;
-        var request = new AddChoreAssigneeRequest(user.Id);
+        var request = new AddChoreAssigneeRequest(chore.Id, user.Id);
 
         // Act
-        var result = await _handler.Handle(chore.Id, request);
+        var result = await _handler.Handle(request);
 
         // Assert
         result.Errors
@@ -95,10 +95,10 @@ public class AddChoreAssigneeHandlerTest : DatabaseTestBase
         // Arrange
         var chore = await Factory.CreateChoreAsync();
         var user = await Factory.CreateUserAsync();
-        var request = new AddChoreAssigneeRequest(user.Id);
+        var request = new AddChoreAssigneeRequest(chore.Id, user.Id);
 
         // Act
-        var result = await _handler.Handle(chore.Id, request);
+        var result = await _handler.Handle(request);
 
         // Assert
         result.IsSuccess.Should().BeTrue();
@@ -120,10 +120,10 @@ public class AddChoreAssigneeHandlerTest : DatabaseTestBase
         // Arrange
         var chore = await Factory.CreateChoreAsync();
         var user = await Factory.CreateUserAsync();
-        var request = new AddChoreAssigneeRequest(user.Id);
+        var request = new AddChoreAssigneeRequest(chore.Id, user.Id);
 
         // Act
-        var result = await _handler.Handle(chore.Id, request);
+        var result = await _handler.Handle(request);
 
         // Assert
         result.IsSuccess.Should().BeTrue();

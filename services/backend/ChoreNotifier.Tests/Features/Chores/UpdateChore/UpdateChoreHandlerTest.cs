@@ -16,7 +16,8 @@ public class UpdateChoreHandlerTest : DatabaseTestBase
         _handler = new UpdateChoreHandler(dbFixture.CreateDbContext());
     }
 
-    public static UpdateChoreRequest CreateValidRequest() => new(
+    public static UpdateChoreRequest CreateValidRequest(int choreId = 0) => new(
+        choreId,
         "Updated Chore",
         "This is an updated chore description",
         new CreateChoreScheduleRequest
@@ -32,10 +33,10 @@ public class UpdateChoreHandlerTest : DatabaseTestBase
     public async Task Handle_WhenChoreNonExistent_ReturnsNotFoundError()
     {
         // Arrange
-        var req = CreateValidRequest();
+        var req = CreateValidRequest(999);
 
         // Act
-        var result = await _handler.Handle(999, req);
+        var result = await _handler.Handle(req);
 
         // Assert
         result.IsFailed.Should().BeTrue();
@@ -48,7 +49,7 @@ public class UpdateChoreHandlerTest : DatabaseTestBase
     {
         // Arrange
         var chore = await Factory.CreateChoreAsync();
-        var req = CreateValidRequest() with
+        var req = CreateValidRequest(chore.Id) with
         {
             Title = string.Empty,
             Description = "A".PadLeft(1001, 'A'),
@@ -56,7 +57,7 @@ public class UpdateChoreHandlerTest : DatabaseTestBase
         };
 
         // Act
-        var result = await _handler.Handle(chore.Id, req);
+        var result = await _handler.Handle(req);
 
         // Assert
         result.IsFailed.Should().BeTrue();
@@ -69,10 +70,10 @@ public class UpdateChoreHandlerTest : DatabaseTestBase
     {
         // Arrange
         var chore = await Factory.CreateChoreAsync();
-        var req = CreateValidRequest();
+        var req = CreateValidRequest(chore.Id);
 
         // Act
-        var result = await _handler.Handle(chore.Id, req);
+        var result = await _handler.Handle(req);
 
         // Assert
         result.IsSuccess.Should().BeTrue();
@@ -92,10 +93,10 @@ public class UpdateChoreHandlerTest : DatabaseTestBase
         // Arrange
         var chore = await Factory.CreateChoreAsync();
         var originalSchedule = chore.ChoreSchedule;
-        var req = CreateValidRequest() with { ChoreSchedule = null };
+        var req = CreateValidRequest(chore.Id) with { ChoreSchedule = null };
 
         // Act
-        var result = await _handler.Handle(chore.Id, req);
+        var result = await _handler.Handle(req);
 
         // Assert
         result.IsSuccess.Should().BeTrue();

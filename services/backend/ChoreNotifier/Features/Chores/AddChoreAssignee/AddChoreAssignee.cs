@@ -4,11 +4,12 @@ using ChoreNotifier.Features.Chores.CreateChore;
 using ChoreNotifier.Features.Chores.Scheduling;
 using ChoreNotifier.Models;
 using FluentResults;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace ChoreNotifier.Features.Chores.AddChoreAssignee;
 
-public sealed record AddChoreAssigneeRequest(int UserId);
+public sealed record AddChoreAssigneeRequest(int ChoreId, int UserId) : IRequest<Result<AddChoreAssigneeResponse>>;
 
 public sealed record AddChoreAssigneeResponse(
     int Id,
@@ -18,17 +19,18 @@ public sealed record AddChoreAssigneeResponse(
     IEnumerable<ChoreAssigneeResponse> Assignees);
 
 public sealed class AddChoreAssigneeHandler(ChoreDbContext db, ChoreSchedulingService choreSchedulingService, IClock clock)
+    : IRequestHandler<AddChoreAssigneeRequest, Result<AddChoreAssigneeResponse>>
 {
-    public async Task<Result<AddChoreAssigneeResponse>> Handle(int choreId, AddChoreAssigneeRequest req,
+    public async Task<Result<AddChoreAssigneeResponse>> Handle(AddChoreAssigneeRequest req,
         CancellationToken ct = default)
     {
         var chore = await db.Chores
             .Include(c => c.Assignees)
             .ThenInclude(a => a.User)
-            .FirstOrDefaultAsync(c => c.Id == choreId, ct);
+            .FirstOrDefaultAsync(c => c.Id == req.ChoreId, ct);
 
         if (chore == null)
-            return Result.Fail(new NotFoundError("Chore", choreId.ToString()));
+            return Result.Fail(new NotFoundError("Chore", req.ChoreId.ToString()));
 
         var user = await db.Users.FindAsync(new object?[] { req.UserId }, ct);
         if (user == null)

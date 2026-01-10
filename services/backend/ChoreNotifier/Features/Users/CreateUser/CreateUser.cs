@@ -3,14 +3,15 @@ using ChoreNotifier.Data;
 using ChoreNotifier.Models;
 using FluentResults;
 using FluentValidation;
+using MediatR;
 
 namespace ChoreNotifier.Features.Users.CreateUser;
 
-public sealed record CreateUserRequest(string Name);
+public sealed record CreateUserRequest(string Name) : IRequest<Result<CreateUserResponse>>;
 
 public sealed record CreateUserResponse(int Id, string Name);
 
-public sealed class CreateUserHandler(ChoreDbContext db)
+public sealed class CreateUserHandler(ChoreDbContext db) : IRequestHandler<CreateUserRequest, Result<CreateUserResponse>>
 {
 
     public async Task<Result<CreateUserResponse>> Handle(CreateUserRequest req, CancellationToken ct = default)

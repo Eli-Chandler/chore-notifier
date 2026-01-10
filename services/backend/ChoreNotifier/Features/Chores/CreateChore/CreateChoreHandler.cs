@@ -4,11 +4,13 @@ using ChoreNotifier.Features.Chores.Scheduling;
 using ChoreNotifier.Models;
 using FluentResults;
 using FluentValidation;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace ChoreNotifier.Features.Chores.CreateChore;
 
 public sealed class CreateChoreHandler(ChoreDbContext db, ChoreSchedulingService choreSchedulingService, IClock clock)
+    : IRequestHandler<CreateChoreRequest, Result<CreateChoreResponse>>
 {
     public async Task<Result<CreateChoreResponse>> Handle(CreateChoreRequest req, CancellationToken ct = default)
     {
