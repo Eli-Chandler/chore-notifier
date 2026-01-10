@@ -14,7 +14,7 @@ export default defineConfig({
                     useInfinite: true,
                     useInfiniteQueryParam: 'afterId',
                     useMutation: true,
-                    useInvalidate: true
+                    useInvalidate: false
                 }
             }
         }

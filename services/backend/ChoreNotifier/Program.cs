@@ -22,6 +22,14 @@ var app = builder.Build();
 app.UseExceptionHandler();
 app.UseStatusCodePages();
 
+// Apply migrations when application actually starts
+app.Lifetime.ApplicationStarted.Register(() =>
+{
+    using var scope = app.Services.CreateScope();
+    var dbContext = scope.ServiceProvider.GetRequiredService<ChoreDbContext>();
+    dbContext.Database.Migrate();
+});
+
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();

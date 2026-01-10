@@ -9,6 +9,7 @@ import {
 } from '@tanstack/react-query';
 import type {
   MutationFunction,
+  QueryClient,
   UseMutationOptions,
   UseMutationResult
 } from '@tanstack/react-query';
@@ -74,7 +75,7 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
 
     export const useSnoozeChore = <TError = AxiosError<unknown>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof snoozeChore>>, TError,{choreOccurrenceId: number;data: SnoozeChoreDto}, TContext>, axios?: AxiosRequestConfig}
- ): UseMutationResult<
+ , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof snoozeChore>>,
         TError,
         {choreOccurrenceId: number;data: SnoozeChoreDto},
@@ -83,7 +84,7 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
 
       const mutationOptions = getSnoozeChoreMutationOptions(options);
 
-      return useMutation(mutationOptions);
+      return useMutation(mutationOptions, queryClient);
     }
     export const completeChore = (
     choreOccurrenceId: number,
@@ -130,7 +131,7 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
 
     export const useCompleteChore = <TError = AxiosError<unknown>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof completeChore>>, TError,{choreOccurrenceId: number;data: CompleteChoreDto}, TContext>, axios?: AxiosRequestConfig}
- ): UseMutationResult<
+ , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof completeChore>>,
         TError,
         {choreOccurrenceId: number;data: CompleteChoreDto},
@@ -139,5 +140,5 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
 
       const mutationOptions = getCompleteChoreMutationOptions(options);
 
-      return useMutation(mutationOptions);
+      return useMutation(mutationOptions, queryClient);
     }
