@@ -23,7 +23,7 @@ public class RemoveChoreAssigneeHandlerTest : DatabaseTestBase
         var user = await Factory.CreateUserAsync();
 
         // Act
-        var result = await _handler.Handle(9999, user.Id);
+        var result = await _handler.Handle(new RemoveChoreAssigneeRequest(9999, user.Id));
 
         // Assert
         var error = result.Errors
@@ -45,7 +45,7 @@ public class RemoveChoreAssigneeHandlerTest : DatabaseTestBase
         var chore = await Factory.CreateChoreAsync();
 
         // Act
-        var result = await _handler.Handle(chore.Id, 9999);
+        var result = await _handler.Handle(new RemoveChoreAssigneeRequest(chore.Id, 9999));
 
         // Assert
         var error = result.Errors
@@ -64,7 +64,7 @@ public class RemoveChoreAssigneeHandlerTest : DatabaseTestBase
     public async Task Handle_WhenUserAndChoreNonExistent_ThrowsNotFoundException()
     {
         // Act
-        var result = await _handler.Handle(9999, 9999);
+        var result = await _handler.Handle(new RemoveChoreAssigneeRequest(9999, 9999));
 
         // Assert
         var error = result.Errors
@@ -87,7 +87,7 @@ public class RemoveChoreAssigneeHandlerTest : DatabaseTestBase
         var user = await Factory.CreateUserAsync();
 
         // Act
-        var result = await _handler.Handle(chore.Id, user.Id);
+        var result = await _handler.Handle(new RemoveChoreAssigneeRequest(chore.Id, user.Id));
 
         // Assert
         var error = result.Errors
@@ -109,7 +109,7 @@ public class RemoveChoreAssigneeHandlerTest : DatabaseTestBase
         var user = chore.Assignees.First().User;
 
         // Act
-        var result = await _handler.Handle(chore.Id, user.Id);
+        var result = await _handler.Handle(new RemoveChoreAssigneeRequest(chore.Id, user.Id));
 
         // Assert
         result.IsSuccess.Should().BeTrue();

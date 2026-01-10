@@ -18,7 +18,7 @@ public class ListChoresHandlerTest : DatabaseTestBase
     public async Task Handle_WhenNoChores_ReturnsEmptyList()
     {
         // Arrange & Act
-        var result = await _handler.Handle(10, null);
+        var result = await _handler.Handle(new ListChoresRequest(10, null));
 
         // Assert
         result.IsSuccess.Should().BeTrue();
@@ -37,7 +37,7 @@ public class ListChoresHandlerTest : DatabaseTestBase
         var chores = await Factory.CreateChoresAsync(choreCount, i => $"Chore {i}");
 
         // Act
-        var result = await _handler.Handle(20, null);
+        var result = await _handler.Handle(new ListChoresRequest(20, null));
 
         // Assert
         result.IsSuccess.Should().BeTrue();
@@ -62,7 +62,7 @@ public class ListChoresHandlerTest : DatabaseTestBase
         var chores = await Factory.CreateChoresAsync(10);
 
         // Act
-        var result = await _handler.Handle(5, null);
+        var result = await _handler.Handle(new ListChoresRequest(5, null));
 
         // Assert
         result.IsSuccess.Should().BeTrue();
@@ -79,10 +79,10 @@ public class ListChoresHandlerTest : DatabaseTestBase
         var chores = await Factory.CreateChoresAsync(10);
 
         // Act - Get first page
-        var firstPage = await _handler.Handle(5, null);
+        var firstPage = await _handler.Handle(new ListChoresRequest(5, null));
 
         // Act - Get second page using cursor
-        var secondPage = await _handler.Handle(5, firstPage.Value.NextCursor);
+        var secondPage = await _handler.Handle(new ListChoresRequest(5, firstPage.Value.NextCursor));
 
         // Assert
         firstPage.Value.Items.Should().HaveCount(5);
@@ -102,7 +102,7 @@ public class ListChoresHandlerTest : DatabaseTestBase
     public async Task Handle_WhenPageSizeIsZero_ReturnsError()
     {
         // Arrange & Act
-        var result = await _handler.Handle(0, null);
+        var result = await _handler.Handle(new ListChoresRequest(0, null));
 
         // Assert
         result.IsFailed.Should().BeTrue();
@@ -117,7 +117,7 @@ public class ListChoresHandlerTest : DatabaseTestBase
     public async Task Handle_WhenPageSizeIsNegative_ReturnsError()
     {
         // Arrange & Act
-        var result = await _handler.Handle(-1, null);
+        var result = await _handler.Handle(new ListChoresRequest(-1, null));
 
         // Assert
         result.IsFailed.Should().BeTrue();
@@ -132,7 +132,7 @@ public class ListChoresHandlerTest : DatabaseTestBase
     public async Task Handle_WhenPageSizeExceeds100_ReturnsError()
     {
         // Arrange & Act
-        var result = await _handler.Handle(101, null);
+        var result = await _handler.Handle(new ListChoresRequest(101, null));
 
         // Assert
         result.IsFailed.Should().BeTrue();

@@ -3,8 +3,11 @@ using ChoreNotifier.Data;
 using ChoreNotifier.Features.Chores.CreateChore;
 using ChoreNotifier.Models;
 using FluentResults;
+using MediatR;
 
 namespace ChoreNotifier.Features.Chores.ListChores;
+
+public sealed record ListChoresRequest(int PageSize, int? AfterId) : IRequest<Result<KeysetPage<ListChoresResponseItem, int>>>;
 
 public sealed record ListChoresResponseItem(
     int Id,
@@ -14,22 +17,22 @@ public sealed record ListChoresResponseItem(
     TimeSpan? SnoozeDuration
 );
 
-public sealed class ListChoresHandler
+public sealed class ListChoresHandler : IRequestHandler<ListChoresRequest, Result<KeysetPage<ListChoresResponseItem, int>>>
 {
     private readonly ChoreDbContext _db;
     public ListChoresHandler(ChoreDbContext db) => _db = db;
 
-    public async Task<Result<KeysetPage<ListChoresResponseItem, int>>> Handle(int pageSize, int? afterId, CancellationToken ct = default)
+    public async Task<Result<KeysetPage<ListChoresResponseItem, int>>> Handle(ListChoresRequest req, CancellationToken ct = default)
     {
-        var validatePageSizeResult = ValidatePageSize(pageSize);
+        var validatePageSizeResult = ValidatePageSize(req.PageSize);
         if (validatePageSizeResult.IsFailed)
             return validatePageSizeResult;
 
         var result = await _db.Chores
             .OrderBy(c => c.Id)
-            .Where(c => afterId == null || c.Id > afterId)
+            .Where(c => req.AfterId == null || c.Id > req.AfterId)
             .ToKeysetPageAsync(
-                pageSize,
+                req.PageSize,
                 c => c.Id,
                 ct
             );

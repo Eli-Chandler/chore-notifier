@@ -2,8 +2,11 @@ using ChoreNotifier.Data;
 using ChoreNotifier.Common;
 using ChoreNotifier.Models;
 using FluentResults;
+using MediatR;
 
 namespace ChoreNotifier.Features.Users.ListUsers;
+
+public sealed record ListUsersRequest(int PageSize, int? AfterId) : IRequest<Result<KeysetPage<ListUserResponseItem, int>>>;
 
 public class ListUserResponseItem
 {
@@ -11,22 +14,22 @@ public class ListUserResponseItem
     public string Name { get; set; } = null!;
 }
 
-public sealed class ListUsersHandler
+public sealed class ListUsersHandler : IRequestHandler<ListUsersRequest, Result<KeysetPage<ListUserResponseItem, int>>>
 {
     private readonly ChoreDbContext _db;
     public ListUsersHandler(ChoreDbContext db) => _db = db;
 
-    public async Task<Result<KeysetPage<ListUserResponseItem, int>>> Handle(int pageSize, int? afterId, CancellationToken ct = default)
+    public async Task<Result<KeysetPage<ListUserResponseItem, int>>> Handle(ListUsersRequest req, CancellationToken ct = default)
     {
-        var validatePageSizeResult = ValidatePageSize(pageSize);
+        var validatePageSizeResult = ValidatePageSize(req.PageSize);
         if (validatePageSizeResult.IsFailed)
             return validatePageSizeResult;
 
         var result = await _db.Users
             .OrderBy(u => u.Id)
-            .Where(u => afterId == null || u.Id > afterId)
+            .Where(u => req.AfterId == null || u.Id > req.AfterId)
             .ToKeysetPageAsync(
-                pageSize,
+                req.PageSize,
                 u => u.Id,
                 ct
             );

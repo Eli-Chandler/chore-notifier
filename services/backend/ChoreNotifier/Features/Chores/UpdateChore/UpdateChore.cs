@@ -2,15 +2,17 @@ using ChoreNotifier.Data;
 using ChoreNotifier.Features.Chores.CreateChore;
 using ChoreNotifier.Models;
 using FluentResults;
+using MediatR;
 
 
 namespace ChoreNotifier.Features.Chores.UpdateChore;
 
 public sealed record UpdateChoreRequest(
+    int ChoreId,
     string Title,
     string? Description,
     CreateChoreScheduleRequest? ChoreSchedule,
-    TimeSpan SnoozeDuration);
+    TimeSpan SnoozeDuration) : IRequest<Result<UpdateChoreResponse>>;
 
 public sealed record UpdateChoreResponse(
     int Id,
@@ -19,16 +21,16 @@ public sealed record UpdateChoreResponse(
     ChoreScheduleResponse ChoreSchedule,
     TimeSpan? SnoozeDuration);
 
-public sealed class UpdateChoreHandler
+public sealed class UpdateChoreHandler : IRequestHandler<UpdateChoreRequest, Result<UpdateChoreResponse>>
 {
     private readonly ChoreDbContext _db;
     public UpdateChoreHandler(ChoreDbContext db) => _db = db;
 
-    public async Task<Result<UpdateChoreResponse>> Handle(int choreId, UpdateChoreRequest req, CancellationToken ct = default)
+    public async Task<Result<UpdateChoreResponse>> Handle(UpdateChoreRequest req, CancellationToken ct = default)
     {
-        var chore = await _db.Chores.FindAsync(new object?[] { choreId }, ct);
+        var chore = await _db.Chores.FindAsync(new object?[] { req.ChoreId }, ct);
         if (chore == null)
-            return Result.Fail(new NotFoundError("Chore", choreId));
+            return Result.Fail(new NotFoundError("Chore", req.ChoreId));
 
         var updateResult = Result.Merge(
             chore.UpdateTitle(req.Title),

@@ -6,11 +6,13 @@ using ChoreNotifier.Models;
 namespace ChoreNotifier.Features.ChoreOccurrences.CompleteChore;
 
 using FluentResults;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-public sealed record CompleteChoreRequest(int UserId, int ChoreOccurrenceId);
+public sealed record CompleteChoreRequest(int UserId, int ChoreOccurrenceId) : IRequest<Result>;
 
 public class CompleteChoreHandler(ChoreDbContext db, ChoreSchedulingService choreSchedulingService, IClock clock)
+    : IRequestHandler<CompleteChoreRequest, Result>
 {
     public async Task<Result> Handle(CompleteChoreRequest req, CancellationToken ct = default)
     {
