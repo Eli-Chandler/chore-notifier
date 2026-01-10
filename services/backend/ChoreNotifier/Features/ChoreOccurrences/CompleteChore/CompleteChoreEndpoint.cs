@@ -11,7 +11,7 @@ public class CompleteChoreEndpoint : IEndpoint
             async (int choreOccurrenceId, CompleteChoreDto dto, ISender sender) =>
             {
                 var result = await sender.Send(new CompleteChoreRequest(dto.UserId, choreOccurrenceId));
-                return result.ToResult();
+                return result.ToResponse();
             })
             .WithName("CompleteChore")
             .WithTags("Chore Occurrences");

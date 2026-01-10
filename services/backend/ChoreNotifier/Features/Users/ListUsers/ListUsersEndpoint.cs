@@ -10,7 +10,7 @@ public class ListUsersEndpoint : IEndpoint
         app.MapGet("/api/users", async (ISender sender, int pageSize = 20, int? afterId = null) =>
             {
                 var result = await sender.Send(new ListUsersRequest(pageSize, afterId));
-                return result.ToResult();
+                return result.ToResponse();
             })
             .WithName("ListUsers")
             .WithTags("Users");

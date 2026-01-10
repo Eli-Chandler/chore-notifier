@@ -10,7 +10,7 @@ public class AddChoreAssigneeEndpoint : IEndpoint
         app.MapPost("/api/chores/{choreId:int}/assignees/{userId:int}", async (int choreId, int userId, ISender sender) =>
             {
                 var result = await sender.Send(new AddChoreAssigneeRequest(choreId, userId));
-                return result.ToResult();
+                return result.ToResponse();
             })
             .WithName("AddChoreAssignee")
             .WithTags("Chores");

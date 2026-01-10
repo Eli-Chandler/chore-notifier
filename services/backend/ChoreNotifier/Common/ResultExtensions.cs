@@ -5,40 +5,27 @@ namespace ChoreNotifier.Common;
 
 public static class ResultExtensions
 {
-    public static IResult ToResult<T>(this Result<T> result)
+    public static IResult ToResponse<T>(this Result<T> result)
     {
         return result.IsSuccess
             ? Results.Ok(result.Value)
             : CreateProblemDetails(result.Errors);
     }
 
-    public static IResult ToResult(this Result result)
+    public static IResult ToResponse(this Result result)
     {
         return result.IsSuccess
             ? Results.NoContent()
             : CreateProblemDetails(result.Errors);
     }
 
-    public static IResult ToCreatedResult<T>(this Result<T> result, Func<T, string> uriFactory)
+    public static IResult ToCreatedResponse<T>(this Result<T> result, Func<T, string> uriFactory)
     {
         return result.IsSuccess
             ? Results.Created(uriFactory(result.Value), result.Value)
             : CreateProblemDetails(result.Errors);
     }
 
-    public static IResult ToResult<T>(this Result<T> result, Func<T, IResult> onSuccess)
-    {
-        return result.IsSuccess
-            ? onSuccess(result.Value)
-            : CreateProblemDetails(result.Errors);
-    }
-
-    public static IResult ToResult(this Result result, Func<IResult> onSuccess)
-    {
-        return result.IsSuccess
-            ? onSuccess()
-            : CreateProblemDetails(result.Errors);
-    }
 
     private static IResult CreateProblemDetails(IEnumerable<IError> errors)
     {

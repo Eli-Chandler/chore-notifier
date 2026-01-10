@@ -17,7 +17,7 @@ public class UpdateChoreEndpoint : IEndpoint
                     dto.SnoozeDuration
                 );
                 var result = await sender.Send(request);
-                return result.ToResult();
+                return result.ToResponse();
             })
             .WithName("UpdateChore")
             .WithTags("Chores");

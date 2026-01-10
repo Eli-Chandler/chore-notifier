@@ -11,7 +11,7 @@ public class SnoozeChoreEndpoint : IEndpoint
             async (int choreOccurrenceId, SnoozeChoreDto dto, ISender sender) =>
             {
                 var result = await sender.Send(new SnoozeChoreRequest(dto.UserId, choreOccurrenceId));
-                return result.ToResult();
+                return result.ToResponse();
             })
             .WithName("SnoozeChore")
             .WithTags("Chore Occurrences");

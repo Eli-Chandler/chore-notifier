@@ -11,7 +11,7 @@ public class UpdateUserEndpoint : IEndpoint
             {
                 var request = new UpdateUserRequest { UserId = userId, Name = dto.Name };
                 var result = await sender.Send(request);
-                return result.ToResult();
+                return result.ToResponse();
             })
             .WithName("UpdateUser")
             .WithTags("Users");

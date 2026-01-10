@@ -10,7 +10,7 @@ public class CreateChoreEndpoint : IEndpoint
         app.MapPost("/api/chores", async (CreateChoreRequest request, ISender sender) =>
             {
                 var result = await sender.Send(request);
-                return result.ToCreatedResult(chore => $"/api/chores/{chore.Id}");
+                return result.ToCreatedResponse(chore => $"/api/chores/{chore.Id}");
             })
             .WithName("CreateChore")
             .WithTags("Chores");

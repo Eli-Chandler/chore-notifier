@@ -10,7 +10,7 @@ public class ListChoresEndpoint : IEndpoint
         app.MapGet("/api/chores", async (ISender sender, int pageSize = 20, int? afterId = null) =>
             {
                 var result = await sender.Send(new ListChoresRequest(pageSize, afterId));
-                return result.ToResult();
+                return result.ToResponse();
             })
             .WithName("ListChores")
             .WithTags("Chores");

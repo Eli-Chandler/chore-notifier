@@ -10,7 +10,7 @@ public class CreateUserEndpoint : IEndpoint
         app.MapPost("/api/users", async (CreateUserRequest request, ISender sender) =>
             {
                 var result = await sender.Send(request);
-                return result.ToCreatedResult(user => $"/api/users/{user.Id}");
+                return result.ToCreatedResponse(user => $"/api/users/{user.Id}");
             })
             .WithName("CreateUser")
             .WithTags("Users");
