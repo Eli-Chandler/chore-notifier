@@ -35,14 +35,7 @@
         },
         "responses": {
           "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Result"
-                }
-              }
-            }
+            "description": "OK"
           }
         }
       },
@@ -105,14 +98,7 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Result"
-                }
-              }
-            }
+            "description": "OK"
           }
         }
       },
@@ -168,14 +154,7 @@
         },
         "responses": {
           "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Result"
-                }
-              }
-            }
+            "description": "OK"
           }
         }
       }
@@ -243,14 +222,7 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Result"
-                }
-              }
-            }
+            "description": "OK"
           }
         }
       }
@@ -290,14 +262,7 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Result"
-                }
-              }
-            }
+            "description": "OK"
           }
         }
       },
@@ -488,104 +453,6 @@
         "properties": {
           "name": {
             "type": "string"
-          }
-        }
-      },
-      "IError": {
-        "type": "object",
-        "properties": {
-          "reasons": {
-            "type": [
-              "null",
-              "array"
-            ],
-            "items": {
-              "$ref": "#/components/schemas/IError"
-            }
-          },
-          "message": {
-            "type": [
-              "null",
-              "string"
-            ]
-          },
-          "metadata": {
-            "type": [
-              "null",
-              "object"
-            ]
-          }
-        }
-      },
-      "IReason": {
-        "type": "object",
-        "properties": {
-          "message": {
-            "type": [
-              "null",
-              "string"
-            ]
-          },
-          "metadata": {
-            "type": [
-              "null",
-              "object"
-            ]
-          }
-        }
-      },
-      "ISuccess": {
-        "type": "object",
-        "properties": {
-          "message": {
-            "type": [
-              "null",
-              "string"
-            ]
-          },
-          "metadata": {
-            "type": [
-              "null",
-              "object"
-            ]
-          }
-        }
-      },
-      "Result": {
-        "type": "object",
-        "properties": {
-          "isFailed": {
-            "type": "boolean"
-          },
-          "isSuccess": {
-            "type": "boolean"
-          },
-          "reasons": {
-            "type": [
-              "null",
-              "array"
-            ],
-            "items": {
-              "$ref": "#/components/schemas/IReason"
-            }
-          },
-          "errors": {
-            "type": [
-              "null",
-              "array"
-            ],
-            "items": {
-              "$ref": "#/components/schemas/IError"
-            }
-          },
-          "successes": {
-            "type": [
-              "null",
-              "array"
-            ],
-            "items": {
-              "$ref": "#/components/schemas/ISuccess"
-            }
           }
         }
       },

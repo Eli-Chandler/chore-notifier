@@ -38,7 +38,6 @@ import type {
 import type {
   CreateChoreRequest,
   ListChoresParams,
-  Result,
   UpdateChoreDto
 } from '../choreNotifierV1.schemas';
 
@@ -49,7 +48,7 @@ import type {
 export const updateChore = (
     choreId: number,
     updateChoreDto: UpdateChoreDto, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<Result>> => {
+ ): Promise<AxiosResponse<void>> => {
 
 
     return axios.default.put(
@@ -160,7 +159,7 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
     export const addChoreAssignee = (
     choreId: number,
     userId: number, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<Result>> => {
+ ): Promise<AxiosResponse<void>> => {
 
 
     return axios.default.post(
@@ -214,7 +213,7 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
     }
     export const listChores = (
     params?: ListChoresParams, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<Result>> => {
+ ): Promise<AxiosResponse<void>> => {
 
 
     return axios.default.get(

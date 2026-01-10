@@ -48,56 +48,6 @@ export interface CreateUserRequest {
   name: string;
 }
 
-export type IErrorReasons = null | IError[];
-
-export type IErrorMessage = null | string;
-
-export type IErrorMetadataAnyOf = { [key: string]: unknown };
-
-export type IErrorMetadata = null | IErrorMetadataAnyOf;
-
-export interface IError {
-  reasons?: IErrorReasons;
-  message?: IErrorMessage;
-  metadata?: IErrorMetadata;
-}
-
-export type IReasonMessage = null | string;
-
-export type IReasonMetadataAnyOf = { [key: string]: unknown };
-
-export type IReasonMetadata = null | IReasonMetadataAnyOf;
-
-export interface IReason {
-  message?: IReasonMessage;
-  metadata?: IReasonMetadata;
-}
-
-export type ISuccessMessage = null | string;
-
-export type ISuccessMetadataAnyOf = { [key: string]: unknown };
-
-export type ISuccessMetadata = null | ISuccessMetadataAnyOf;
-
-export interface ISuccess {
-  message?: ISuccessMessage;
-  metadata?: ISuccessMetadata;
-}
-
-export type ResultReasons = null | IReason[];
-
-export type ResultErrors = null | IError[];
-
-export type ResultSuccesses = null | ISuccess[];
-
-export interface Result {
-  isFailed?: boolean;
-  isSuccess?: boolean;
-  reasons?: ResultReasons;
-  errors?: ResultErrors;
-  successes?: ResultSuccesses;
-}
-
 /**
  * @pattern ^-?(?:0|[1-9]\d*)$
  */

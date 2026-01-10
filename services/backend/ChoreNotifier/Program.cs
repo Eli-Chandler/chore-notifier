@@ -35,12 +35,24 @@ var app = builder.Build();
 app.UseExceptionHandler();
 app.UseStatusCodePages();
 
-// Apply migrations when application actually starts
+// Apply migrations when application actually starts (if database is available)
 app.Lifetime.ApplicationStarted.Register(() =>
 {
     using var scope = app.Services.CreateScope();
-    var dbContext = scope.ServiceProvider.GetRequiredService<ChoreDbContext>();
-    dbContext.Database.Migrate();
+    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+
+    try
+    {
+        var dbContext = scope.ServiceProvider.GetRequiredService<ChoreDbContext>();
+        logger.LogInformation("Applying database migrations...");
+        dbContext.Database.Migrate();
+        logger.LogInformation("Database migrations applied successfully");
+    }
+    catch (Npgsql.NpgsqlException ex)
+    {
+        // Database not available - expected during build/OpenAPI generation
+        logger.LogWarning(ex, "Database not available, skipping migrations. This is expected during build/OpenAPI generation");
+    }
 });
 
 if (app.Environment.IsDevelopment())

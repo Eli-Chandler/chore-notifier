@@ -38,7 +38,6 @@ import type {
 import type {
   CreateUserRequest,
   ListUsersParams,
-  Result,
   UpdateUserDto
 } from '../choreNotifierV1.schemas';
 
@@ -49,7 +48,7 @@ import type {
 export const updateUser = (
     userId: number,
     updateUserDto: UpdateUserDto, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<Result>> => {
+ ): Promise<AxiosResponse<void>> => {
 
 
     return axios.default.put(
@@ -158,7 +157,7 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
     }
     export const listUsers = (
     params?: ListUsersParams, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<Result>> => {
+ ): Promise<AxiosResponse<void>> => {
 
 
     return axios.default.get(
