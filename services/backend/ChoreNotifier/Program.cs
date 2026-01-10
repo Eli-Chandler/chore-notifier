@@ -17,6 +17,19 @@ builder.Services.AddSingleton<IClock, SystemClock>();
 
 builder.Services.AddProblemDetails();
 
+// Configure CORS
+var allowedOrigins = builder.Configuration["Cors:AllowedOrigins"]?.Split(',') ?? [];
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.WithOrigins(allowedOrigins)
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
+    });
+});
+
 var app = builder.Build();
 
 app.UseExceptionHandler();
@@ -37,6 +50,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors();
 
 app.MapEndpoints();
 
