@@ -19,6 +19,17 @@ export interface ChoreAssigneeResponse {
   name: string;
 }
 
+export type ChoreOccurenceFilter = typeof ChoreOccurenceFilter[keyof typeof ChoreOccurenceFilter];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ChoreOccurenceFilter = {
+  All: 'All',
+  Completed: 'Completed',
+  Upcoming: 'Upcoming',
+  Due: 'Due',
+} as const;
+
 export type ChoreScheduleResponseUntil = null | string;
 
 export interface ChoreScheduleResponse {
@@ -85,6 +96,15 @@ export interface KeysetPageOfListChoresResponseItemAndint {
   pageSize: number;
 }
 
+export type KeysetPageOfListUserChoreOccurrencesResponseItemAndintNextCursor = null | number;
+
+export interface KeysetPageOfListUserChoreOccurrencesResponseItemAndint {
+  items: ListUserChoreOccurrencesResponseItem[];
+  hasNextPage: boolean;
+  nextCursor: KeysetPageOfListUserChoreOccurrencesResponseItemAndintNextCursor;
+  pageSize: number;
+}
+
 export type KeysetPageOfListUserResponseItemAndintNextCursor = null | number;
 
 export interface KeysetPageOfListUserResponseItemAndint {
@@ -112,9 +132,51 @@ export interface ListChoresResponseItem {
   snoozeDuration: ListChoresResponseItemSnoozeDuration;
 }
 
+export type ListUserChoreOccurrencesChoreResponseItemDescription = null | string;
+
+/**
+ * @pattern ^-?(\d+\.)?\d{2}:\d{2}:\d{2}(\.\d{1,7})?$
+ */
+export type ListUserChoreOccurrencesChoreResponseItemSnoozeDuration = null | string;
+
+export interface ListUserChoreOccurrencesChoreResponseItem {
+  id: number;
+  title: string;
+  description: ListUserChoreOccurrencesChoreResponseItemDescription;
+  /** @pattern ^-?(\d+\.)?\d{2}:\d{2}:\d{2}(\.\d{1,7})?$ */
+  snoozeDuration: ListUserChoreOccurrencesChoreResponseItemSnoozeDuration;
+}
+
+export interface ListUserChoreOccurrencesResponseItem {
+  id: number;
+  originalDueAt: string;
+  currentDueAt: string;
+  isCompleted: boolean;
+  isDue: boolean;
+  chore: ListUserChoreOccurrencesChoreResponseItem;
+}
+
 export interface ListUserResponseItem {
   id: number;
   name: string;
+}
+
+export type ProblemDetailsType = null | string;
+
+export type ProblemDetailsTitle = null | string;
+
+export type ProblemDetailsStatus = null | number;
+
+export type ProblemDetailsDetail = null | string;
+
+export type ProblemDetailsInstance = null | string;
+
+export interface ProblemDetails {
+  type?: ProblemDetailsType;
+  title?: ProblemDetailsTitle;
+  status?: ProblemDetailsStatus;
+  detail?: ProblemDetailsDetail;
+  instance?: ProblemDetailsInstance;
 }
 
 export interface SnoozeChoreDto {
@@ -161,6 +223,12 @@ export interface UpdateUserResponse {
 export type ListUsersParams = {
 pageSize?: number;
 afterId?: number;
+};
+
+export type ListUserChoreOccurrencesParams = {
+pageSize?: number;
+afterId?: number;
+filter?: ChoreOccurenceFilter;
 };
 
 export type ListChoresParams = {

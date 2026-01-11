@@ -14,7 +14,8 @@ public class UpdateUserEndpoint : IEndpoint
                 return result.ToResponse();
             })
             .WithName("UpdateUser")
-            .WithTags("Users");
+            .WithTags("Users")
+            .WithProblemDetails();
     }
 }
 

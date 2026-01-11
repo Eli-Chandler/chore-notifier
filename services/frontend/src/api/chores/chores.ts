@@ -41,6 +41,7 @@ import type {
   CreateChoreResponse,
   KeysetPageOfListChoresResponseItemAndint,
   ListChoresParams,
+  ProblemDetails,
   UpdateChoreDto,
   UpdateChoreResponse
 } from '../choreNotifierV1.schemas';
@@ -63,7 +64,7 @@ export const updateChore = (
 
 
 
-export const getUpdateChoreMutationOptions = <TError = AxiosError<unknown>,
+export const getUpdateChoreMutationOptions = <TError = AxiosError<ProblemDetails>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateChore>>, TError,{choreId: number;data: UpdateChoreDto}, TContext>, axios?: AxiosRequestConfig}
 ): UseMutationOptions<Awaited<ReturnType<typeof updateChore>>, TError,{choreId: number;data: UpdateChoreDto}, TContext> => {
 
@@ -90,9 +91,9 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
 
     export type UpdateChoreMutationResult = NonNullable<Awaited<ReturnType<typeof updateChore>>>
     export type UpdateChoreMutationBody = UpdateChoreDto
-    export type UpdateChoreMutationError = AxiosError<unknown>
+    export type UpdateChoreMutationError = AxiosError<ProblemDetails>
 
-    export const useUpdateChore = <TError = AxiosError<unknown>,
+    export const useUpdateChore = <TError = AxiosError<ProblemDetails>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateChore>>, TError,{choreId: number;data: UpdateChoreDto}, TContext>, axios?: AxiosRequestConfig}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof updateChore>>,
@@ -118,7 +119,7 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
 
 
 
-export const getRemoveChoreAssigneeMutationOptions = <TError = AxiosError<unknown>,
+export const getRemoveChoreAssigneeMutationOptions = <TError = AxiosError<ProblemDetails>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof removeChoreAssignee>>, TError,{choreId: number;userId: number}, TContext>, axios?: AxiosRequestConfig}
 ): UseMutationOptions<Awaited<ReturnType<typeof removeChoreAssignee>>, TError,{choreId: number;userId: number}, TContext> => {
 
@@ -145,9 +146,9 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
 
     export type RemoveChoreAssigneeMutationResult = NonNullable<Awaited<ReturnType<typeof removeChoreAssignee>>>
 
-    export type RemoveChoreAssigneeMutationError = AxiosError<unknown>
+    export type RemoveChoreAssigneeMutationError = AxiosError<ProblemDetails>
 
-    export const useRemoveChoreAssignee = <TError = AxiosError<unknown>,
+    export const useRemoveChoreAssignee = <TError = AxiosError<ProblemDetails>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof removeChoreAssignee>>, TError,{choreId: number;userId: number}, TContext>, axios?: AxiosRequestConfig}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof removeChoreAssignee>>,
@@ -173,7 +174,7 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
 
 
 
-export const getAddChoreAssigneeMutationOptions = <TError = AxiosError<unknown>,
+export const getAddChoreAssigneeMutationOptions = <TError = AxiosError<ProblemDetails>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof addChoreAssignee>>, TError,{choreId: number;userId: number}, TContext>, axios?: AxiosRequestConfig}
 ): UseMutationOptions<Awaited<ReturnType<typeof addChoreAssignee>>, TError,{choreId: number;userId: number}, TContext> => {
 
@@ -200,9 +201,9 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
 
     export type AddChoreAssigneeMutationResult = NonNullable<Awaited<ReturnType<typeof addChoreAssignee>>>
 
-    export type AddChoreAssigneeMutationError = AxiosError<unknown>
+    export type AddChoreAssigneeMutationError = AxiosError<ProblemDetails>
 
-    export const useAddChoreAssignee = <TError = AxiosError<unknown>,
+    export const useAddChoreAssignee = <TError = AxiosError<ProblemDetails>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof addChoreAssignee>>, TError,{choreId: number;userId: number}, TContext>, axios?: AxiosRequestConfig}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof addChoreAssignee>>,
@@ -243,7 +244,7 @@ export const getListChoresQueryKey = (params?: ListChoresParams,) => {
     }
 
 
-export const getListChoresInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof listChores>>, ListChoresParams['afterId']>, TError = AxiosError<unknown>>(params?: ListChoresParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof listChores>>, TError, TData, QueryKey, ListChoresParams['afterId']>>, axios?: AxiosRequestConfig}
+export const getListChoresInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof listChores>>, ListChoresParams['afterId']>, TError = AxiosError<ProblemDetails>>(params?: ListChoresParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof listChores>>, TError, TData, QueryKey, ListChoresParams['afterId']>>, axios?: AxiosRequestConfig}
 ) => {
 
 const {query: queryOptions, axios: axiosOptions} = options ?? {};
@@ -262,10 +263,10 @@ const {query: queryOptions, axios: axiosOptions} = options ?? {};
 }
 
 export type ListChoresInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof listChores>>>
-export type ListChoresInfiniteQueryError = AxiosError<unknown>
+export type ListChoresInfiniteQueryError = AxiosError<ProblemDetails>
 
 
-export function useListChoresInfinite<TData = InfiniteData<Awaited<ReturnType<typeof listChores>>, ListChoresParams['afterId']>, TError = AxiosError<unknown>>(
+export function useListChoresInfinite<TData = InfiniteData<Awaited<ReturnType<typeof listChores>>, ListChoresParams['afterId']>, TError = AxiosError<ProblemDetails>>(
  params: undefined |  ListChoresParams, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof listChores>>, TError, TData, QueryKey, ListChoresParams['afterId']>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof listChores>>,
@@ -275,7 +276,7 @@ export function useListChoresInfinite<TData = InfiniteData<Awaited<ReturnType<ty
       >, axios?: AxiosRequestConfig}
  , queryClient?: QueryClient
   ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListChoresInfinite<TData = InfiniteData<Awaited<ReturnType<typeof listChores>>, ListChoresParams['afterId']>, TError = AxiosError<unknown>>(
+export function useListChoresInfinite<TData = InfiniteData<Awaited<ReturnType<typeof listChores>>, ListChoresParams['afterId']>, TError = AxiosError<ProblemDetails>>(
  params?: ListChoresParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof listChores>>, TError, TData, QueryKey, ListChoresParams['afterId']>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof listChores>>,
@@ -285,12 +286,12 @@ export function useListChoresInfinite<TData = InfiniteData<Awaited<ReturnType<ty
       >, axios?: AxiosRequestConfig}
  , queryClient?: QueryClient
   ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListChoresInfinite<TData = InfiniteData<Awaited<ReturnType<typeof listChores>>, ListChoresParams['afterId']>, TError = AxiosError<unknown>>(
+export function useListChoresInfinite<TData = InfiniteData<Awaited<ReturnType<typeof listChores>>, ListChoresParams['afterId']>, TError = AxiosError<ProblemDetails>>(
  params?: ListChoresParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof listChores>>, TError, TData, QueryKey, ListChoresParams['afterId']>>, axios?: AxiosRequestConfig}
  , queryClient?: QueryClient
   ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 
-export function useListChoresInfinite<TData = InfiniteData<Awaited<ReturnType<typeof listChores>>, ListChoresParams['afterId']>, TError = AxiosError<unknown>>(
+export function useListChoresInfinite<TData = InfiniteData<Awaited<ReturnType<typeof listChores>>, ListChoresParams['afterId']>, TError = AxiosError<ProblemDetails>>(
  params?: ListChoresParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof listChores>>, TError, TData, QueryKey, ListChoresParams['afterId']>>, axios?: AxiosRequestConfig}
  , queryClient?: QueryClient
  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -307,7 +308,7 @@ export function useListChoresInfinite<TData = InfiniteData<Awaited<ReturnType<ty
 
 
 
-export const getListChoresQueryOptions = <TData = Awaited<ReturnType<typeof listChores>>, TError = AxiosError<unknown>>(params?: ListChoresParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listChores>>, TError, TData>>, axios?: AxiosRequestConfig}
+export const getListChoresQueryOptions = <TData = Awaited<ReturnType<typeof listChores>>, TError = AxiosError<ProblemDetails>>(params?: ListChoresParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listChores>>, TError, TData>>, axios?: AxiosRequestConfig}
 ) => {
 
 const {query: queryOptions, axios: axiosOptions} = options ?? {};
@@ -326,10 +327,10 @@ const {query: queryOptions, axios: axiosOptions} = options ?? {};
 }
 
 export type ListChoresQueryResult = NonNullable<Awaited<ReturnType<typeof listChores>>>
-export type ListChoresQueryError = AxiosError<unknown>
+export type ListChoresQueryError = AxiosError<ProblemDetails>
 
 
-export function useListChores<TData = Awaited<ReturnType<typeof listChores>>, TError = AxiosError<unknown>>(
+export function useListChores<TData = Awaited<ReturnType<typeof listChores>>, TError = AxiosError<ProblemDetails>>(
  params: undefined |  ListChoresParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listChores>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof listChores>>,
@@ -339,7 +340,7 @@ export function useListChores<TData = Awaited<ReturnType<typeof listChores>>, TE
       >, axios?: AxiosRequestConfig}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListChores<TData = Awaited<ReturnType<typeof listChores>>, TError = AxiosError<unknown>>(
+export function useListChores<TData = Awaited<ReturnType<typeof listChores>>, TError = AxiosError<ProblemDetails>>(
  params?: ListChoresParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listChores>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof listChores>>,
@@ -349,12 +350,12 @@ export function useListChores<TData = Awaited<ReturnType<typeof listChores>>, TE
       >, axios?: AxiosRequestConfig}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListChores<TData = Awaited<ReturnType<typeof listChores>>, TError = AxiosError<unknown>>(
+export function useListChores<TData = Awaited<ReturnType<typeof listChores>>, TError = AxiosError<ProblemDetails>>(
  params?: ListChoresParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listChores>>, TError, TData>>, axios?: AxiosRequestConfig}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 
-export function useListChores<TData = Awaited<ReturnType<typeof listChores>>, TError = AxiosError<unknown>>(
+export function useListChores<TData = Awaited<ReturnType<typeof listChores>>, TError = AxiosError<ProblemDetails>>(
  params?: ListChoresParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listChores>>, TError, TData>>, axios?: AxiosRequestConfig}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -384,7 +385,7 @@ export const createChore = (
 
 
 
-export const getCreateChoreMutationOptions = <TError = AxiosError<unknown>,
+export const getCreateChoreMutationOptions = <TError = AxiosError<ProblemDetails>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createChore>>, TError,{data: CreateChoreRequest}, TContext>, axios?: AxiosRequestConfig}
 ): UseMutationOptions<Awaited<ReturnType<typeof createChore>>, TError,{data: CreateChoreRequest}, TContext> => {
 
@@ -411,9 +412,9 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
 
     export type CreateChoreMutationResult = NonNullable<Awaited<ReturnType<typeof createChore>>>
     export type CreateChoreMutationBody = CreateChoreRequest
-    export type CreateChoreMutationError = AxiosError<unknown>
+    export type CreateChoreMutationError = AxiosError<ProblemDetails>
 
-    export const useCreateChore = <TError = AxiosError<unknown>,
+    export const useCreateChore = <TError = AxiosError<ProblemDetails>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createChore>>, TError,{data: CreateChoreRequest}, TContext>, axios?: AxiosRequestConfig}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof createChore>>,

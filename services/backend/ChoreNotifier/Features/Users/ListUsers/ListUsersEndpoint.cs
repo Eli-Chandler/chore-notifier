@@ -13,6 +13,7 @@ public class ListUsersEndpoint : IEndpoint
                 return result.ToResponse();
             })
             .WithName("ListUsers")
-            .WithTags("Users");
+            .WithTags("Users")
+            .WithProblemDetails();
     }
 }

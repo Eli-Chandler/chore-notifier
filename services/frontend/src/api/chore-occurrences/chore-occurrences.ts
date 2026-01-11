@@ -23,6 +23,7 @@ import type {
 
 import type {
   CompleteChoreDto,
+  ProblemDetails,
   SnoozeChoreDto
 } from '../choreNotifierV1.schemas';
 
@@ -44,7 +45,7 @@ export const snoozeChore = (
 
 
 
-export const getSnoozeChoreMutationOptions = <TError = AxiosError<unknown>,
+export const getSnoozeChoreMutationOptions = <TError = AxiosError<ProblemDetails>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof snoozeChore>>, TError,{choreOccurrenceId: number;data: SnoozeChoreDto}, TContext>, axios?: AxiosRequestConfig}
 ): UseMutationOptions<Awaited<ReturnType<typeof snoozeChore>>, TError,{choreOccurrenceId: number;data: SnoozeChoreDto}, TContext> => {
 
@@ -71,9 +72,9 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
 
     export type SnoozeChoreMutationResult = NonNullable<Awaited<ReturnType<typeof snoozeChore>>>
     export type SnoozeChoreMutationBody = SnoozeChoreDto
-    export type SnoozeChoreMutationError = AxiosError<unknown>
+    export type SnoozeChoreMutationError = AxiosError<ProblemDetails>
 
-    export const useSnoozeChore = <TError = AxiosError<unknown>,
+    export const useSnoozeChore = <TError = AxiosError<ProblemDetails>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof snoozeChore>>, TError,{choreOccurrenceId: number;data: SnoozeChoreDto}, TContext>, axios?: AxiosRequestConfig}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof snoozeChore>>,
@@ -100,7 +101,7 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
 
 
 
-export const getCompleteChoreMutationOptions = <TError = AxiosError<unknown>,
+export const getCompleteChoreMutationOptions = <TError = AxiosError<ProblemDetails>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof completeChore>>, TError,{choreOccurrenceId: number;data: CompleteChoreDto}, TContext>, axios?: AxiosRequestConfig}
 ): UseMutationOptions<Awaited<ReturnType<typeof completeChore>>, TError,{choreOccurrenceId: number;data: CompleteChoreDto}, TContext> => {
 
@@ -127,9 +128,9 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
 
     export type CompleteChoreMutationResult = NonNullable<Awaited<ReturnType<typeof completeChore>>>
     export type CompleteChoreMutationBody = CompleteChoreDto
-    export type CompleteChoreMutationError = AxiosError<unknown>
+    export type CompleteChoreMutationError = AxiosError<ProblemDetails>
 
-    export const useCompleteChore = <TError = AxiosError<unknown>,
+    export const useCompleteChore = <TError = AxiosError<ProblemDetails>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof completeChore>>, TError,{choreOccurrenceId: number;data: CompleteChoreDto}, TContext>, axios?: AxiosRequestConfig}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof completeChore>>,
