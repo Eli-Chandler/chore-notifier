@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using ChoreNotifier.Common;
 using ChoreNotifier.Data;
 using ChoreNotifier.Features.Chores.Scheduling;
@@ -5,6 +6,11 @@ using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+    options.SerializerOptions.NumberHandling = JsonNumberHandling.Strict;
+});
 
 builder.Services.AddOpenApi();
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<Program>());
