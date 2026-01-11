@@ -36,9 +36,13 @@ import type {
 } from 'axios';
 
 import type {
+  AddChoreAssigneeResponse,
   CreateChoreRequest,
+  CreateChoreResponse,
+  KeysetPageOfListChoresResponseItemAndint,
   ListChoresParams,
-  UpdateChoreDto
+  UpdateChoreDto,
+  UpdateChoreResponse
 } from '../choreNotifierV1.schemas';
 
 
@@ -48,7 +52,7 @@ import type {
 export const updateChore = (
     choreId: number,
     updateChoreDto: UpdateChoreDto, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<void>> => {
+ ): Promise<AxiosResponse<UpdateChoreResponse>> => {
 
 
     return axios.default.put(
@@ -159,7 +163,7 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
     export const addChoreAssignee = (
     choreId: number,
     userId: number, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<void>> => {
+ ): Promise<AxiosResponse<AddChoreAssigneeResponse>> => {
 
 
     return axios.default.post(
@@ -213,7 +217,7 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
     }
     export const listChores = (
     params?: ListChoresParams, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<void>> => {
+ ): Promise<AxiosResponse<KeysetPageOfListChoresResponseItemAndint>> => {
 
 
     return axios.default.get(
@@ -369,7 +373,7 @@ export function useListChores<TData = Awaited<ReturnType<typeof listChores>>, TE
 
 export const createChore = (
     createChoreRequest: CreateChoreRequest, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<void>> => {
+ ): Promise<AxiosResponse<CreateChoreResponse>> => {
 
 
     return axios.default.post(

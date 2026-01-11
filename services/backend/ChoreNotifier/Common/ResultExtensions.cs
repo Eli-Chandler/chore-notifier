@@ -1,53 +1,57 @@
 using ChoreNotifier.Models;
 using FluentResults;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ChoreNotifier.Common;
 
 public static class ResultExtensions
 {
-    public static IResult ToResponse<T>(this Result<T> result)
+    public static Results<Ok<T>, ProblemHttpResult> ToResponse<T>(this Result<T> result)
     {
         return result.IsSuccess
-            ? Results.Ok(result.Value)
-            : CreateProblemDetails(result.Errors);
+            ? TypedResults.Ok(result.Value)
+            : TypedResults.Problem(CreateProblemDetails(result.Errors));
     }
 
-    public static IResult ToResponse(this Result result)
+    public static Results<NoContent, ProblemHttpResult> ToResponse(this Result result)
     {
         return result.IsSuccess
-            ? Results.NoContent()
-            : CreateProblemDetails(result.Errors);
+            ? TypedResults.NoContent()
+            : TypedResults.Problem(CreateProblemDetails(result.Errors));
     }
 
-    public static IResult ToCreatedResponse<T>(this Result<T> result, Func<T, string> uriFactory)
+    public static Results<Created<T>, ProblemHttpResult> ToCreatedResponse<T>(this Result<T> result, Func<T, string> uriFactory)
     {
         return result.IsSuccess
-            ? Results.Created(uriFactory(result.Value), result.Value)
-            : CreateProblemDetails(result.Errors);
+            ? TypedResults.Created(uriFactory(result.Value), result.Value)
+            : TypedResults.Problem(CreateProblemDetails(result.Errors));
     }
 
 
-    private static IResult CreateProblemDetails(IEnumerable<IError> errors)
+    private static ProblemDetails CreateProblemDetails(IEnumerable<IError> errors)
     {
-        var firstError = errors.FirstOrDefault();
+        var errorsList = errors.ToList();
+        var firstError = errorsList.FirstOrDefault();
         var (statusCode, title) = GetStatusCodeAndTitle(firstError);
 
-        var errorDetails = errors.Select(e => new
+        var errorDetails = errorsList.Select(e => new
         {
             message = e.Message,
             code = e.Metadata.TryGetValue("code", out var code) ? code?.ToString() : null,
             metadata = e.Metadata.Where(m => m.Key != "code").ToDictionary(m => m.Key, m => m.Value)
         }).ToArray();
 
-        return Results.Problem(
-            title: title,
-            detail: string.Join("; ", errors.Select(e => e.Message)),
-            statusCode: statusCode,
-            extensions: new Dictionary<string, object?>
+        return new ProblemDetails
+        {
+            Title = title,
+            Detail = string.Join("; ", errorsList.Select(e => e.Message)),
+            Status = statusCode,
+            Extensions =
             {
-                { "errors", errorDetails }
+                ["errors"] = errorDetails
             }
-        );
+        };
     }
 
     private static (int statusCode, string title) GetStatusCodeAndTitle(IError? error)

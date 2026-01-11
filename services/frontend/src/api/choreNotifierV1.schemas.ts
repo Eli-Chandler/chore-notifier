@@ -7,6 +7,47 @@
 /**
  * @pattern ^-?(?:0|[1-9]\d*)$
  */
+export type AddChoreAssigneeResponseId = number | string;
+
+export type AddChoreAssigneeResponseDescription = null | string;
+
+export interface AddChoreAssigneeResponse {
+  /** @pattern ^-?(?:0|[1-9]\d*)$ */
+  id: AddChoreAssigneeResponseId;
+  title: string;
+  description: AddChoreAssigneeResponseDescription;
+  choreSchedule: ChoreScheduleResponse;
+  assignees: ChoreAssigneeResponse[];
+}
+
+/**
+ * @pattern ^-?(?:0|[1-9]\d*)$
+ */
+export type ChoreAssigneeResponseId = number | string;
+
+export interface ChoreAssigneeResponse {
+  /** @pattern ^-?(?:0|[1-9]\d*)$ */
+  id: ChoreAssigneeResponseId;
+  name: string;
+}
+
+/**
+ * @pattern ^-?(?:0|[1-9]\d*)$
+ */
+export type ChoreScheduleResponseIntervalDays = number | string;
+
+export type ChoreScheduleResponseUntil = null | string;
+
+export interface ChoreScheduleResponse {
+  start: string;
+  /** @pattern ^-?(?:0|[1-9]\d*)$ */
+  intervalDays: ChoreScheduleResponseIntervalDays;
+  until: ChoreScheduleResponseUntil;
+}
+
+/**
+ * @pattern ^-?(?:0|[1-9]\d*)$
+ */
 export type CompleteChoreDtoUserId = number | string;
 
 export interface CompleteChoreDto {
@@ -33,6 +74,29 @@ export interface CreateChoreRequest {
 /**
  * @pattern ^-?(?:0|[1-9]\d*)$
  */
+export type CreateChoreResponseId = number | string;
+
+export type CreateChoreResponseDescription = null | string;
+
+/**
+ * @pattern ^-?(\d+\.)?\d{2}:\d{2}:\d{2}(\.\d{1,7})?$
+ */
+export type CreateChoreResponseSnoozeDuration = null | string;
+
+export interface CreateChoreResponse {
+  /** @pattern ^-?(?:0|[1-9]\d*)$ */
+  id: CreateChoreResponseId;
+  title: string;
+  description: CreateChoreResponseDescription;
+  choreSchedule: ChoreScheduleResponse;
+  /** @pattern ^-?(\d+\.)?\d{2}:\d{2}:\d{2}(\.\d{1,7})?$ */
+  snoozeDuration: CreateChoreResponseSnoozeDuration;
+  assignees: ChoreAssigneeResponse[];
+}
+
+/**
+ * @pattern ^-?(?:0|[1-9]\d*)$
+ */
 export type CreateChoreScheduleRequestIntervalDays = number | string;
 
 export type CreateChoreScheduleRequestUntil = null | string;
@@ -46,6 +110,90 @@ export interface CreateChoreScheduleRequest {
 
 export interface CreateUserRequest {
   name: string;
+}
+
+/**
+ * @pattern ^-?(?:0|[1-9]\d*)$
+ */
+export type CreateUserResponseId = number | string;
+
+export interface CreateUserResponse {
+  /** @pattern ^-?(?:0|[1-9]\d*)$ */
+  id: CreateUserResponseId;
+  name: string;
+}
+
+/**
+ * @pattern ^-?(?:0|[1-9]\d*)$
+ */
+export type KeysetPageOfListChoresResponseItemAndintNextCursor = null | number | string;
+
+/**
+ * @pattern ^-?(?:0|[1-9]\d*)$
+ */
+export type KeysetPageOfListChoresResponseItemAndintPageSize = number | string;
+
+export interface KeysetPageOfListChoresResponseItemAndint {
+  items: ListChoresResponseItem[];
+  hasNextPage: boolean;
+  /** @pattern ^-?(?:0|[1-9]\d*)$ */
+  nextCursor: KeysetPageOfListChoresResponseItemAndintNextCursor;
+  /** @pattern ^-?(?:0|[1-9]\d*)$ */
+  pageSize: KeysetPageOfListChoresResponseItemAndintPageSize;
+}
+
+/**
+ * @pattern ^-?(?:0|[1-9]\d*)$
+ */
+export type KeysetPageOfListUserResponseItemAndintNextCursor = null | number | string;
+
+/**
+ * @pattern ^-?(?:0|[1-9]\d*)$
+ */
+export type KeysetPageOfListUserResponseItemAndintPageSize = number | string;
+
+export interface KeysetPageOfListUserResponseItemAndint {
+  items: ListUserResponseItem[];
+  hasNextPage: boolean;
+  /** @pattern ^-?(?:0|[1-9]\d*)$ */
+  nextCursor: KeysetPageOfListUserResponseItemAndintNextCursor;
+  /** @pattern ^-?(?:0|[1-9]\d*)$ */
+  pageSize: KeysetPageOfListUserResponseItemAndintPageSize;
+}
+
+/**
+ * @pattern ^-?(?:0|[1-9]\d*)$
+ */
+export type ListChoresResponseItemId = number | string;
+
+export type ListChoresResponseItemDescription = null | string;
+
+export type ListChoresResponseItemChoreSchedule = null | ChoreScheduleResponse;
+
+/**
+ * @pattern ^-?(\d+\.)?\d{2}:\d{2}:\d{2}(\.\d{1,7})?$
+ */
+export type ListChoresResponseItemSnoozeDuration = null | string;
+
+export interface ListChoresResponseItem {
+  /** @pattern ^-?(?:0|[1-9]\d*)$ */
+  id: ListChoresResponseItemId;
+  title: string;
+  description: ListChoresResponseItemDescription;
+  choreSchedule: ListChoresResponseItemChoreSchedule;
+  /** @pattern ^-?(\d+\.)?\d{2}:\d{2}:\d{2}(\.\d{1,7})?$ */
+  snoozeDuration: ListChoresResponseItemSnoozeDuration;
+}
+
+/**
+ * @pattern ^-?(?:0|[1-9]\d*)$
+ */
+export type ListUserResponseItemId = number | string;
+
+export interface ListUserResponseItem {
+  /** @pattern ^-?(?:0|[1-9]\d*)$ */
+  id?: ListUserResponseItemId;
+  name?: string;
 }
 
 /**
@@ -70,7 +218,40 @@ export interface UpdateChoreDto {
   snoozeDuration: string;
 }
 
+/**
+ * @pattern ^-?(?:0|[1-9]\d*)$
+ */
+export type UpdateChoreResponseId = number | string;
+
+export type UpdateChoreResponseDescription = null | string;
+
+/**
+ * @pattern ^-?(\d+\.)?\d{2}:\d{2}:\d{2}(\.\d{1,7})?$
+ */
+export type UpdateChoreResponseSnoozeDuration = null | string;
+
+export interface UpdateChoreResponse {
+  /** @pattern ^-?(?:0|[1-9]\d*)$ */
+  id: UpdateChoreResponseId;
+  title: string;
+  description: UpdateChoreResponseDescription;
+  choreSchedule: ChoreScheduleResponse;
+  /** @pattern ^-?(\d+\.)?\d{2}:\d{2}:\d{2}(\.\d{1,7})?$ */
+  snoozeDuration: UpdateChoreResponseSnoozeDuration;
+}
+
 export interface UpdateUserDto {
+  name: string;
+}
+
+/**
+ * @pattern ^-?(?:0|[1-9]\d*)$
+ */
+export type UpdateUserResponseId = number | string;
+
+export interface UpdateUserResponse {
+  /** @pattern ^-?(?:0|[1-9]\d*)$ */
+  id: UpdateUserResponseId;
   name: string;
 }
 

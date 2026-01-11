@@ -37,8 +37,11 @@ import type {
 
 import type {
   CreateUserRequest,
+  CreateUserResponse,
+  KeysetPageOfListUserResponseItemAndint,
   ListUsersParams,
-  UpdateUserDto
+  UpdateUserDto,
+  UpdateUserResponse
 } from '../choreNotifierV1.schemas';
 
 
@@ -48,7 +51,7 @@ import type {
 export const updateUser = (
     userId: number,
     updateUserDto: UpdateUserDto, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<void>> => {
+ ): Promise<AxiosResponse<UpdateUserResponse>> => {
 
 
     return axios.default.put(
@@ -157,7 +160,7 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
     }
     export const listUsers = (
     params?: ListUsersParams, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<void>> => {
+ ): Promise<AxiosResponse<KeysetPageOfListUserResponseItemAndint>> => {
 
 
     return axios.default.get(
@@ -313,7 +316,7 @@ export function useListUsers<TData = Awaited<ReturnType<typeof listUsers>>, TErr
 
 export const createUser = (
     createUserRequest: CreateUserRequest, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<void>> => {
+ ): Promise<AxiosResponse<CreateUserResponse>> => {
 
 
     return axios.default.post(
