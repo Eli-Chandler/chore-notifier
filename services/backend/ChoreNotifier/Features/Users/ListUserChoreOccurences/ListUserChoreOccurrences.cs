@@ -64,6 +64,7 @@ public class ListUserChoreOccurrencesHandler(ChoreDbContext db, IClock clock)
 
         query = ApplyFilter(query, request.Filter);
 
+        // TODO: Add ordering by due date and opaque keyset cursor.
         var result = await query
             .OrderBy(co => co.Id)
             .Where(co => request.AfterId == null || co.Id > request.AfterId)
