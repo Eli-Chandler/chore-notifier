@@ -20,7 +20,8 @@ public class UpdateChoreEndpoint : IEndpoint
                 return result.ToResponse();
             })
             .WithName("UpdateChore")
-            .WithTags("Chores");
+            .WithTags("Chores")
+            .WithProblemDetails();
     }
 }
 

@@ -38,8 +38,11 @@ import type {
 import type {
   CreateUserRequest,
   CreateUserResponse,
+  KeysetPageOfListUserChoreOccurrencesResponseItemAndint,
   KeysetPageOfListUserResponseItemAndint,
+  ListUserChoreOccurrencesParams,
   ListUsersParams,
+  ProblemDetails,
   UpdateUserDto,
   UpdateUserResponse
 } from '../choreNotifierV1.schemas';
@@ -62,7 +65,7 @@ export const updateUser = (
 
 
 
-export const getUpdateUserMutationOptions = <TError = AxiosError<unknown>,
+export const getUpdateUserMutationOptions = <TError = AxiosError<ProblemDetails>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateUser>>, TError,{userId: number;data: UpdateUserDto}, TContext>, axios?: AxiosRequestConfig}
 ): UseMutationOptions<Awaited<ReturnType<typeof updateUser>>, TError,{userId: number;data: UpdateUserDto}, TContext> => {
 
@@ -89,9 +92,9 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
 
     export type UpdateUserMutationResult = NonNullable<Awaited<ReturnType<typeof updateUser>>>
     export type UpdateUserMutationBody = UpdateUserDto
-    export type UpdateUserMutationError = AxiosError<unknown>
+    export type UpdateUserMutationError = AxiosError<ProblemDetails>
 
-    export const useUpdateUser = <TError = AxiosError<unknown>,
+    export const useUpdateUser = <TError = AxiosError<ProblemDetails>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateUser>>, TError,{userId: number;data: UpdateUserDto}, TContext>, axios?: AxiosRequestConfig}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof updateUser>>,
@@ -116,7 +119,7 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
 
 
 
-export const getDeleteUserMutationOptions = <TError = AxiosError<unknown>,
+export const getDeleteUserMutationOptions = <TError = AxiosError<ProblemDetails>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteUser>>, TError,{userId: number}, TContext>, axios?: AxiosRequestConfig}
 ): UseMutationOptions<Awaited<ReturnType<typeof deleteUser>>, TError,{userId: number}, TContext> => {
 
@@ -143,9 +146,9 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
 
     export type DeleteUserMutationResult = NonNullable<Awaited<ReturnType<typeof deleteUser>>>
 
-    export type DeleteUserMutationError = AxiosError<unknown>
+    export type DeleteUserMutationError = AxiosError<ProblemDetails>
 
-    export const useDeleteUser = <TError = AxiosError<unknown>,
+    export const useDeleteUser = <TError = AxiosError<ProblemDetails>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteUser>>, TError,{userId: number}, TContext>, axios?: AxiosRequestConfig}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof deleteUser>>,
@@ -186,7 +189,7 @@ export const getListUsersQueryKey = (params?: ListUsersParams,) => {
     }
 
 
-export const getListUsersInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof listUsers>>, ListUsersParams['afterId']>, TError = AxiosError<unknown>>(params?: ListUsersParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof listUsers>>, TError, TData, QueryKey, ListUsersParams['afterId']>>, axios?: AxiosRequestConfig}
+export const getListUsersInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof listUsers>>, ListUsersParams['afterId']>, TError = AxiosError<ProblemDetails>>(params?: ListUsersParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof listUsers>>, TError, TData, QueryKey, ListUsersParams['afterId']>>, axios?: AxiosRequestConfig}
 ) => {
 
 const {query: queryOptions, axios: axiosOptions} = options ?? {};
@@ -205,10 +208,10 @@ const {query: queryOptions, axios: axiosOptions} = options ?? {};
 }
 
 export type ListUsersInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof listUsers>>>
-export type ListUsersInfiniteQueryError = AxiosError<unknown>
+export type ListUsersInfiniteQueryError = AxiosError<ProblemDetails>
 
 
-export function useListUsersInfinite<TData = InfiniteData<Awaited<ReturnType<typeof listUsers>>, ListUsersParams['afterId']>, TError = AxiosError<unknown>>(
+export function useListUsersInfinite<TData = InfiniteData<Awaited<ReturnType<typeof listUsers>>, ListUsersParams['afterId']>, TError = AxiosError<ProblemDetails>>(
  params: undefined |  ListUsersParams, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof listUsers>>, TError, TData, QueryKey, ListUsersParams['afterId']>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof listUsers>>,
@@ -218,7 +221,7 @@ export function useListUsersInfinite<TData = InfiniteData<Awaited<ReturnType<typ
       >, axios?: AxiosRequestConfig}
  , queryClient?: QueryClient
   ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListUsersInfinite<TData = InfiniteData<Awaited<ReturnType<typeof listUsers>>, ListUsersParams['afterId']>, TError = AxiosError<unknown>>(
+export function useListUsersInfinite<TData = InfiniteData<Awaited<ReturnType<typeof listUsers>>, ListUsersParams['afterId']>, TError = AxiosError<ProblemDetails>>(
  params?: ListUsersParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof listUsers>>, TError, TData, QueryKey, ListUsersParams['afterId']>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof listUsers>>,
@@ -228,12 +231,12 @@ export function useListUsersInfinite<TData = InfiniteData<Awaited<ReturnType<typ
       >, axios?: AxiosRequestConfig}
  , queryClient?: QueryClient
   ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListUsersInfinite<TData = InfiniteData<Awaited<ReturnType<typeof listUsers>>, ListUsersParams['afterId']>, TError = AxiosError<unknown>>(
+export function useListUsersInfinite<TData = InfiniteData<Awaited<ReturnType<typeof listUsers>>, ListUsersParams['afterId']>, TError = AxiosError<ProblemDetails>>(
  params?: ListUsersParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof listUsers>>, TError, TData, QueryKey, ListUsersParams['afterId']>>, axios?: AxiosRequestConfig}
  , queryClient?: QueryClient
   ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 
-export function useListUsersInfinite<TData = InfiniteData<Awaited<ReturnType<typeof listUsers>>, ListUsersParams['afterId']>, TError = AxiosError<unknown>>(
+export function useListUsersInfinite<TData = InfiniteData<Awaited<ReturnType<typeof listUsers>>, ListUsersParams['afterId']>, TError = AxiosError<ProblemDetails>>(
  params?: ListUsersParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof listUsers>>, TError, TData, QueryKey, ListUsersParams['afterId']>>, axios?: AxiosRequestConfig}
  , queryClient?: QueryClient
  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -250,7 +253,7 @@ export function useListUsersInfinite<TData = InfiniteData<Awaited<ReturnType<typ
 
 
 
-export const getListUsersQueryOptions = <TData = Awaited<ReturnType<typeof listUsers>>, TError = AxiosError<unknown>>(params?: ListUsersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listUsers>>, TError, TData>>, axios?: AxiosRequestConfig}
+export const getListUsersQueryOptions = <TData = Awaited<ReturnType<typeof listUsers>>, TError = AxiosError<ProblemDetails>>(params?: ListUsersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listUsers>>, TError, TData>>, axios?: AxiosRequestConfig}
 ) => {
 
 const {query: queryOptions, axios: axiosOptions} = options ?? {};
@@ -269,10 +272,10 @@ const {query: queryOptions, axios: axiosOptions} = options ?? {};
 }
 
 export type ListUsersQueryResult = NonNullable<Awaited<ReturnType<typeof listUsers>>>
-export type ListUsersQueryError = AxiosError<unknown>
+export type ListUsersQueryError = AxiosError<ProblemDetails>
 
 
-export function useListUsers<TData = Awaited<ReturnType<typeof listUsers>>, TError = AxiosError<unknown>>(
+export function useListUsers<TData = Awaited<ReturnType<typeof listUsers>>, TError = AxiosError<ProblemDetails>>(
  params: undefined |  ListUsersParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listUsers>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof listUsers>>,
@@ -282,7 +285,7 @@ export function useListUsers<TData = Awaited<ReturnType<typeof listUsers>>, TErr
       >, axios?: AxiosRequestConfig}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListUsers<TData = Awaited<ReturnType<typeof listUsers>>, TError = AxiosError<unknown>>(
+export function useListUsers<TData = Awaited<ReturnType<typeof listUsers>>, TError = AxiosError<ProblemDetails>>(
  params?: ListUsersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listUsers>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof listUsers>>,
@@ -292,12 +295,12 @@ export function useListUsers<TData = Awaited<ReturnType<typeof listUsers>>, TErr
       >, axios?: AxiosRequestConfig}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListUsers<TData = Awaited<ReturnType<typeof listUsers>>, TError = AxiosError<unknown>>(
+export function useListUsers<TData = Awaited<ReturnType<typeof listUsers>>, TError = AxiosError<ProblemDetails>>(
  params?: ListUsersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listUsers>>, TError, TData>>, axios?: AxiosRequestConfig}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 
-export function useListUsers<TData = Awaited<ReturnType<typeof listUsers>>, TError = AxiosError<unknown>>(
+export function useListUsers<TData = Awaited<ReturnType<typeof listUsers>>, TError = AxiosError<ProblemDetails>>(
  params?: ListUsersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listUsers>>, TError, TData>>, axios?: AxiosRequestConfig}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -327,7 +330,7 @@ export const createUser = (
 
 
 
-export const getCreateUserMutationOptions = <TError = AxiosError<unknown>,
+export const getCreateUserMutationOptions = <TError = AxiosError<ProblemDetails>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createUser>>, TError,{data: CreateUserRequest}, TContext>, axios?: AxiosRequestConfig}
 ): UseMutationOptions<Awaited<ReturnType<typeof createUser>>, TError,{data: CreateUserRequest}, TContext> => {
 
@@ -354,9 +357,9 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
 
     export type CreateUserMutationResult = NonNullable<Awaited<ReturnType<typeof createUser>>>
     export type CreateUserMutationBody = CreateUserRequest
-    export type CreateUserMutationError = AxiosError<unknown>
+    export type CreateUserMutationError = AxiosError<ProblemDetails>
 
-    export const useCreateUser = <TError = AxiosError<unknown>,
+    export const useCreateUser = <TError = AxiosError<ProblemDetails>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createUser>>, TError,{data: CreateUserRequest}, TContext>, axios?: AxiosRequestConfig}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof createUser>>,
@@ -369,3 +372,168 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
 
       return useMutation(mutationOptions, queryClient);
     }
+    export const listUserChoreOccurrences = (
+    userId: number,
+    params?: ListUserChoreOccurrencesParams, options?: AxiosRequestConfig
+ ): Promise<AxiosResponse<KeysetPageOfListUserChoreOccurrencesResponseItemAndint>> => {
+
+
+    return axios.default.get(
+      `/api/users/${userId}/chore-occurrences`,{
+    ...options,
+        params: {...params, ...options?.params},}
+    );
+  }
+
+
+
+
+export const getListUserChoreOccurrencesInfiniteQueryKey = (userId?: number,
+    params?: ListUserChoreOccurrencesParams,) => {
+    return [
+    'infinite', `/api/users/${userId}/chore-occurrences`, ...(params ? [params]: [])
+    ] as const;
+    }
+
+export const getListUserChoreOccurrencesQueryKey = (userId?: number,
+    params?: ListUserChoreOccurrencesParams,) => {
+    return [
+    `/api/users/${userId}/chore-occurrences`, ...(params ? [params]: [])
+    ] as const;
+    }
+
+
+export const getListUserChoreOccurrencesInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof listUserChoreOccurrences>>, ListUserChoreOccurrencesParams['afterId']>, TError = AxiosError<ProblemDetails>>(userId: number,
+    params?: ListUserChoreOccurrencesParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof listUserChoreOccurrences>>, TError, TData, QueryKey, ListUserChoreOccurrencesParams['afterId']>>, axios?: AxiosRequestConfig}
+) => {
+
+const {query: queryOptions, axios: axiosOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListUserChoreOccurrencesInfiniteQueryKey(userId,params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listUserChoreOccurrences>>, QueryKey, ListUserChoreOccurrencesParams['afterId']> = ({ signal, pageParam }) => listUserChoreOccurrences(userId,{...params, 'afterId': pageParam || params?.['afterId']}, { signal, ...axiosOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: !!(userId), ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof listUserChoreOccurrences>>, TError, TData, QueryKey, ListUserChoreOccurrencesParams['afterId']> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ListUserChoreOccurrencesInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof listUserChoreOccurrences>>>
+export type ListUserChoreOccurrencesInfiniteQueryError = AxiosError<ProblemDetails>
+
+
+export function useListUserChoreOccurrencesInfinite<TData = InfiniteData<Awaited<ReturnType<typeof listUserChoreOccurrences>>, ListUserChoreOccurrencesParams['afterId']>, TError = AxiosError<ProblemDetails>>(
+ userId: number,
+    params: undefined |  ListUserChoreOccurrencesParams, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof listUserChoreOccurrences>>, TError, TData, QueryKey, ListUserChoreOccurrencesParams['afterId']>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof listUserChoreOccurrences>>,
+          TError,
+          Awaited<ReturnType<typeof listUserChoreOccurrences>>, QueryKey
+        > , 'initialData'
+      >, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useListUserChoreOccurrencesInfinite<TData = InfiniteData<Awaited<ReturnType<typeof listUserChoreOccurrences>>, ListUserChoreOccurrencesParams['afterId']>, TError = AxiosError<ProblemDetails>>(
+ userId: number,
+    params?: ListUserChoreOccurrencesParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof listUserChoreOccurrences>>, TError, TData, QueryKey, ListUserChoreOccurrencesParams['afterId']>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof listUserChoreOccurrences>>,
+          TError,
+          Awaited<ReturnType<typeof listUserChoreOccurrences>>, QueryKey
+        > , 'initialData'
+      >, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useListUserChoreOccurrencesInfinite<TData = InfiniteData<Awaited<ReturnType<typeof listUserChoreOccurrences>>, ListUserChoreOccurrencesParams['afterId']>, TError = AxiosError<ProblemDetails>>(
+ userId: number,
+    params?: ListUserChoreOccurrencesParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof listUserChoreOccurrences>>, TError, TData, QueryKey, ListUserChoreOccurrencesParams['afterId']>>, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function useListUserChoreOccurrencesInfinite<TData = InfiniteData<Awaited<ReturnType<typeof listUserChoreOccurrences>>, ListUserChoreOccurrencesParams['afterId']>, TError = AxiosError<ProblemDetails>>(
+ userId: number,
+    params?: ListUserChoreOccurrencesParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof listUserChoreOccurrences>>, TError, TData, QueryKey, ListUserChoreOccurrencesParams['afterId']>>, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getListUserChoreOccurrencesInfiniteQueryOptions(userId,params,options)
+
+  const query = useInfiniteQuery(queryOptions, queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+export const getListUserChoreOccurrencesQueryOptions = <TData = Awaited<ReturnType<typeof listUserChoreOccurrences>>, TError = AxiosError<ProblemDetails>>(userId: number,
+    params?: ListUserChoreOccurrencesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listUserChoreOccurrences>>, TError, TData>>, axios?: AxiosRequestConfig}
+) => {
+
+const {query: queryOptions, axios: axiosOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListUserChoreOccurrencesQueryKey(userId,params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listUserChoreOccurrences>>> = ({ signal }) => listUserChoreOccurrences(userId,params, { signal, ...axiosOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: !!(userId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listUserChoreOccurrences>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ListUserChoreOccurrencesQueryResult = NonNullable<Awaited<ReturnType<typeof listUserChoreOccurrences>>>
+export type ListUserChoreOccurrencesQueryError = AxiosError<ProblemDetails>
+
+
+export function useListUserChoreOccurrences<TData = Awaited<ReturnType<typeof listUserChoreOccurrences>>, TError = AxiosError<ProblemDetails>>(
+ userId: number,
+    params: undefined |  ListUserChoreOccurrencesParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listUserChoreOccurrences>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof listUserChoreOccurrences>>,
+          TError,
+          Awaited<ReturnType<typeof listUserChoreOccurrences>>
+        > , 'initialData'
+      >, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useListUserChoreOccurrences<TData = Awaited<ReturnType<typeof listUserChoreOccurrences>>, TError = AxiosError<ProblemDetails>>(
+ userId: number,
+    params?: ListUserChoreOccurrencesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listUserChoreOccurrences>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof listUserChoreOccurrences>>,
+          TError,
+          Awaited<ReturnType<typeof listUserChoreOccurrences>>
+        > , 'initialData'
+      >, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useListUserChoreOccurrences<TData = Awaited<ReturnType<typeof listUserChoreOccurrences>>, TError = AxiosError<ProblemDetails>>(
+ userId: number,
+    params?: ListUserChoreOccurrencesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listUserChoreOccurrences>>, TError, TData>>, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function useListUserChoreOccurrences<TData = Awaited<ReturnType<typeof listUserChoreOccurrences>>, TError = AxiosError<ProblemDetails>>(
+ userId: number,
+    params?: ListUserChoreOccurrencesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listUserChoreOccurrences>>, TError, TData>>, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getListUserChoreOccurrencesQueryOptions(userId,params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}

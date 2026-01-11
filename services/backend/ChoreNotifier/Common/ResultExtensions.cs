@@ -66,4 +66,17 @@ public static class ResultExtensions
             _ => (StatusCodes.Status400BadRequest, "Bad Request")
         };
     }
+
+    /// <summary>
+    /// Adds all possible problem detail responses to the endpoint for OpenAPI documentation
+    /// </summary>
+    public static RouteHandlerBuilder WithProblemDetails(this RouteHandlerBuilder builder)
+    {
+        return builder
+            .ProducesProblem(StatusCodes.Status400BadRequest)
+            .ProducesProblem(StatusCodes.Status403Forbidden)
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .ProducesProblem(StatusCodes.Status409Conflict)
+            .ProducesProblem(StatusCodes.Status422UnprocessableEntity);
+    }
 }

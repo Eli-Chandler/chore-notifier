@@ -5,15 +5,15 @@ using JetBrains.Annotations;
 
 namespace ChoreNotifier.Tests.Features.Users.ListUserChoreOccurences;
 
-[TestSubject(typeof(ListUserChoreOccurencesHandler))]
-public class ListUserChoreOccurencesHandlerTest : DatabaseTestBase
+[TestSubject(typeof(ListUserChoreOccurrencesHandler))]
+public class ListUserChoreOccurrencesHandlerTest : DatabaseTestBase
 {
-    private readonly ListUserChoreOccurencesHandler _handler;
+    private readonly ListUserChoreOccurrencesHandler _handler;
 
-    public ListUserChoreOccurencesHandlerTest(DatabaseFixture dbFixture, ClockFixture clockFixture) : base(dbFixture,
+    public ListUserChoreOccurrencesHandlerTest(DatabaseFixture dbFixture, ClockFixture clockFixture) : base(dbFixture,
         clockFixture)
     {
-        _handler = new ListUserChoreOccurencesHandler(dbFixture.CreateDbContext(), clockFixture.TestClock);
+        _handler = new ListUserChoreOccurrencesHandler(dbFixture.CreateDbContext(), clockFixture.TestClock);
     }
 
     [Theory]
@@ -32,6 +32,23 @@ public class ListUserChoreOccurencesHandlerTest : DatabaseTestBase
         result.IsFailed.Should().BeTrue();
         var error = result.Errors.Should().ContainSingle().Which.Should().BeOfType<ValidationError>().Subject;
         error.Message.Should().Contain("Page size");
+    }
+
+    [Fact]
+    public async Task Handle_WhenFilterInvalid_ReturnsValidationError()
+    {
+        // Arrange
+        var invalidFilter = (ChoreOccurenceFilter)999;
+        var request =
+            new ListUserChoreOccurrencesRequest(UserId: 1, PageSize: 10, AfterId: null, Filter: invalidFilter);
+
+        // Act
+        var result = await _handler.Handle(request, CancellationToken.None);
+
+        // Assert
+        result.IsFailed.Should().BeTrue();
+        var error = result.Errors.Should().ContainSingle().Which.Should().BeOfType<ValidationError>().Subject;
+        error.Message.Should().Contain("filter");
     }
 
     [Fact]
@@ -114,52 +131,86 @@ public class ListUserChoreOccurencesHandlerTest : DatabaseTestBase
         page2.Items.Select(co => co.Id).Should().OnlyContain(id => id > afterId);
     }
 
-    [Fact]
-    public async Task Handle_WhenChoreOccurrencesDueAtDifferentTimes_ReturnsInCorrectOrder()
+    [Theory]
+    [InlineData(ChoreOccurenceFilter.All)]
+    [InlineData(ChoreOccurenceFilter.Completed)]
+    [InlineData(ChoreOccurenceFilter.Upcoming)]
+    [InlineData(ChoreOccurenceFilter.Due)]
+    public async Task Handle_WhenFilterApplied_ReturnsFilteredChoreOccurrences(ChoreOccurenceFilter filter)
     {
-
-
         // Arrange
         await using var ctx = DbFixture.CreateDbContext();
         var user = await Factory.CreateUserAsync(context: ctx);
+        var now = TestClock.UtcNow;
 
-        var choreOccurrences = new List<ChoreOccurrence>();
+        var completedOccurrences = new List<ChoreOccurrence>();
+        var upcomingOccurrences = new List<ChoreOccurrence>();
+        var dueOccurrences = new List<ChoreOccurrence>();
 
-        for (int i = 0; i < 10; i++)
+        // Create 3 completed chore occurrences (scheduled in past, completed)
+        for (int i = 0; i < 3; i++)
         {
-            var co = await Factory.CreateChoreOccurrenceAsync(
+            var occurrence = await Factory.CreateChoreOccurrenceAsync(
                 user: user,
-                scheduledAt: TestClock.UtcNow.AddDays(i),
-                context: ctx);
+                scheduledAt: now.AddHours(-1),
+                context: ctx
+            );
+            occurrence.Complete(user.Id, now);
+            completedOccurrences.Add(occurrence);
+        }
 
-            if (i % 2 == 0)
-            {
-                co.Complete(user.Id, TestClock.UtcNow.AddDays(i + 1));
-            }
-            choreOccurrences.Add(co);
+        // Create 3 upcoming (not completed, scheduled in future)
+        for (int i = 0; i < 3; i++)
+        {
+            var occurrence = await Factory.CreateChoreOccurrenceAsync(
+                user: user,
+                scheduledAt: now.AddDays(1),
+                context: ctx
+            );
+            upcomingOccurrences.Add(occurrence);
+        }
+
+        // Create 3 due (not completed, scheduled now or in past)
+        for (int i = 0; i < 3; i++)
+        {
+            var occurrence = await Factory.CreateChoreOccurrenceAsync(
+                user: user,
+                scheduledAt: now.AddHours(-1),
+                context: ctx
+            );
+            dueOccurrences.Add(occurrence);
         }
 
         await ctx.SaveChangesAsync();
 
+        var allOccurrences = completedOccurrences
+            .Concat(upcomingOccurrences)
+            .Concat(dueOccurrences)
+            .ToList();
+
+        var request = new ListUserChoreOccurrencesRequest(
+            UserId: user.Id,
+            PageSize: 100,
+            AfterId: null,
+            Filter: filter
+        );
+
         // Act
-        var request = new ListUserChoreOccurrencesRequest(UserId: user.Id, PageSize: 10, AfterId: null);
         var result = await _handler.Handle(request);
 
         // Assert
         result.IsSuccess.Should().BeTrue();
         var page = result.Value;
-        page.Items.Should().HaveCount(10);
-        // Should be ordered first by:
-        // Completed or not? (Incomplete first)
-        // Then by Due date (earliest first)
-        // With a final tiebreaker by Id (lowest first)
-        var expectedOrder = choreOccurrences
-            .OrderByDescending(co => co.IsCompleted)
-            .ThenBy(co => co.DueAt)
-            .ThenBy(co => co.Id)
-            .Select(co => co.Id)
-            .ToList();
 
-        page.Items.Select(co => co.Id).Should().Equal(expectedOrder);
+        var expectedIds = filter switch
+        {
+            ChoreOccurenceFilter.All => allOccurrences.Select(co => co.Id),
+            ChoreOccurenceFilter.Completed => completedOccurrences.Select(co => co.Id),
+            ChoreOccurenceFilter.Upcoming => upcomingOccurrences.Select(co => co.Id),
+            ChoreOccurenceFilter.Due => dueOccurrences.Select(co => co.Id),
+            _ => throw new ArgumentOutOfRangeException()
+        };
+
+        page.Items.Select(co => co.Id).Should().BeEquivalentTo(expectedIds);
     }
 }

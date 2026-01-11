@@ -13,6 +13,7 @@ public class RemoveChoreAssigneeEndpoint : IEndpoint
                 return result.ToResponse();
             })
             .WithName("RemoveChoreAssignee")
-            .WithTags("Chores");
+            .WithTags("Chores")
+            .WithProblemDetails();
     }
 }
