@@ -87,6 +87,11 @@ export interface CreateUserResponse {
   name: string;
 }
 
+export interface GetUserResponse {
+  id: number;
+  name: string;
+}
+
 export type KeysetPageOfListChoresResponseItemAndintNextCursor = null | number;
 
 export interface KeysetPageOfListChoresResponseItemAndint {
