@@ -8,11 +8,7 @@ namespace ChoreNotifier.Features.Users.ListUsers;
 
 public sealed record ListUsersRequest(int PageSize, int? AfterId) : IRequest<Result<KeysetPage<ListUserResponseItem, int>>>;
 
-public class ListUserResponseItem
-{
-    public int Id { get; set; }
-    public string Name { get; set; } = null!;
-}
+public sealed record ListUserResponseItem(int Id, string Name);
 
 public sealed class ListUsersHandler : IRequestHandler<ListUsersRequest, Result<KeysetPage<ListUserResponseItem, int>>>
 {
@@ -34,11 +30,7 @@ public sealed class ListUsersHandler : IRequestHandler<ListUsersRequest, Result<
                 ct
             );
 
-        return result.Select(u => new ListUserResponseItem
-        {
-            Id = u.Id,
-            Name = u.Name
-        }
+        return result.Select(u => new ListUserResponseItem(u.Id, u.Name)
         );
     }
 

@@ -192,8 +192,8 @@ export type ListUserResponseItemId = number | string;
 
 export interface ListUserResponseItem {
   /** @pattern ^-?(?:0|[1-9]\d*)$ */
-  id?: ListUserResponseItemId;
-  name?: string;
+  id: ListUserResponseItemId;
+  name: string;
 }
 
 /**

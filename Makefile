@@ -9,3 +9,7 @@ full:
 
 down:
 	docker compose down
+
+api-client:
+	dotnet build
+	cd services/frontend && npm run generate:api

@@ -779,6 +779,10 @@
         }
       },
       "ListUserResponseItem": {
+        "required": [
+          "id",
+          "name"
+        ],
         "type": "object",
         "properties": {
           "id": {
