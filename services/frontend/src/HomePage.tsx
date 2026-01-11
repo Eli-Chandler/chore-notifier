@@ -129,7 +129,7 @@ function AddTenant({onAddTenant}: Props) {
                     <DialogHeader>
                         <DialogTitle>New Tenant</DialogTitle>
                         <DialogDescription>
-                            Enter tenant details below and save.
+                            Enter name and save.
                         </DialogDescription>
                     </DialogHeader>
 
@@ -145,7 +145,7 @@ function AddTenant({onAddTenant}: Props) {
                         </div>
                     </div>
 
-                    <DialogFooter>
+                    <DialogFooter className="mt-10">
                         <DialogClose asChild>
                             <Button variant="outline">Cancel</Button>
                         </DialogClose>
