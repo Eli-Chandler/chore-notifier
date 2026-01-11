@@ -190,7 +190,7 @@ function AddChore({availableUsers}: AddChoreProps) {
                             onSelectedUsersChange={setAssignees}
                         />
                     </div>
-                    <DialogFooter>
+                    <DialogFooter className="mt-10">
                         <DialogClose asChild>
                             <Button type="button" variant="outline">Cancel</Button>
                         </DialogClose>
