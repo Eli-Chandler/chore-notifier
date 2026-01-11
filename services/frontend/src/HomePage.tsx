@@ -76,7 +76,7 @@ function HomePage() {
                 {isPending && <p>Loading tenants...</p>}
                 {users && users.map((user) => (
                     <div key={user.id} className="flex w-full gap-2">
-                        <Link to={`/${user.name}`} className="flex-1">
+                        <Link to={`/${user.id}`} className="flex-1">
                             <Button variant="secondary" className={buttonFormat}>
                                 {user.name}
                             </Button>
