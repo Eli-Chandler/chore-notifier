@@ -14,6 +14,8 @@ public class ChoreOccurrence
     public DateTimeOffset DueAt { get; private set; }
     public DateTimeOffset? CompletedAt { get; private set; }
 
+    public bool IsCompleted => CompletedAt is not null;
+
     private ChoreOccurrence()
     {
     } // For EF
@@ -40,6 +42,8 @@ public class ChoreOccurrence
             return Result.Fail(new InvalidOperationError("Cannot snooze a chore occurrence before its due time."));
         if (CompletedAt is not null)
             return Result.Fail(new InvalidOperationError("Cannot snooze a completed chore occurrence"));
+        if (duration is not null && duration <= TimeSpan.Zero)
+            return Result.Fail(new InvalidOperationError("Snooze duration must be a positive time span."));
 
         DueAt = currentTime.Add(duration ?? Chore.SnoozeDuration.Value);
         return Result.Ok();
@@ -64,5 +68,10 @@ public class ChoreOccurrence
         if (actorUserId != User.Id)
             return Result.Fail(new ForbiddenError("User does not have permission to modify this chore occurrence."));
         return Result.Ok();
+    }
+
+    public bool IsDue(DateTimeOffset currentTime)
+    {
+        return currentTime >= DueAt && CompletedAt is null;
     }
 }

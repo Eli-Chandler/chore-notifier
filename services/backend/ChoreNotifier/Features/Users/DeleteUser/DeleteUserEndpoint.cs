@@ -13,6 +13,7 @@ public class DeleteUserEndpoint : IEndpoint
                 return result.ToResponse();
             })
             .WithName("DeleteUser")
-            .WithTags("Users");
+            .WithTags("Users")
+            .WithProblemDetails();
     }
 }

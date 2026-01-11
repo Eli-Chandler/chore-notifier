@@ -13,6 +13,7 @@ public class CreateUserEndpoint : IEndpoint
                 return result.ToCreatedResponse(user => $"/api/users/{user.Id}");
             })
             .WithName("CreateUser")
-            .WithTags("Users");
+            .WithTags("Users")
+            .WithProblemDetails();
     }
 }

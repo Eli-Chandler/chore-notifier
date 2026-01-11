@@ -14,7 +14,8 @@ public class CompleteChoreEndpoint : IEndpoint
                 return result.ToResponse();
             })
             .WithName("CompleteChore")
-            .WithTags("Chore Occurrences");
+            .WithTags("Chore Occurrences")
+            .WithProblemDetails();
     }
 }
 

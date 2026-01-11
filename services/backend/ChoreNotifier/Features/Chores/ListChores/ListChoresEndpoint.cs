@@ -13,6 +13,7 @@ public class ListChoresEndpoint : IEndpoint
                 return result.ToResponse();
             })
             .WithName("ListChores")
-            .WithTags("Chores");
+            .WithTags("Chores")
+            .WithProblemDetails();
     }
 }

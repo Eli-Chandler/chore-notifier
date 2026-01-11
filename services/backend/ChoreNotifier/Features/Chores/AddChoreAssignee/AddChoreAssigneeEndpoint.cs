@@ -13,6 +13,7 @@ public class AddChoreAssigneeEndpoint : IEndpoint
                 return result.ToResponse();
             })
             .WithName("AddChoreAssignee")
-            .WithTags("Chores");
+            .WithTags("Chores")
+            .WithProblemDetails();
     }
 }

@@ -14,7 +14,8 @@ public class SnoozeChoreEndpoint : IEndpoint
                 return result.ToResponse();
             })
             .WithName("SnoozeChore")
-            .WithTags("Chore Occurrences");
+            .WithTags("Chore Occurrences")
+            .WithProblemDetails();
     }
 }
 

@@ -13,6 +13,7 @@ public class CreateChoreEndpoint : IEndpoint
                 return result.ToCreatedResponse(chore => $"/api/chores/{chore.Id}");
             })
             .WithName("CreateChore")
-            .WithTags("Chores");
+            .WithTags("Chores")
+            .WithProblemDetails();
     }
 }
