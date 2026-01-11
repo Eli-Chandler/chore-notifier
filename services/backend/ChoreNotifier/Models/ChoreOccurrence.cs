@@ -14,6 +14,8 @@ public class ChoreOccurrence
     public DateTimeOffset DueAt { get; private set; }
     public DateTimeOffset? CompletedAt { get; private set; }
 
+    public bool IsCompleted => CompletedAt is not null;
+
     private ChoreOccurrence()
     {
     } // For EF
@@ -64,5 +66,10 @@ public class ChoreOccurrence
         if (actorUserId != User.Id)
             return Result.Fail(new ForbiddenError("User does not have permission to modify this chore occurrence."));
         return Result.Ok();
+    }
+
+    public bool IsDue(DateTimeOffset currentTime)
+    {
+        return currentTime >= DueAt && CompletedAt is null;
     }
 }
