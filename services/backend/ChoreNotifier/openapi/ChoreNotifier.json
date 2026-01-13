@@ -440,6 +440,90 @@
         }
       }
     },
+    "/api/users/{userId}/notification-preferences": {
+      "post": {
+        "tags": [
+          "Notifications"
+        ],
+        "operationId": "AddNotificationPreference",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateNotificationMethodRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/chores/{choreId}": {
       "put": {
         "tags": [
@@ -1238,6 +1322,59 @@
           }
         }
       },
+      "CreateNotificationMethodRequest": {
+        "required": [
+          "type"
+        ],
+        "type": "object",
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/CreateNotificationMethodRequestCreateConsoleMethodRequest"
+          },
+          {
+            "$ref": "#/components/schemas/CreateNotificationMethodRequestCreateNtfyMethodRequest"
+          }
+        ],
+        "discriminator": {
+          "propertyName": "type",
+          "mapping": {
+            "Console": "#/components/schemas/CreateNotificationMethodRequestCreateConsoleMethodRequest",
+            "Ntfy": "#/components/schemas/CreateNotificationMethodRequestCreateNtfyMethodRequest"
+          }
+        }
+      },
+      "CreateNotificationMethodRequestCreateConsoleMethodRequest": {
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "type": {
+            "enum": [
+              "Console"
+            ],
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "CreateNotificationMethodRequestCreateNtfyMethodRequest": {
+        "required": [
+          "topicName"
+        ],
+        "properties": {
+          "type": {
+            "enum": [
+              "Ntfy"
+            ],
+            "type": "string"
+          },
+          "topicName": {
+            "type": "string"
+          }
+        }
+      },
       "CreateUserRequest": {
         "required": [
           "name"
@@ -1630,6 +1767,9 @@
   "tags": [
     {
       "name": "Users"
+    },
+    {
+      "name": "Notifications"
     },
     {
       "name": "Chores"

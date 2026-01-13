@@ -3,6 +3,7 @@ using ChoreNotifier.Common;
 using ChoreNotifier.Data;
 using ChoreNotifier.Features.Chores.Scheduling;
 using ChoreNotifier.Infrastructure.Clock;
+using ChoreNotifier.Infrastructure.Notifications;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 
@@ -22,6 +23,12 @@ builder.Services.AddDbContext<ChoreDbContext>(options =>
 
 builder.Services.AddScoped<ChoreSchedulingService>();
 builder.Services.AddSingleton<IClock, SystemClock>();
+
+// Register notification services
+builder.Services.AddScoped<INotificationSender, ConsoleNotificationSender>();
+builder.Services.AddScoped<INotificationSender, NtfyNotificationSender>();
+builder.Services.AddScoped<INotificationRouter, NotificationRouter>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
 
 builder.Services.AddProblemDetails();
 
