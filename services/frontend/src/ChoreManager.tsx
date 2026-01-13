@@ -149,12 +149,12 @@ function AddChore({availableUsers}: AddChoreProps) {
                     <DialogHeader>
                         <DialogTitle>New Chore</DialogTitle>
                         <DialogDescription>
-                            Enter the chore details below and click create.
+                            Enter the chore details below and create.
                         </DialogDescription>
                     </DialogHeader>
-                    <div className="grid gap-4">
+                    <div className="grid gap-4 mt-3">
                         <div className="grid gap-3">
-                            <Label htmlFor="name-1">Name</Label>
+                            <Label className="font-bold" htmlFor="name-1">Name</Label>
                             <Input
                                 id="name-1"
                                 value={title}
@@ -163,7 +163,7 @@ function AddChore({availableUsers}: AddChoreProps) {
                             />
                         </div>
                         <div className="grid gap-3">
-                            <Label htmlFor="description-1">Description</Label>
+                            <Label className="font-bold" htmlFor="description-1">Description</Label>
                             <Textarea
                                 id="description-1"
                                 value={description}
@@ -177,7 +177,7 @@ function AddChore({availableUsers}: AddChoreProps) {
                             <DatePicker label="End" date={endDate} setDate={setEndDate}/>
                         </div>
                         <div className="grid gap-3">
-                            <Label htmlFor="interval-1">Intervals (Days)</Label>
+                            <Label className="font-bold" htmlFor="interval-1">Intervals (Days)</Label>
                             <Input
                                 id="interval-1" type="number"
                                 value={intervalDays} onChange={(e) => setIntervalDays(Number(e.target.value))}
@@ -254,7 +254,7 @@ function Assignment({availableUsers, selectedUsers, onSelectedUsersChange}: Assi
 
     return (
         <div className="flex flex-col gap-1">
-            <Label className="mb-1">Assign to</Label>
+            <Label className="font-bold mb-1">Assign to</Label>
             <div className="flex flex-wrap gap-2">
                 {selectedUsers.map(user => (
                     <Button key={user.id} variant="secondary" size="sm" onClick={() => removeUser(user.id)}>
