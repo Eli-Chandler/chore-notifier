@@ -2,6 +2,7 @@ using System.Text.Json.Serialization;
 using ChoreNotifier.Common;
 using ChoreNotifier.Data;
 using ChoreNotifier.Features.Chores.Scheduling;
+using ChoreNotifier.Features.Notifications.OverdueChoreNotifier;
 using ChoreNotifier.Infrastructure.Clock;
 using ChoreNotifier.Infrastructure.Notifications;
 using Microsoft.EntityFrameworkCore;
@@ -30,6 +31,10 @@ builder.Services.AddScoped<INotificationSender, ConsoleNotificationSender>();
 builder.Services.AddScoped<INotificationSender, NtfyNotificationSender>();
 builder.Services.AddScoped<INotificationRouter, NotificationRouter>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<OverdueChoreNotificationHandler>();
+
+// Register background services
+builder.Services.AddHostedService<OverdueChoreNotifier>();
 
 builder.Services.AddProblemDetails();
 
