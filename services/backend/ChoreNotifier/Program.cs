@@ -2,11 +2,18 @@ using System.Text.Json.Serialization;
 using ChoreNotifier.Common;
 using ChoreNotifier.Data;
 using ChoreNotifier.Features.Chores.Scheduling;
+using ChoreNotifier.Features.ChoreAlerts;
 using ChoreNotifier.Features.Notifications.OverdueChoreNotifier;
 using ChoreNotifier.Infrastructure.Clock;
+using ChoreNotifier.Infrastructure.ChoreAlerts;
 using ChoreNotifier.Infrastructure.Notifications;
+using DotNetEnv;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
+
+// Load .env file for local development
+if (File.Exists(".env"))
+    Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,8 +40,14 @@ builder.Services.AddScoped<INotificationRouter, NotificationRouter>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<OverdueChoreNotificationHandler>();
 
+// Register chore alert indicator
+builder.Services.Configure<TapoChoreAlertIndicatorOptions>(builder.Configuration.GetSection("Tapo"));
+builder.Services.AddSingleton<IChoreAlertIndicator, TapoChoreAlertIndicator>();
+builder.Services.AddScoped<OverdueChoreIndicatorHandler>();
+
 // Register background services
 builder.Services.AddHostedService<OverdueChoreNotifier>();
+builder.Services.AddHostedService<OverdueChoreIndicatorService>();
 
 builder.Services.AddProblemDetails();
 
