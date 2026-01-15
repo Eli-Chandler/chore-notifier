@@ -1319,6 +1319,59 @@
           }
         }
       },
+      "CreateNotificationMethodRequest": {
+        "required": [
+          "type"
+        ],
+        "type": "object",
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/CreateNotificationMethodRequestCreateConsoleMethodRequest"
+          },
+          {
+            "$ref": "#/components/schemas/CreateNotificationMethodRequestCreateNtfyMethodRequest"
+          }
+        ],
+        "discriminator": {
+          "propertyName": "type",
+          "mapping": {
+            "Console": "#/components/schemas/CreateNotificationMethodRequestCreateConsoleMethodRequest",
+            "Ntfy": "#/components/schemas/CreateNotificationMethodRequestCreateNtfyMethodRequest"
+          }
+        }
+      },
+      "CreateNotificationMethodRequestCreateConsoleMethodRequest": {
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "type": {
+            "enum": [
+              "Console"
+            ],
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "CreateNotificationMethodRequestCreateNtfyMethodRequest": {
+        "required": [
+          "topicName"
+        ],
+        "properties": {
+          "type": {
+            "enum": [
+              "Ntfy"
+            ],
+            "type": "string"
+          },
+          "topicName": {
+            "type": "string"
+          }
+        }
+      },
       "CreateUserRequest": {
         "required": [
           "name"
@@ -1727,6 +1780,9 @@
   "tags": [
     {
       "name": "Users"
+    },
+    {
+      "name": "Notifications"
     },
     {
       "name": "Chores"

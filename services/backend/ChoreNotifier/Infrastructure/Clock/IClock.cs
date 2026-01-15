@@ -1,4 +1,4 @@
-namespace ChoreNotifier.Common;
+namespace ChoreNotifier.Infrastructure.Clock;
 
 public interface IClock
 {
