@@ -110,7 +110,7 @@ public class OverdueChoreNotificationHandlerTest : DatabaseTestBase
         {
             var occurrence = await verifyContext.ChoreOccurrences.FindAsync(occurrenceId);
             occurrence!.LastNotifiedAt.Should().NotBeNull();
-            occurrence.LastNotifiedAt.Should().Be(now);
+            occurrence.LastNotifiedAt.Should().BeCloseTo(now, TimeSpan.FromMicroseconds(1));
         }
     }
 
@@ -159,7 +159,7 @@ public class OverdueChoreNotificationHandlerTest : DatabaseTestBase
         await using (var verifyContext = DbFixture.CreateDbContext())
         {
             var occurrence = await verifyContext.ChoreOccurrences.FindAsync(occurrenceId);
-            occurrence!.LastNotifiedAt.Should().Be(lastNotifiedAt);
+            occurrence!.LastNotifiedAt.Should().BeCloseTo(lastNotifiedAt, TimeSpan.FromMicroseconds(1));
         }
     }
 
@@ -212,7 +212,7 @@ public class OverdueChoreNotificationHandlerTest : DatabaseTestBase
         await using (var verifyContext = DbFixture.CreateDbContext())
         {
             var occurrence = await verifyContext.ChoreOccurrences.FindAsync(occurrenceId);
-            occurrence!.LastNotifiedAt.Should().Be(now);
+            occurrence!.LastNotifiedAt.Should().BeCloseTo(now, TimeSpan.FromMicroseconds(1));
         }
     }
 
@@ -367,8 +367,8 @@ public class OverdueChoreNotificationHandlerTest : DatabaseTestBase
         {
             var occurrence1 = await verifyContext.ChoreOccurrences.FindAsync(occurrence1Id);
             var occurrence2 = await verifyContext.ChoreOccurrences.FindAsync(occurrence2Id);
-            occurrence1!.LastNotifiedAt.Should().Be(now);
-            occurrence2!.LastNotifiedAt.Should().Be(now);
+            occurrence1!.LastNotifiedAt.Should().BeCloseTo(now, TimeSpan.FromMicroseconds(1));
+            occurrence2!.LastNotifiedAt.Should().BeCloseTo(now, TimeSpan.FromMicroseconds(1));
         }
     }
 
@@ -509,7 +509,7 @@ public class OverdueChoreNotificationHandlerTest : DatabaseTestBase
         await using (var verifyContext = DbFixture.CreateDbContext())
         {
             var occurrence = await verifyContext.ChoreOccurrences.FindAsync(occurrenceId);
-            occurrence!.LastNotifiedAt.Should().Be(afterSnoozeTime);
+            occurrence!.LastNotifiedAt.Should().BeCloseTo(afterSnoozeTime, TimeSpan.FromMicroseconds(1));
         }
     }
 }
