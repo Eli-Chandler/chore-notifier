@@ -440,15 +440,15 @@
         }
       }
     },
-    "/api/users/{userId}/notification-preferences": {
-      "post": {
+    "/api/users/{id}": {
+      "get": {
         "tags": [
-          "Notifications"
+          "Users"
         ],
-        "operationId": "AddNotificationPreference",
+        "operationId": "GetUser",
         "parameters": [
           {
-            "name": "userId",
+            "name": "id",
             "in": "path",
             "required": true,
             "schema": {
@@ -457,19 +457,16 @@
             }
           }
         ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateNotificationMethodRequest"
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetUserResponse"
+                }
               }
             }
-          },
-          "required": true
-        },
-        "responses": {
-          "204": {
-            "description": "No Content"
           },
           "400": {
             "description": "Bad Request",
@@ -1387,6 +1384,22 @@
         }
       },
       "CreateUserResponse": {
+        "required": [
+          "id",
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "GetUserResponse": {
         "required": [
           "id",
           "name"

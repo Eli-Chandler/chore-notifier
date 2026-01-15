@@ -8,7 +8,6 @@ import HomePage from "@/HomePage.tsx";
 import User from "@/User.tsx";
 import ChoreManager from "@/ChoreManager.tsx";
 
-
 const router = createBrowserRouter([
     {
         path: "/",
@@ -25,7 +24,7 @@ const router = createBrowserRouter([
             {
                 path: "/choreManagement",
                 element: <ChoreManager/>
-            }
+            },
         ]
     },
 ]);

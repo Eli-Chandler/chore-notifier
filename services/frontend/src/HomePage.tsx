@@ -1,44 +1,160 @@
 import {Button} from "@/components/ui/button.tsx";
 import {Link} from "react-router";
+import {Trash2, UserPlus} from "lucide-react";
+import {
+    useListUsers,
+    useDeleteUser,
+    useCreateUser,
+    useListUsersInfinite,
+    getListUsersInfiniteQueryKey
+} from "@/api/users/users.ts";
+import {
+    Dialog,
+    DialogClose,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog";
+import {Input} from "@/components/ui/input.tsx";
+import {Label} from "@/components/ui/label.tsx";
+import {useState} from "react";
+import {useQueryClient} from "@tanstack/react-query";
 
-const buttonFormat = "w-full h-12 text-xl"
+const buttonFormat = "w-full h-12 text-xl flex items-center justify-center";
 
 function ChoreManagement() {
     return (
-        <Link to="/choreManagement">
-            <Button
-                variant="secondary"
-                className={buttonFormat}
-            >
+        <Link
+            to="/choreManagement">
+            <Button variant="secondary" className={buttonFormat} >
                 Chore Management
             </Button>
-        </Link>
-    )
-}
+        </Link> ) }
 
 function HomePage() {
-    // User objects with Id and Name
-    const users = ["Joy", "Eli", "Yana", "Chase"];
+    const queryClient = useQueryClient();
+    const { data, fetchNextPage, hasNextPage, isPending } = useListUsersInfinite(
+        undefined,
+        {
+            query: {
+                getNextPageParam: (lastPage) => lastPage.data.nextCursor ?? undefined,
+            }
+        }
+    );
+    const {mutateAsync: deleteUser} = useDeleteUser();
+    const {mutateAsync: createUser} = useCreateUser();
+
+    const users = data?.pages.flatMap(x => x.data.items);
+
+
+    async function handleAddTenant(name: string) {
+        await createUser({data: {name}});
+        await queryClient.invalidateQueries({queryKey: getListUsersInfiniteQueryKey()});
+    }
+
+    // Handler to delete a tenant
+    async function handleDeleteUser(id: number) {
+        await deleteUser({userId: id});
+        await queryClient.invalidateQueries({queryKey: getListUsersInfiniteQueryKey()});
+    }
+
+    if (isPending) return null;
 
     return (
         <>
-            <ChoreManagement/>
-
-            <div className="flex flex-col gap-10 items-center justify-center h-screen">
+            <ChoreManagement />
+            <img
+                src="/cleaningPig.gif"
+                alt="Cleaning pig"
+                className="mx-auto mb-4 mt-5 w-48"
+            />
+            <div className="flex flex-col gap-10 items-center h-screen">
                 <h1 className="text-4xl text-primary">Who Are You?</h1>
-
-                {
-                    users.map((user) => (
-                        <Link key={user} to={`/${user}`} className="w-full">
+                {isPending && <p>Loading tenants...</p>}
+                {users && users.map((user) => (
+                    <div key={user.id} className="flex w-full gap-2">
+                        <Link to={`/${user.id}`} className="flex-1">
                             <Button variant="secondary" className={buttonFormat}>
-                                {user}
+                                {user.name}
                             </Button>
                         </Link>
-                    ))
-                }
+
+                        <Button
+                            variant="destructive"
+                            className="h-12 w-12 flex items-center justify-center"
+                            onClick={() => handleDeleteUser(user.id)}
+                        >
+                            <Trash2 />
+                        </Button>
+
+                    </div>
+                ))}
+
+                <AddTenant onAddTenant={handleAddTenant}/>
             </div>
         </>
-    )
+    );
+}
+
+type Props = {
+    onAddTenant: (name: string) => Promise<void>;
+};
+
+function AddTenant({onAddTenant}: Props) {
+    const [name, setName] = useState("");
+    const [isOpen, setIsOpen] = useState(false);
+
+    async function handleSubmit(e: React.FormEvent) {
+        e.preventDefault();
+        if (!name) return;
+        await onAddTenant(name);
+        setName("");
+        setIsOpen(false);
+    }
+
+    return (
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
+            <DialogTrigger asChild>
+                <Button
+                    className="fixed bottom-6 right-6 rounded-full size-16 bg-primary text-primary-foreground shadow-lg">
+                    <UserPlus className="size-8"/>
+                </Button>
+            </DialogTrigger>
+
+            <DialogContent className="sm:max-w-[425px]">
+                <form onSubmit={handleSubmit}>
+                    <DialogHeader>
+                        <DialogTitle>New Tenant</DialogTitle>
+                        <DialogDescription>
+                            Enter name and save.
+                        </DialogDescription>
+                    </DialogHeader>
+
+                    <div className="grid gap-4">
+                        <div className="grid gap-3">
+                            <Label htmlFor="name">Name</Label>
+                            <Input
+                                id="name"
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                required
+                            />
+                        </div>
+                    </div>
+
+                    <DialogFooter className="mt-10">
+                        <DialogClose asChild>
+                            <Button variant="outline">Cancel</Button>
+                        </DialogClose>
+                        <Button type="submit">Save</Button>
+                    </DialogFooter>
+                </form>
+            </DialogContent>
+        </Dialog>
+    );
 }
 
 export default HomePage;
