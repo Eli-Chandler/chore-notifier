@@ -106,6 +106,60 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
 
       return useMutation(mutationOptions, queryClient);
     }
+    export const deleteChore = (
+    choreId: number, options?: AxiosRequestConfig
+ ): Promise<AxiosResponse<void>> => {
+
+
+    return axios.default.delete(
+      `/api/chores/${choreId}`,options
+    );
+  }
+
+
+
+export const getDeleteChoreMutationOptions = <TError = AxiosError<ProblemDetails>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteChore>>, TError,{choreId: number}, TContext>, axios?: AxiosRequestConfig}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteChore>>, TError,{choreId: number}, TContext> => {
+
+const mutationKey = ['deleteChore'];
+const {mutation: mutationOptions, axios: axiosOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, axios: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteChore>>, {choreId: number}> = (props) => {
+          const {choreId} = props ?? {};
+
+          return  deleteChore(choreId,axiosOptions)
+        }
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteChoreMutationResult = NonNullable<Awaited<ReturnType<typeof deleteChore>>>
+
+    export type DeleteChoreMutationError = AxiosError<ProblemDetails>
+
+    export const useDeleteChore = <TError = AxiosError<ProblemDetails>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteChore>>, TError,{choreId: number}, TContext>, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof deleteChore>>,
+        TError,
+        {choreId: number},
+        TContext
+      > => {
+
+      const mutationOptions = getDeleteChoreMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
     export const removeChoreAssignee = (
     choreId: number,
     userId: number, options?: AxiosRequestConfig

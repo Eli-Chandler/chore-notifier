@@ -78,6 +78,34 @@ export interface CreateChoreScheduleRequest {
   until: CreateChoreScheduleRequestUntil;
 }
 
+export type CreateNotificationMethodRequest = CreateNotificationMethodRequestCreateConsoleMethodRequest | CreateNotificationMethodRequestCreateNtfyMethodRequest;
+
+export type CreateNotificationMethodRequestCreateConsoleMethodRequestType = typeof CreateNotificationMethodRequestCreateConsoleMethodRequestType[keyof typeof CreateNotificationMethodRequestCreateConsoleMethodRequestType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const CreateNotificationMethodRequestCreateConsoleMethodRequestType = {
+  Console: 'Console',
+} as const;
+
+export interface CreateNotificationMethodRequestCreateConsoleMethodRequest {
+  type: CreateNotificationMethodRequestCreateConsoleMethodRequestType;
+  name: string;
+}
+
+export type CreateNotificationMethodRequestCreateNtfyMethodRequestType = typeof CreateNotificationMethodRequestCreateNtfyMethodRequestType[keyof typeof CreateNotificationMethodRequestCreateNtfyMethodRequestType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const CreateNotificationMethodRequestCreateNtfyMethodRequestType = {
+  Ntfy: 'Ntfy',
+} as const;
+
+export interface CreateNotificationMethodRequestCreateNtfyMethodRequest {
+  type: CreateNotificationMethodRequestCreateNtfyMethodRequestType;
+  topicName: string;
+}
+
 export interface CreateUserRequest {
   name: string;
 }
@@ -152,10 +180,13 @@ export interface ListUserChoreOccurrencesChoreResponseItem {
   snoozeDuration: ListUserChoreOccurrencesChoreResponseItemSnoozeDuration;
 }
 
+export type ListUserChoreOccurrencesResponseItemCompletedAt = null | string;
+
 export interface ListUserChoreOccurrencesResponseItem {
   id: number;
   originalDueAt: string;
   currentDueAt: string;
+  completedAt: ListUserChoreOccurrencesResponseItemCompletedAt;
   isCompleted: boolean;
   isDue: boolean;
   chore: ListUserChoreOccurrencesChoreResponseItem;
