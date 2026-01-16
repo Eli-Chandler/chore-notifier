@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/tabs"
 import {ScrollArea} from "@/components/ui/scroll-area.tsx";
 import {getListUserChoreOccurrencesQueryKey, useGetUser, useListUserChoreOccurrences} from "@/api/users/users.ts";
-import {ArrowLeft, Check, ClockPlus} from "lucide-react";
+import {ArrowLeft, BellIcon, Check, ClockPlus} from "lucide-react";
 import {
     Card,
     CardContent,
@@ -19,9 +19,22 @@ import {
 import {Button} from "@/components/ui/button.tsx";
 import {useCompleteChore, useSnoozeChore} from "@/api/chore-occurrences/chore-occurrences.ts";
 import {useQueryClient} from "@tanstack/react-query";
+import {Dialog, DialogHeader, DialogContent, DialogTitle, DialogTrigger} from "@/components/ui/dialog.tsx";
+import {
+    getGetNotificationPreferenceQueryKey, getListNotificationHistoryQueryKey,
+    getNotificationPreference,
+    useAddNotificationPreference,
+    useGetNotificationPreference, useListNotificationHistory
+} from "@/api/notifications/notifications.ts";
+import {Input} from "@/components/ui/input.tsx";
+import {useEffect, useState} from "react";
+import {Label} from "@/components/ui/label.tsx";
+import {Skeleton} from "@/components/ui/skeleton.tsx";
+import type {DeliveryStatus} from "@/api/choreNotifierV1.schemas.ts";
+import {Badge} from "@/components/ui/badge.tsx";
 
 function useCurrentUserId() {
-    const { userId } = useParams<{ userId: string }>();
+    const {userId} = useParams<{ userId: string }>();
     return Number(userId);
 }
 
@@ -42,7 +55,7 @@ function User() {
 
     return (
         <>
-            <div className="flex flex-row gap-15">
+            <div className="flex flex-row justify-between">
                 <Link to="/">
                     <Button className="bg-secondary text-primary">
                         <ArrowLeft className="left-6"/>
@@ -50,17 +63,135 @@ function User() {
                     </Button>
                 </Link>
                 <h1 className="text-4xl">{user.name}</h1>
+                <NotificationPreference/>
             </div>
             <div>
-                <ChoreTabs userId={userId} />
+                <ChoreTabs userId={userId}/>
             </div>
         </>
     )
 }
 
+function NotificationPreference() {
+    const userId = useCurrentUserId();
+    const {data} = useGetNotificationPreference(userId);
+    const {data: notificationData, isPending: notificationsPending} = useListNotificationHistory(userId, {
+        pageSize: 5
+    });
+    const {mutateAsync, isPending: isSaving} = useAddNotificationPreference();
+    const queryClient = useQueryClient();
+
+    const notifications = notificationData?.data.items ?? [];
+
+    const savedTopicName = data?.data.type === "Ntfy" ? data.data.topicName : "";
+
+    // Local state only tracks unsaved edits
+    const [draft, setDraft] = useState<string | null>(null);
+
+    // What to show in the input: draft if editing, otherwise saved value
+    const channelId = draft ?? savedTopicName;
+    const isChanged = draft !== null && draft !== savedTopicName;
+
+    async function handleSave() {
+        await mutateAsync({
+            userId,
+            data: {
+                type: "Ntfy",
+                topicName: channelId,
+            },
+        });
+        setDraft(null);
+        await queryClient.invalidateQueries({
+            queryKey: getGetNotificationPreferenceQueryKey(userId)
+        });
+        await queryClient.invalidateQueries({
+            queryKey: getListNotificationHistoryQueryKey(userId)
+        })
+    }
+
+    return (
+        <Dialog onOpenChange={() => setDraft(null)}> {/* Reset draft when closing */}
+            <DialogTrigger asChild>
+                <Button size="icon"><BellIcon/></Button>
+            </DialogTrigger>
+
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Update Notification Preference</DialogTitle>
+                </DialogHeader>
+                <Label>
+                    Ntfy Notification Channel
+                </Label>
+                <Input
+                    value={channelId}
+                    onChange={(e) => setDraft(e.target.value)}
+                />
+
+                <Button
+                    onClick={handleSave}
+                    disabled={isSaving || !channelId || !isChanged}
+                >
+                    Save
+                </Button>
+                <ScrollArea className="h-60">
+                    {notificationsPending ? <Skeleton className="w-full h-40"/> :
+                        <div className="flex flex-col gap-1">
+                            {
+                            notifications.map((notification) => (
+                            <NotificationCard
+                                key={notification.id}
+                                title={notification.title}
+                                message={notification.message}
+                                attemptedAt={notification.attemptedAt}
+                                deliveryStatus={notification.deliveryStatus}
+                                failureReason={notification.failureReason}
+                            />
+                            ))
+                            }
+                        </div>
+                    }
+
+                </ScrollArea>
+            </DialogContent>
+        </Dialog>
+    );
+}
+
+interface NotificationCardProps {
+    title: string;
+    message: string;
+    attemptedAt: string;
+    deliveryStatus: DeliveryStatus;
+    failureReason?: string | null;
+}
+
+function NotificationCard({title, message, attemptedAt, deliveryStatus, failureReason}: NotificationCardProps) {
+    const deliveryStatusColourMap: Record<DeliveryStatus, string> = {
+        "Pending": "bg-gray-200",
+        "Delivered": "bg-primary text-white",
+        "Failed": "bg-destructive text-white",
+    }
+
+    return (
+        <Card className="w-full">
+            <CardHeader>
+                <div className="flex justify-between items-center">
+                    <Badge className={deliveryStatusColourMap[deliveryStatus]}>{deliveryStatus}</Badge>
+                    <p className="text-xs">{formatRelativeDate(attemptedAt)}</p>
+                </div>
+
+                <CardTitle className="text-sm">{title}</CardTitle>
+                <CardDescription>{message}</CardDescription>
+                {failureReason && <p className="text-destructive"></p> }
+            </CardHeader>
+        </Card>
+    );
+
+}
+
 const TabFormat = "w-full text-lg";
 
-function ChoreTabs({ userId }: { userId: number }) {
+function ChoreTabs({userId}: { userId: number }) {
     return (
         <div className="w-full">
             <Tabs defaultValue="Due" className="mt-3 w-full">
@@ -78,13 +209,13 @@ function ChoreTabs({ userId }: { userId: number }) {
 
                 <TabsContent value="Due">
                     <ScrollArea className="h-screen">
-                        <DueChores userId={userId} />
+                        <DueChores userId={userId}/>
                     </ScrollArea>
                 </TabsContent>
 
                 <TabsContent value="Upcoming">
                     <ScrollArea className="h-screen">
-                        <UpcomingChores userId={userId} />
+                        <UpcomingChores userId={userId}/>
                     </ScrollArea>
                 </TabsContent>
 
@@ -100,7 +231,7 @@ function ChoreTabs({ userId }: { userId: number }) {
 
 
 // The thing that shows ALL the due chores
-function DueChores({ userId }: { userId: number }) {
+function DueChores({userId}: { userId: number }) {
     const {data, isPending} = useListUserChoreOccurrences(userId, {
         filter: "Due"
     });
@@ -125,8 +256,8 @@ function DueChores({ userId }: { userId: number }) {
                 <DueChoreCard
                     key={choreOccurrence.id}
                     id={choreOccurrence.id}
-                    title = {choreOccurrence.chore.title}
-                    description = {choreOccurrence.chore.description}
+                    title={choreOccurrence.chore.title}
+                    description={choreOccurrence.chore.description}
                     dueAt={choreOccurrence.currentDueAt}
 
                 />
@@ -136,18 +267,18 @@ function DueChores({ userId }: { userId: number }) {
 }
 
 // The thing that repreesnts one due chore
-function DueChoreCard({ id, title, description, dueAt }: {id: number, title: string, description? : string | null, dueAt: string}) {
+function DueChoreCard({id, title, description, dueAt}: { id: number, title: string, description?: string | null, dueAt: string }) {
     const userId = useCurrentUserId();
     // We need access to the query client (the thing that makes the requests)
     const queryClient = useQueryClient();
     // We need to make the query for snoozing the chore
-    const { mutateAsync: snoozeChore, isPending: isSnoozing, } = useSnoozeChore();
-    const { mutateAsync: completeChore, isPending: isCompleting, } = useCompleteChore();
+    const {mutateAsync: snoozeChore, isPending: isSnoozing,} = useSnoozeChore();
+    const {mutateAsync: completeChore, isPending: isCompleting,} = useCompleteChore();
 
 
     async function handleSnoozeChore() {
         await snoozeChore({
-            data: { userId },
+            data: {userId},
             choreOccurrenceId: id,
         });
         await queryClient.invalidateQueries(
@@ -157,7 +288,7 @@ function DueChoreCard({ id, title, description, dueAt }: {id: number, title: str
 
     async function handleCompleteChore() {
         await completeChore({
-            data: { userId },
+            data: {userId},
             choreOccurrenceId: id,
         });
         await queryClient.invalidateQueries(
@@ -180,13 +311,13 @@ function DueChoreCard({ id, title, description, dueAt }: {id: number, title: str
                 <p>Due: {formatRelativeDate(dueAt)}</p>
             </CardContent>
             <CardFooter className="flex flex-row justify-center gap-10">
-                <Button disabled={isSnoozing}  onClick={() => handleSnoozeChore()} variant="secondary">
-                    <ClockPlus />
+                <Button disabled={isSnoozing} onClick={() => handleSnoozeChore()} variant="secondary">
+                    <ClockPlus/>
                     Snooze
                 </Button>
 
-                <Button disabled={isCompleting}  onClick={() => handleCompleteChore()} className="bg-primary text-primary-foreground">
-                    <Check />
+                <Button disabled={isCompleting} onClick={() => handleCompleteChore()} className="bg-primary text-primary-foreground">
+                    <Check/>
                     Done
                 </Button>
             </CardFooter>
@@ -194,7 +325,7 @@ function DueChoreCard({ id, title, description, dueAt }: {id: number, title: str
     )
 }
 
-function UpcomingChores({ userId }: { userId: number }) {
+function UpcomingChores({userId}: { userId: number }) {
     const {data, isPending} = useListUserChoreOccurrences(userId, {
         filter: "Upcoming"
     });
@@ -217,8 +348,8 @@ function UpcomingChores({ userId }: { userId: number }) {
             {chores?.map(choreOccurrence => (
                 <UpcomingChoreCard
                     key={choreOccurrence.id}
-                    title = {choreOccurrence.chore.title}
-                    description = {choreOccurrence.chore.description}
+                    title={choreOccurrence.chore.title}
+                    description={choreOccurrence.chore.description}
                     dueAt={choreOccurrence.currentDueAt}
 
                 />
@@ -227,7 +358,8 @@ function UpcomingChores({ userId }: { userId: number }) {
     )
 }
 
-function UpcomingChoreCard({ title, description, dueAt }: {title: string, description? : string | null, dueAt: string}){
+
+function UpcomingChoreCard({title, description, dueAt}: { title: string, description?: string | null, dueAt: string }) {
     return (
         <div>
             <Card className="mb-4">
@@ -237,14 +369,14 @@ function UpcomingChoreCard({ title, description, dueAt }: {title: string, descri
                 </CardHeader>
                 <CardContent>
                     <p>Due: {formatRelativeDate(dueAt)}</p>
-            </CardContent>
+                </CardContent>
             </Card>
         </div>
     )
 }
 
 
-function CompletedChores({ userId }: { userId: number }) {
+function CompletedChores({userId}: { userId: number }) {
     const {data, isPending} = useListUserChoreOccurrences(userId, {
         filter: "Completed"
     });
@@ -259,8 +391,8 @@ function CompletedChores({ userId }: { userId: number }) {
             {chores?.map(choreOccurrence => (
                 <CompletedChoreCard
                     key={choreOccurrence.id}
-                    title = {choreOccurrence.chore.title}
-                    description = {choreOccurrence.chore.description}
+                    title={choreOccurrence.chore.title}
+                    description={choreOccurrence.chore.description}
                     completedAt={choreOccurrence.completedAt!}
                 />
             ))}
@@ -268,7 +400,7 @@ function CompletedChores({ userId }: { userId: number }) {
     )
 }
 
-function CompletedChoreCard({ title, description, completedAt }: {title: string, description? : string | null, completedAt: string}){
+function CompletedChoreCard({title, description, completedAt}: { title: string, description?: string | null, completedAt: string }) {
     return (
         <div>
             <Card className="mb-4">
@@ -278,7 +410,7 @@ function CompletedChoreCard({ title, description, completedAt }: {title: string,
                 </CardHeader>
                 <CardContent>
                     <p>Completed: {formatRelativeDate(completedAt)}</p>
-            </CardContent>
+                </CardContent>
             </Card>
         </div>
     )
@@ -302,6 +434,10 @@ export function formatRelativeDate(input: string | Date): string {
             month: "short",
             day: "numeric",
         });
+    }
+
+    if (Math.abs(diffMinutes) < 1) {
+        return "now";
     }
 
     if (Math.abs(diffMinutes) < 60) {

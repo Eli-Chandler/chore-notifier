@@ -521,6 +521,185 @@
         }
       }
     },
+    "/api/users/{userId}/notification-history": {
+      "get": {
+        "tags": [
+          "Notifications"
+        ],
+        "operationId": "ListNotificationHistory",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 20
+            }
+          },
+          {
+            "name": "afterDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KeysetPageOfListNotificationHistoryResponseItemAndDateTimeOffset"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/users/{userId}/notification-preference": {
+      "get": {
+        "tags": [
+          "Notifications"
+        ],
+        "operationId": "GetNotificationPreference",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetNotificationPreferenceResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/users/{userId}/notification-preferences": {
       "post": {
         "tags": [
@@ -1555,6 +1734,66 @@
           }
         }
       },
+      "DeliveryStatus": {
+        "enum": [
+          "Pending",
+          "Delivered",
+          "Failed"
+        ]
+      },
+      "GetNotificationPreferenceResponse": {
+        "required": [
+          "type"
+        ],
+        "type": "object",
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/GetNotificationPreferenceResponseConsoleMethodResponse"
+          },
+          {
+            "$ref": "#/components/schemas/GetNotificationPreferenceResponseNtfyMethodResponse"
+          }
+        ],
+        "discriminator": {
+          "propertyName": "type",
+          "mapping": {
+            "Console": "#/components/schemas/GetNotificationPreferenceResponseConsoleMethodResponse",
+            "Ntfy": "#/components/schemas/GetNotificationPreferenceResponseNtfyMethodResponse"
+          }
+        }
+      },
+      "GetNotificationPreferenceResponseConsoleMethodResponse": {
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "type": {
+            "enum": [
+              "Console"
+            ],
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "GetNotificationPreferenceResponseNtfyMethodResponse": {
+        "required": [
+          "topicName"
+        ],
+        "properties": {
+          "type": {
+            "enum": [
+              "Ntfy"
+            ],
+            "type": "string"
+          },
+          "topicName": {
+            "type": "string"
+          }
+        }
+      },
       "GetUserResponse": {
         "required": [
           "id",
@@ -1595,6 +1834,37 @@
               "integer"
             ],
             "format": "int32"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "KeysetPageOfListNotificationHistoryResponseItemAndDateTimeOffset": {
+        "required": [
+          "items",
+          "hasNextPage",
+          "nextCursor",
+          "pageSize"
+        ],
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ListNotificationHistoryResponseItem"
+            }
+          },
+          "hasNextPage": {
+            "type": "boolean"
+          },
+          "nextCursor": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
           },
           "pageSize": {
             "type": "integer",
@@ -1706,6 +1976,61 @@
           }
         }
       },
+      "ListNotificationHistoryResponseItem": {
+        "required": [
+          "id",
+          "title",
+          "message",
+          "notificationType",
+          "attemptedAt",
+          "deliveryStatus",
+          "deliveredAt",
+          "failureReason"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "notificationType": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/NotificationType"
+              }
+            ]
+          },
+          "attemptedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "deliveryStatus": {
+            "$ref": "#/components/schemas/DeliveryStatus"
+          },
+          "deliveredAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "failureReason": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
       "ListUserChoreOccurrencesChoreResponseItem": {
         "required": [
           "id",
@@ -1794,6 +2119,13 @@
             "type": "string"
           }
         }
+      },
+      "NotificationType": {
+        "enum": [
+          "Console",
+          "Ntfy",
+          null
+        ]
       },
       "ProblemDetails": {
         "type": "object",

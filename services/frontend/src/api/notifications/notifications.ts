@@ -5,13 +5,27 @@
  * OpenAPI spec version: 1.0.0
  */
 import {
-  useMutation
+  useInfiniteQuery,
+  useMutation,
+  useQuery
 } from '@tanstack/react-query';
 import type {
+  DataTag,
+  DefinedInitialDataOptions,
+  DefinedUseInfiniteQueryResult,
+  DefinedUseQueryResult,
+  InfiniteData,
   MutationFunction,
   QueryClient,
+  QueryFunction,
+  QueryKey,
+  UndefinedInitialDataOptions,
+  UseInfiniteQueryOptions,
+  UseInfiniteQueryResult,
   UseMutationOptions,
-  UseMutationResult
+  UseMutationResult,
+  UseQueryOptions,
+  UseQueryResult
 } from '@tanstack/react-query';
 
 import * as axios from 'axios';
@@ -23,9 +37,335 @@ import type {
 
 import type {
   CreateNotificationMethodRequest,
+  GetNotificationPreferenceResponse,
+  KeysetPageOfListNotificationHistoryResponseItemAndDateTimeOffset,
+  ListNotificationHistoryParams,
   ProblemDetails
 } from '../choreNotifierV1.schemas';
 
+
+
+
+
+export const listNotificationHistory = (
+    userId: number,
+    params?: ListNotificationHistoryParams, options?: AxiosRequestConfig
+ ): Promise<AxiosResponse<KeysetPageOfListNotificationHistoryResponseItemAndDateTimeOffset>> => {
+
+
+    return axios.default.get(
+      `/api/users/${userId}/notification-history`,{
+    ...options,
+        params: {...params, ...options?.params},}
+    );
+  }
+
+
+
+
+export const getListNotificationHistoryInfiniteQueryKey = (userId?: number,
+    params?: ListNotificationHistoryParams,) => {
+    return [
+    'infinite', `/api/users/${userId}/notification-history`, ...(params ? [params]: [])
+    ] as const;
+    }
+
+export const getListNotificationHistoryQueryKey = (userId?: number,
+    params?: ListNotificationHistoryParams,) => {
+    return [
+    `/api/users/${userId}/notification-history`, ...(params ? [params]: [])
+    ] as const;
+    }
+
+
+export const getListNotificationHistoryInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof listNotificationHistory>>, ListNotificationHistoryParams['afterId']>, TError = AxiosError<ProblemDetails>>(userId: number,
+    params?: ListNotificationHistoryParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof listNotificationHistory>>, TError, TData, QueryKey, ListNotificationHistoryParams['afterId']>>, axios?: AxiosRequestConfig}
+) => {
+
+const {query: queryOptions, axios: axiosOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListNotificationHistoryInfiniteQueryKey(userId,params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listNotificationHistory>>, QueryKey, ListNotificationHistoryParams['afterId']> = ({ signal, pageParam }) => listNotificationHistory(userId,{...params, 'afterId': pageParam || params?.['afterId']}, { signal, ...axiosOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: !!(userId), ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof listNotificationHistory>>, TError, TData, QueryKey, ListNotificationHistoryParams['afterId']> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ListNotificationHistoryInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof listNotificationHistory>>>
+export type ListNotificationHistoryInfiniteQueryError = AxiosError<ProblemDetails>
+
+
+export function useListNotificationHistoryInfinite<TData = InfiniteData<Awaited<ReturnType<typeof listNotificationHistory>>, ListNotificationHistoryParams['afterId']>, TError = AxiosError<ProblemDetails>>(
+ userId: number,
+    params: undefined |  ListNotificationHistoryParams, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof listNotificationHistory>>, TError, TData, QueryKey, ListNotificationHistoryParams['afterId']>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof listNotificationHistory>>,
+          TError,
+          Awaited<ReturnType<typeof listNotificationHistory>>, QueryKey
+        > , 'initialData'
+      >, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useListNotificationHistoryInfinite<TData = InfiniteData<Awaited<ReturnType<typeof listNotificationHistory>>, ListNotificationHistoryParams['afterId']>, TError = AxiosError<ProblemDetails>>(
+ userId: number,
+    params?: ListNotificationHistoryParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof listNotificationHistory>>, TError, TData, QueryKey, ListNotificationHistoryParams['afterId']>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof listNotificationHistory>>,
+          TError,
+          Awaited<ReturnType<typeof listNotificationHistory>>, QueryKey
+        > , 'initialData'
+      >, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useListNotificationHistoryInfinite<TData = InfiniteData<Awaited<ReturnType<typeof listNotificationHistory>>, ListNotificationHistoryParams['afterId']>, TError = AxiosError<ProblemDetails>>(
+ userId: number,
+    params?: ListNotificationHistoryParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof listNotificationHistory>>, TError, TData, QueryKey, ListNotificationHistoryParams['afterId']>>, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function useListNotificationHistoryInfinite<TData = InfiniteData<Awaited<ReturnType<typeof listNotificationHistory>>, ListNotificationHistoryParams['afterId']>, TError = AxiosError<ProblemDetails>>(
+ userId: number,
+    params?: ListNotificationHistoryParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof listNotificationHistory>>, TError, TData, QueryKey, ListNotificationHistoryParams['afterId']>>, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getListNotificationHistoryInfiniteQueryOptions(userId,params,options)
+
+  const query = useInfiniteQuery(queryOptions, queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+export const getListNotificationHistoryQueryOptions = <TData = Awaited<ReturnType<typeof listNotificationHistory>>, TError = AxiosError<ProblemDetails>>(userId: number,
+    params?: ListNotificationHistoryParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listNotificationHistory>>, TError, TData>>, axios?: AxiosRequestConfig}
+) => {
+
+const {query: queryOptions, axios: axiosOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListNotificationHistoryQueryKey(userId,params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listNotificationHistory>>> = ({ signal }) => listNotificationHistory(userId,params, { signal, ...axiosOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: !!(userId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listNotificationHistory>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ListNotificationHistoryQueryResult = NonNullable<Awaited<ReturnType<typeof listNotificationHistory>>>
+export type ListNotificationHistoryQueryError = AxiosError<ProblemDetails>
+
+
+export function useListNotificationHistory<TData = Awaited<ReturnType<typeof listNotificationHistory>>, TError = AxiosError<ProblemDetails>>(
+ userId: number,
+    params: undefined |  ListNotificationHistoryParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listNotificationHistory>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof listNotificationHistory>>,
+          TError,
+          Awaited<ReturnType<typeof listNotificationHistory>>
+        > , 'initialData'
+      >, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useListNotificationHistory<TData = Awaited<ReturnType<typeof listNotificationHistory>>, TError = AxiosError<ProblemDetails>>(
+ userId: number,
+    params?: ListNotificationHistoryParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listNotificationHistory>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof listNotificationHistory>>,
+          TError,
+          Awaited<ReturnType<typeof listNotificationHistory>>
+        > , 'initialData'
+      >, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useListNotificationHistory<TData = Awaited<ReturnType<typeof listNotificationHistory>>, TError = AxiosError<ProblemDetails>>(
+ userId: number,
+    params?: ListNotificationHistoryParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listNotificationHistory>>, TError, TData>>, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function useListNotificationHistory<TData = Awaited<ReturnType<typeof listNotificationHistory>>, TError = AxiosError<ProblemDetails>>(
+ userId: number,
+    params?: ListNotificationHistoryParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listNotificationHistory>>, TError, TData>>, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getListNotificationHistoryQueryOptions(userId,params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+export const getNotificationPreference = (
+    userId: number, options?: AxiosRequestConfig
+ ): Promise<AxiosResponse<GetNotificationPreferenceResponse>> => {
+
+
+    return axios.default.get(
+      `/api/users/${userId}/notification-preference`,options
+    );
+  }
+
+
+
+
+export const getGetNotificationPreferenceInfiniteQueryKey = (userId?: number,) => {
+    return [
+    'infinite', `/api/users/${userId}/notification-preference`
+    ] as const;
+    }
+
+export const getGetNotificationPreferenceQueryKey = (userId?: number,) => {
+    return [
+    `/api/users/${userId}/notification-preference`
+    ] as const;
+    }
+
+
+export const getGetNotificationPreferenceInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof getNotificationPreference>>>, TError = AxiosError<ProblemDetails>>(userId: number, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getNotificationPreference>>, TError, TData>>, axios?: AxiosRequestConfig}
+) => {
+
+const {query: queryOptions, axios: axiosOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetNotificationPreferenceInfiniteQueryKey(userId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getNotificationPreference>>> = ({ signal }) => getNotificationPreference(userId, { signal, ...axiosOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: !!(userId), ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof getNotificationPreference>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetNotificationPreferenceInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof getNotificationPreference>>>
+export type GetNotificationPreferenceInfiniteQueryError = AxiosError<ProblemDetails>
+
+
+export function useGetNotificationPreferenceInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getNotificationPreference>>>, TError = AxiosError<ProblemDetails>>(
+ userId: number, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getNotificationPreference>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getNotificationPreference>>,
+          TError,
+          Awaited<ReturnType<typeof getNotificationPreference>>
+        > , 'initialData'
+      >, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetNotificationPreferenceInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getNotificationPreference>>>, TError = AxiosError<ProblemDetails>>(
+ userId: number, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getNotificationPreference>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getNotificationPreference>>,
+          TError,
+          Awaited<ReturnType<typeof getNotificationPreference>>
+        > , 'initialData'
+      >, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetNotificationPreferenceInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getNotificationPreference>>>, TError = AxiosError<ProblemDetails>>(
+ userId: number, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getNotificationPreference>>, TError, TData>>, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function useGetNotificationPreferenceInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getNotificationPreference>>>, TError = AxiosError<ProblemDetails>>(
+ userId: number, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getNotificationPreference>>, TError, TData>>, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetNotificationPreferenceInfiniteQueryOptions(userId,options)
+
+  const query = useInfiniteQuery(queryOptions, queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+export const getGetNotificationPreferenceQueryOptions = <TData = Awaited<ReturnType<typeof getNotificationPreference>>, TError = AxiosError<ProblemDetails>>(userId: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getNotificationPreference>>, TError, TData>>, axios?: AxiosRequestConfig}
+) => {
+
+const {query: queryOptions, axios: axiosOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetNotificationPreferenceQueryKey(userId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getNotificationPreference>>> = ({ signal }) => getNotificationPreference(userId, { signal, ...axiosOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: !!(userId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getNotificationPreference>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetNotificationPreferenceQueryResult = NonNullable<Awaited<ReturnType<typeof getNotificationPreference>>>
+export type GetNotificationPreferenceQueryError = AxiosError<ProblemDetails>
+
+
+export function useGetNotificationPreference<TData = Awaited<ReturnType<typeof getNotificationPreference>>, TError = AxiosError<ProblemDetails>>(
+ userId: number, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getNotificationPreference>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getNotificationPreference>>,
+          TError,
+          Awaited<ReturnType<typeof getNotificationPreference>>
+        > , 'initialData'
+      >, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetNotificationPreference<TData = Awaited<ReturnType<typeof getNotificationPreference>>, TError = AxiosError<ProblemDetails>>(
+ userId: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getNotificationPreference>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getNotificationPreference>>,
+          TError,
+          Awaited<ReturnType<typeof getNotificationPreference>>
+        > , 'initialData'
+      >, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetNotificationPreference<TData = Awaited<ReturnType<typeof getNotificationPreference>>, TError = AxiosError<ProblemDetails>>(
+ userId: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getNotificationPreference>>, TError, TData>>, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function useGetNotificationPreference<TData = Awaited<ReturnType<typeof getNotificationPreference>>, TError = AxiosError<ProblemDetails>>(
+ userId: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getNotificationPreference>>, TError, TData>>, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetNotificationPreferenceQueryOptions(userId,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
 
 
 

@@ -115,6 +115,44 @@ export interface CreateUserResponse {
   name: string;
 }
 
+export type DeliveryStatus = typeof DeliveryStatus[keyof typeof DeliveryStatus];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const DeliveryStatus = {
+  Pending: 'Pending',
+  Delivered: 'Delivered',
+  Failed: 'Failed',
+} as const;
+
+export type GetNotificationPreferenceResponse = GetNotificationPreferenceResponseConsoleMethodResponse | GetNotificationPreferenceResponseNtfyMethodResponse;
+
+export type GetNotificationPreferenceResponseConsoleMethodResponseType = typeof GetNotificationPreferenceResponseConsoleMethodResponseType[keyof typeof GetNotificationPreferenceResponseConsoleMethodResponseType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GetNotificationPreferenceResponseConsoleMethodResponseType = {
+  Console: 'Console',
+} as const;
+
+export interface GetNotificationPreferenceResponseConsoleMethodResponse {
+  type: GetNotificationPreferenceResponseConsoleMethodResponseType;
+  name: string;
+}
+
+export type GetNotificationPreferenceResponseNtfyMethodResponseType = typeof GetNotificationPreferenceResponseNtfyMethodResponseType[keyof typeof GetNotificationPreferenceResponseNtfyMethodResponseType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GetNotificationPreferenceResponseNtfyMethodResponseType = {
+  Ntfy: 'Ntfy',
+} as const;
+
+export interface GetNotificationPreferenceResponseNtfyMethodResponse {
+  type: GetNotificationPreferenceResponseNtfyMethodResponseType;
+  topicName: string;
+}
+
 export interface GetUserResponse {
   id: number;
   name: string;
@@ -126,6 +164,15 @@ export interface KeysetPageOfListChoresResponseItemAndint {
   items: ListChoresResponseItem[];
   hasNextPage: boolean;
   nextCursor: KeysetPageOfListChoresResponseItemAndintNextCursor;
+  pageSize: number;
+}
+
+export type KeysetPageOfListNotificationHistoryResponseItemAndDateTimeOffsetNextCursor = null | string;
+
+export interface KeysetPageOfListNotificationHistoryResponseItemAndDateTimeOffset {
+  items: ListNotificationHistoryResponseItem[];
+  hasNextPage: boolean;
+  nextCursor: KeysetPageOfListNotificationHistoryResponseItemAndDateTimeOffsetNextCursor;
   pageSize: number;
 }
 
@@ -165,6 +212,23 @@ export interface ListChoresResponseItem {
   snoozeDuration: ListChoresResponseItemSnoozeDuration;
 }
 
+export type ListNotificationHistoryResponseItemNotificationType = null | NotificationType;
+
+export type ListNotificationHistoryResponseItemDeliveredAt = null | string;
+
+export type ListNotificationHistoryResponseItemFailureReason = null | string;
+
+export interface ListNotificationHistoryResponseItem {
+  id: string;
+  title: string;
+  message: string;
+  notificationType: ListNotificationHistoryResponseItemNotificationType;
+  attemptedAt: string;
+  deliveryStatus: DeliveryStatus;
+  deliveredAt: ListNotificationHistoryResponseItemDeliveredAt;
+  failureReason: ListNotificationHistoryResponseItemFailureReason;
+}
+
 export type ListUserChoreOccurrencesChoreResponseItemDescription = null | string;
 
 /**
@@ -196,6 +260,15 @@ export interface ListUserResponseItem {
   id: number;
   name: string;
 }
+
+export type NotificationType = typeof NotificationType[keyof typeof NotificationType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const NotificationType = {
+  Console: 'Console',
+  Ntfy: 'Ntfy',
+} as const;
 
 export type ProblemDetailsType = null | string;
 
@@ -265,6 +338,11 @@ export type ListUserChoreOccurrencesParams = {
 pageSize?: number;
 afterId?: number;
 filter?: ChoreOccurenceFilter;
+};
+
+export type ListNotificationHistoryParams = {
+pageSize?: number;
+afterDate?: string;
 };
 
 export type ListChoresParams = {
