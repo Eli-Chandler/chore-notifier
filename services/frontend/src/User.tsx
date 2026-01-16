@@ -6,8 +6,8 @@ import {
     TabsTrigger,
 } from "@/components/ui/tabs"
 import {ScrollArea} from "@/components/ui/scroll-area.tsx";
-import {useGetUser, useListUserChoreOccurrences} from "@/api/users/users.ts";
-import {AlarmClockIcon, ArrowLeft} from "lucide-react";
+import {getListUserChoreOccurrencesQueryKey, useGetUser, useListUserChoreOccurrences} from "@/api/users/users.ts";
+import {AlarmClockIcon, ArrowLeft, Check, ClockPlus} from "lucide-react";
 import {
     Card,
     CardContent,
@@ -17,9 +17,17 @@ import {
     CardTitle,
 } from "@/components/ui/card"
 import {Button} from "@/components/ui/button.tsx";
+import {useSnoozeChore} from "@/api/chore-occurrences/chore-occurrences.ts";
+import {useQueryClient} from "@tanstack/react-query";
+
+function useCurrentUserId() {
+    const { userId } = useParams<{ userId: string }>();
+    return Number(userId);
+}
 
 function User() {
-    const { userId } = useParams<{ userId: string }>();
+    const userId = useCurrentUserId();
+    // Update current user in a react context or some shit
     const actualUserId = parseInt(userId!)
     const {data: userData, isPending} = useGetUser(actualUserId);
 
@@ -35,7 +43,7 @@ function User() {
 
     return (
         <>
-            <div className="flex flex-row gap-6">
+            <div className="flex flex-row gap-15">
                 <Link to="/">
                     <Button className="bg-secondary text-primary">
                         <ArrowLeft className="left-6"/>
@@ -109,6 +117,7 @@ function DueChores({ userId }: { userId: number }) {
             {chores?.map(choreOccurrence => (
                 <DueChoreCard
                     key={choreOccurrence.id}
+                    id={choreOccurrence.id}
                     title = {choreOccurrence.chore.title}
                     description = {choreOccurrence.chore.description}
                     dueAt={choreOccurrence.currentDueAt}
@@ -120,20 +129,47 @@ function DueChores({ userId }: { userId: number }) {
 }
 
 // The thing that repreesnts one due chore
-function DueChoreCard({ title, description, dueAt }: {title: string, description? : string | null, dueAt: string}) {
+function DueChoreCard({ id, title, description, dueAt }: {id: number, title: string, description? : string | null, dueAt: string}) {
+    const userId = useCurrentUserId();
+    // We need access to the query client (the thing that makes the requests)
+    const queryClient = useQueryClient();
+    // We need to make the query for snoozing the chore
+    const {mutateAsync, isPending} = useSnoozeChore();
+
+    async function handleSnoozeChore() {
+        await mutateAsync(
+            {
+                data: {
+                    userId
+                },
+                choreOccurrenceId: id
+            }
+        )
+        await queryClient.invalidateQueries(getListUserChoreOccurrencesQueryKey(userId))
+    }
+
+    // Basically whenever we delete a chore or snooze it or whatever it would change the state of due and upcoming
+    // So we may as well just refetch the whole thing, makes sense?
+    // Not 100% efficient but its a lot easier than trying to manage the state on the frontend.
+
     return (
-        <Card className="mb-4">
+        <Card className="flex flex-col justify-between mb-3">
             <CardHeader>
                 <CardTitle>{title}</CardTitle>
                 {description && <CardDescription>{description}</CardDescription>}
             </CardHeader>
             <CardContent>
-                <p>Due at: {new Date(dueAt).toLocaleString()}</p>
+                <p>Due: {formatRelativeDate(dueAt)}</p>
             </CardContent>
-            <CardFooter>
-                <Button variant="default">
-                    <AlarmClockIcon className="mr-2" />
-                    Mark as Complete
+            <CardFooter className="flex flex-row justify-center gap-10">
+                <Button disabled={isPending}  onClick={() => handleSnoozeChore()} variant="secondary">
+                    <ClockPlus />
+                    Snooze
+                </Button>
+
+                <Button className="bg-primary text-primary-foreground">
+                    <Check />
+                    Done
                 </Button>
             </CardFooter>
         </Card>
@@ -165,6 +201,43 @@ function UpcomingChores({ userId }: { userId: number }) {
         </div>
     )
 }
+export function formatRelativeDate(input: string | Date): string {
+    const date = typeof input === "string" ? new Date(input) : input;
+    const now = new Date();
+
+    const diffMs = date.getTime() - now.getTime();
+    const diffMinutes = Math.round(diffMs / (1000 * 60));
+    const diffHours = Math.round(diffMs / (1000 * 60 * 60));
+    const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
+
+    const absDays = Math.abs(diffDays);
+
+    // More than 5 days away, show date
+    if (absDays > 5) {
+        return date.toLocaleDateString(undefined, {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+        });
+    }
+
+    if (Math.abs(diffMinutes) < 60) {
+        return diffMinutes >= 0
+            ? `in ${diffMinutes} minute${diffMinutes === 1 ? "" : "s"}`
+            : `${Math.abs(diffMinutes)} minute${Math.abs(diffMinutes) === 1 ? "" : "s"} ago`;
+    }
+
+    if (Math.abs(diffHours) < 24) {
+        return diffHours >= 0
+            ? `in ${diffHours} hour${diffHours === 1 ? "" : "s"}`
+            : `${Math.abs(diffHours)} hour${Math.abs(diffHours) === 1 ? "" : "s"} ago`;
+    }
+
+    return diffDays >= 0
+        ? `in ${diffDays} day${diffDays === 1 ? "" : "s"}`
+        : `${Math.abs(diffDays)} day${Math.abs(diffDays) === 1 ? "" : "s"} ago`;
+}
+
 
 function UpcomingChoreCard({ title, description, dueAt }: {title: string, description? : string | null, dueAt: string}){
     return (
@@ -175,8 +248,8 @@ function UpcomingChoreCard({ title, description, dueAt }: {title: string, descri
                     {description && <CardDescription>{description}</CardDescription>}
                 </CardHeader>
                 <CardContent>
-                    <p>Due at: {new Date(dueAt).toLocaleString()}</p>
-                </CardContent>
+                    <p>Due: {formatRelativeDate(dueAt)}</p>
+            </CardContent>
             </Card>
         </div>
     )

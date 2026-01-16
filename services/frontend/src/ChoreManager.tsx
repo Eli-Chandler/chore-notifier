@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/popover";
 import * as React from "react";
 import {ChevronDownIcon} from "lucide-react";
-import {Calendar} from "@/components/ui/calendar";
+import {DateTimePicker} from "@/components/ui/date-time-picker.tsx";
 import {
     DropdownMenu,
     DropdownMenuCheckboxItem,
@@ -107,7 +107,6 @@ function AddChore({availableUsers}: AddChoreProps) {
     const {mutateAsync: createChore, isPending} = useCreateChore();
 
     async function handleSubmit(e: React.FormEvent) {
-        console.log("Clicked!")
         e.preventDefault();
         if (!title || !intervalDays || !startDate) return;
 
@@ -179,10 +178,15 @@ function AddChore({availableUsers}: AddChoreProps) {
                         <div className="grid gap-3">
                             <Label className="font-bold" htmlFor="interval-1">Intervals (Days)</Label>
                             <Input
-                                id="interval-1" type="number"
-                                value={intervalDays} onChange={(e) => setIntervalDays(Number(e.target.value))}
+                                id="interval-1"
+                                type="number"
+                                value={intervalDays}
+                                onChange={(e) =>
+                                    setIntervalDays(e.target.value === "" ? "" : Number(e.target.value))
+                                }
                                 placeholder="E.g. 2"
                             />
+
                         </div>
                         <Assignment
                             availableUsers={availableUsers}
@@ -203,33 +207,23 @@ function AddChore({availableUsers}: AddChoreProps) {
     );
 }
 
-function DatePicker({label, date, setDate}: {
-    label: string;
-    date?: Date;
+function DatePicker({label, date, setDate,}: {
+    label: string
+    date?: Date
     setDate: React.Dispatch<React.SetStateAction<Date | undefined>>
 }) {
-    const [open, setOpen] = React.useState(false);
-
     return (
         <div className="flex flex-col gap-3">
-            <Label htmlFor={label.toLowerCase()} className="px-1">{label}</Label>
-            <Popover open={open} onOpenChange={setOpen}>
-                <PopoverTrigger asChild>
-                    <Button variant="outline" id={label.toLowerCase()} className="w-full justify-between font-normal">
-                        {date ? date.toLocaleDateString() : "Select date"}
-                        <ChevronDownIcon/>
-                    </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto overflow-hidden p-0" align="start">
-                    <Calendar mode="single" selected={date} captionLayout="dropdown" onSelect={(d) => {
-                        setDate(d);
-                        setOpen(false)
-                    }}/>
-                </PopoverContent>
-            </Popover>
+            <Label className="px-1">{label}</Label>
+            <DateTimePicker
+                value={date}
+                onChange={setDate}
+                placeholder={`Pick ${label.toLowerCase()} date`}
+            />
         </div>
-    );
+    )
 }
+
 
 type AssignmentProps = {
     availableUsers: { id: number; name: string }[];
@@ -293,12 +287,6 @@ function ChoreCard({title, description}: { title: string; description: string | 
 
                 </div>
                 <div className="flex gap-2">
-                    <CardAction>
-                        <div className="flex gap-1 items-center">
-
-                            <Button variant="default"> Eli<BellIcon/></Button>
-                        </div>
-                    </CardAction>
                     <CardAction>
                         <Button variant="secondary"><Pencil/></Button>
                     </CardAction>
