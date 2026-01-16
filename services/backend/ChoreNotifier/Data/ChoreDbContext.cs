@@ -34,6 +34,7 @@ public class ChoreDbContext : DbContext
             .HasOne(u => u.NotificationPreference)
             .WithOne()
             .HasForeignKey<NotificationMethod>("UserId")
-            .IsRequired(false);
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

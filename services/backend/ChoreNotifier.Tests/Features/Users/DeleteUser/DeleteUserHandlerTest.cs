@@ -2,6 +2,7 @@ using ChoreNotifier.Features.Users.DeleteUser;
 using ChoreNotifier.Models;
 using FluentAssertions;
 using JetBrains.Annotations;
+using Microsoft.EntityFrameworkCore;
 
 namespace ChoreNotifier.Tests.Features.Users.DeleteUser;
 
@@ -75,5 +76,37 @@ public class DeleteUserHandlerTest : DatabaseTestBase
 
         var remainingUser2 = await context.Users.FindAsync(users[2].Id);
         remainingUser2.Should().NotBeNull();
+    }
+
+    [Fact]
+    public async Task Handle_WhenUserHasNotificationPreference_DeletesUserAndPreference()
+    {
+        // Arrange
+        int userId;
+        int notificationMethodId;
+
+        await using (var context = DbFixture.CreateDbContext())
+        {
+            var user = await Factory.CreateUserAsync(context: context);
+            var consoleMethod = ConsoleMethod.Create("test-console").Value;
+            user.NotificationPreference = consoleMethod;
+            await context.SaveChangesAsync();
+
+            userId = user.Id;
+            notificationMethodId = consoleMethod.Id;
+        }
+
+        // Act
+        var result = await _handler.Handle(new DeleteUserRequest(userId));
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+
+        await using var verifyContext = DbFixture.CreateDbContext();
+        var deletedUser = await verifyContext.Users.FindAsync(userId);
+        deletedUser.Should().BeNull();
+
+        var deletedNotificationMethod = await verifyContext.NotificationMethods.FindAsync(notificationMethodId);
+        deletedNotificationMethod.Should().BeNull();
     }
 }
