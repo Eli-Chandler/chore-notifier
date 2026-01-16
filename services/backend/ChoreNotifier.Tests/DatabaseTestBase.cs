@@ -1,4 +1,4 @@
-using ChoreNotifier.Common;
+using ChoreNotifier.Infrastructure.Clock;
 
 namespace ChoreNotifier.Tests;
 

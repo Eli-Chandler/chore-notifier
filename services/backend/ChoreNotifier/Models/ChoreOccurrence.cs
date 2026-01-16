@@ -13,7 +13,7 @@ public class ChoreOccurrence
     public required DateTimeOffset ScheduledFor { get; set; }
     public DateTimeOffset DueAt { get; private set; }
     public DateTimeOffset? CompletedAt { get; private set; }
-
+    public DateTimeOffset? LastNotifiedAt { get; private set; }
     public bool IsCompleted => CompletedAt is not null;
 
     private ChoreOccurrence()
@@ -73,5 +73,10 @@ public class ChoreOccurrence
     public bool IsDue(DateTimeOffset currentTime)
     {
         return currentTime >= DueAt && CompletedAt is null;
+    }
+
+    public void UpdateLastNotifiedAt(DateTimeOffset notifiedAt)
+    {
+        LastNotifiedAt = notifiedAt;
     }
 }
