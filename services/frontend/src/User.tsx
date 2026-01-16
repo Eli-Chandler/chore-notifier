@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/tabs"
 import {ScrollArea} from "@/components/ui/scroll-area.tsx";
 import {getListUserChoreOccurrencesQueryKey, useGetUser, useListUserChoreOccurrences} from "@/api/users/users.ts";
-import {AlarmClockIcon, ArrowLeft, Check, ClockPlus} from "lucide-react";
+import {ArrowLeft, Check, ClockPlus} from "lucide-react";
 import {
     Card,
     CardContent,
@@ -17,7 +17,7 @@ import {
     CardTitle,
 } from "@/components/ui/card"
 import {Button} from "@/components/ui/button.tsx";
-import {useSnoozeChore} from "@/api/chore-occurrences/chore-occurrences.ts";
+import {useCompleteChore, useSnoozeChore} from "@/api/chore-occurrences/chore-occurrences.ts";
 import {useQueryClient} from "@tanstack/react-query";
 
 function useCurrentUserId() {
@@ -28,8 +28,7 @@ function useCurrentUserId() {
 function User() {
     const userId = useCurrentUserId();
     // Update current user in a react context or some shit
-    const actualUserId = parseInt(userId!)
-    const {data: userData, isPending} = useGetUser(actualUserId);
+    const {data: userData, isPending} = useGetUser(userId);
 
     const user = userData?.data;
 
@@ -53,7 +52,7 @@ function User() {
                 <h1 className="text-4xl">{user.name}</h1>
             </div>
             <div>
-                <ChoreTabs userId={actualUserId!} />
+                <ChoreTabs userId={userId} />
             </div>
         </>
     )
@@ -91,7 +90,7 @@ function ChoreTabs({ userId }: { userId: number }) {
 
                 <TabsContent value="Completed">
                     <ScrollArea className="h-screen">
-                        <CompletedChores />
+                        <CompletedChores userId={userId}/>
                     </ScrollArea>
                 </TabsContent>
             </Tabs>
@@ -110,7 +109,15 @@ function DueChores({ userId }: { userId: number }) {
         return <div>Loading due chores...</div>
     }
 
-    const chores = data?.data.items;
+    const chores = data?.data.items ?? [];
+
+    if (chores.length === 0) {
+        return (
+            <p className="mt-6 text-center text-muted-foreground">
+                No chores due 🎉
+            </p>
+        );
+    }
 
     return (
         <div className="mt-3">
@@ -134,19 +141,30 @@ function DueChoreCard({ id, title, description, dueAt }: {id: number, title: str
     // We need access to the query client (the thing that makes the requests)
     const queryClient = useQueryClient();
     // We need to make the query for snoozing the chore
-    const {mutateAsync, isPending} = useSnoozeChore();
+    const { mutateAsync: snoozeChore, isPending: isSnoozing, } = useSnoozeChore();
+    const { mutateAsync: completeChore, isPending: isCompleting, } = useCompleteChore();
+
 
     async function handleSnoozeChore() {
-        await mutateAsync(
-            {
-                data: {
-                    userId
-                },
-                choreOccurrenceId: id
-            }
-        )
-        await queryClient.invalidateQueries(getListUserChoreOccurrencesQueryKey(userId))
+        await snoozeChore({
+            data: { userId },
+            choreOccurrenceId: id,
+        });
+        await queryClient.invalidateQueries(
+            {queryKey: getListUserChoreOccurrencesQueryKey(userId)}
+        );
     }
+
+    async function handleCompleteChore() {
+        await completeChore({
+            data: { userId },
+            choreOccurrenceId: id,
+        });
+        await queryClient.invalidateQueries(
+            {queryKey: getListUserChoreOccurrencesQueryKey(userId)}
+        );
+    }
+
 
     // Basically whenever we delete a chore or snooze it or whatever it would change the state of due and upcoming
     // So we may as well just refetch the whole thing, makes sense?
@@ -162,12 +180,12 @@ function DueChoreCard({ id, title, description, dueAt }: {id: number, title: str
                 <p>Due: {formatRelativeDate(dueAt)}</p>
             </CardContent>
             <CardFooter className="flex flex-row justify-center gap-10">
-                <Button disabled={isPending}  onClick={() => handleSnoozeChore()} variant="secondary">
+                <Button disabled={isSnoozing}  onClick={() => handleSnoozeChore()} variant="secondary">
                     <ClockPlus />
                     Snooze
                 </Button>
 
-                <Button className="bg-primary text-primary-foreground">
+                <Button disabled={isCompleting}  onClick={() => handleCompleteChore()} className="bg-primary text-primary-foreground">
                     <Check />
                     Done
                 </Button>
@@ -185,7 +203,14 @@ function UpcomingChores({ userId }: { userId: number }) {
         return <div>Loading upcoming chores...</div>
     }
 
-    const chores = data?.data.items;
+    const chores = data?.data.items ?? [];
+    if (chores.length === 0) {
+        return (
+            <p className="mt-6 text-center text-muted-foreground">
+                No upcoming chores 🎉
+            </p>
+        );
+    }
 
     return (
         <div>
@@ -201,6 +226,64 @@ function UpcomingChores({ userId }: { userId: number }) {
         </div>
     )
 }
+
+function UpcomingChoreCard({ title, description, dueAt }: {title: string, description? : string | null, dueAt: string}){
+    return (
+        <div>
+            <Card className="mb-4">
+                <CardHeader>
+                    <CardTitle>{title}</CardTitle>
+                    {description && <CardDescription>{description}</CardDescription>}
+                </CardHeader>
+                <CardContent>
+                    <p>Due: {formatRelativeDate(dueAt)}</p>
+            </CardContent>
+            </Card>
+        </div>
+    )
+}
+
+
+function CompletedChores({ userId }: { userId: number }) {
+    const {data, isPending} = useListUserChoreOccurrences(userId, {
+        filter: "Completed"
+    });
+
+    if (isPending) {
+        return <div>Loading completed chores...</div>
+    }
+    const chores = data?.data.items;
+
+    return (
+        <div>
+            {chores?.map(choreOccurrence => (
+                <CompletedChoreCard
+                    key={choreOccurrence.id}
+                    title = {choreOccurrence.chore.title}
+                    description = {choreOccurrence.chore.description}
+                    completedAt={choreOccurrence.completedAt!}
+                />
+            ))}
+        </div>
+    )
+}
+
+function CompletedChoreCard({ title, description, completedAt }: {title: string, description? : string | null, completedAt: string}){
+    return (
+        <div>
+            <Card className="mb-4">
+                <CardHeader>
+                    <CardTitle>{title}</CardTitle>
+                    {description && <CardDescription>{description}</CardDescription>}
+                </CardHeader>
+                <CardContent>
+                    <p>Completed: {formatRelativeDate(completedAt)}</p>
+            </CardContent>
+            </Card>
+        </div>
+    )
+}
+
 export function formatRelativeDate(input: string | Date): string {
     const date = typeof input === "string" ? new Date(input) : input;
     const now = new Date();
@@ -238,30 +321,5 @@ export function formatRelativeDate(input: string | Date): string {
         : `${Math.abs(diffDays)} day${Math.abs(diffDays) === 1 ? "" : "s"} ago`;
 }
 
-
-function UpcomingChoreCard({ title, description, dueAt }: {title: string, description? : string | null, dueAt: string}){
-    return (
-        <div>
-            <Card className="mb-4">
-                <CardHeader>
-                    <CardTitle>{title}</CardTitle>
-                    {description && <CardDescription>{description}</CardDescription>}
-                </CardHeader>
-                <CardContent>
-                    <p>Due: {formatRelativeDate(dueAt)}</p>
-            </CardContent>
-            </Card>
-        </div>
-    )
-}
-
-
-function CompletedChores() {
-    return (
-        <div>
-            Completed Chores
-        </div>
-    )
-}
 
 export default User;
