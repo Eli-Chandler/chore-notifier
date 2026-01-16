@@ -1742,6 +1742,7 @@
           "id",
           "originalDueAt",
           "currentDueAt",
+          "completedAt",
           "isCompleted",
           "isDue",
           "chore"
@@ -1758,6 +1759,13 @@
           },
           "currentDueAt": {
             "type": "string",
+            "format": "date-time"
+          },
+          "completedAt": {
+            "type": [
+              "null",
+              "string"
+            ],
             "format": "date-time"
           },
           "isCompleted": {

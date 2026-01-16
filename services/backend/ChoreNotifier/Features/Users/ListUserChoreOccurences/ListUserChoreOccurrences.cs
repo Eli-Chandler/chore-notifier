@@ -27,6 +27,7 @@ public sealed record ListUserChoreOccurrencesResponseItem(
     int Id,
     DateTimeOffset OriginalDueAt,
     DateTimeOffset CurrentDueAt,
+    DateTimeOffset? CompletedAt,
     bool IsCompleted,
     bool IsDue,
     ListUserChoreOccurrencesChoreResponseItem Chore
@@ -75,6 +76,7 @@ public class ListUserChoreOccurrencesHandler(ChoreDbContext db, IClock clock)
             co.Id,
             co.ScheduledFor,
             co.DueAt,
+            co.CompletedAt,
             co.IsCompleted,
             co.IsDue(clock.UtcNow),
             new ListUserChoreOccurrencesChoreResponseItem(
