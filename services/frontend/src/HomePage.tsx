@@ -2,7 +2,6 @@ import {Button} from "@/components/ui/button.tsx";
 import {Link} from "react-router";
 import {Trash2, UserPlus} from "lucide-react";
 import {
-    useListUsers,
     useDeleteUser,
     useCreateUser,
     useListUsersInfinite,
@@ -36,7 +35,7 @@ function ChoreManagement() {
 
 function HomePage() {
     const queryClient = useQueryClient();
-    const { data, fetchNextPage, hasNextPage, isPending } = useListUsersInfinite(
+    const { data, isPending } = useListUsersInfinite(
         undefined,
         {
             query: {

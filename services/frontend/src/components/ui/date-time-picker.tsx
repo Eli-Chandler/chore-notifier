@@ -1,11 +1,16 @@
-import React, { useState } from "react"
+import { useState } from "react"
 import { ChevronLeft, ChevronRight, CalendarDays, Clock } from "lucide-react"
 
-function cn(...classes) {
+function cn(...classes: (string | boolean | undefined | null | 0)[]) {
     return classes.filter(Boolean).join(" ")
 }
 
-function Calendar({ selected, onSelect }) {
+interface CalendarProps {
+    selected: Date | null;
+    onSelect: (date: Date) => void;
+}
+
+function Calendar({ selected, onSelect }: CalendarProps) {
     const [currentMonth, setCurrentMonth] = useState(selected || new Date())
 
     const year = currentMonth.getFullYear()
@@ -28,14 +33,14 @@ function Calendar({ selected, onSelect }) {
     const prevMonth = () => setCurrentMonth(new Date(year, month - 1, 1))
     const nextMonth = () => setCurrentMonth(new Date(year, month + 1, 1))
 
-    const isSelected = (day) =>
+    const isSelected = (day: number | null) =>
         selected &&
         day &&
         selected.getDate() === day &&
         selected.getMonth() === month &&
         selected.getFullYear() === year
 
-    const isToday = (day) => {
+    const isToday = (day: number | null) => {
         const today = new Date()
         return (
             today.getDate() === day &&
@@ -102,7 +107,13 @@ function Calendar({ selected, onSelect }) {
     )
 }
 
-function TimeSelect({ value, onChange, max }) {
+interface TimeSelectProps {
+    value: number;
+    onChange: (value: number) => void;
+    max: number;
+}
+
+function TimeSelect({ value, onChange, max }: TimeSelectProps) {
     return (
         <select
             value={value}
@@ -119,12 +130,18 @@ function TimeSelect({ value, onChange, max }) {
     )
 }
 
+interface DateTimePickerProps {
+    value?: Date | null;
+    onChange?: (date: Date) => void;
+    placeholder?: string;
+}
+
 export function DateTimePicker({
                                    value,
                                    onChange,
                                    placeholder = "Pick a date and time",
-                               }) {
-    const [internalDate, setInternalDate] = useState(null)
+                               }: DateTimePickerProps) {
+    const [internalDate, setInternalDate] = useState<Date | null>(null)
     const [hours, setHours] = useState(value?.getHours() ?? 12)
     const [minutes, setMinutes] = useState(value?.getMinutes() ?? 0)
     const [open, setOpen] = useState(false)
@@ -132,13 +149,13 @@ export function DateTimePicker({
     const date = value ?? internalDate
     const setDate = onChange ?? setInternalDate
 
-    const handleDateSelect = (selectedDate) => {
+    const handleDateSelect = (selectedDate: Date) => {
         const newDate = new Date(selectedDate)
         newDate.setHours(hours, minutes, 0, 0)
         setDate(newDate)
     }
 
-    const handleHoursChange = (newHours) => {
+    const handleHoursChange = (newHours: number) => {
         setHours(newHours)
         if (date) {
             const newDate = new Date(date)
@@ -147,7 +164,7 @@ export function DateTimePicker({
         }
     }
 
-    const handleMinutesChange = (newMinutes) => {
+    const handleMinutesChange = (newMinutes: number) => {
         setMinutes(newMinutes)
         if (date) {
             const newDate = new Date(date)

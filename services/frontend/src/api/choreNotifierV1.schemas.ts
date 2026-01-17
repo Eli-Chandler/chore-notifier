@@ -352,6 +352,7 @@ filter?: ChoreOccurenceFilter;
 export type ListNotificationHistoryParams = {
 pageSize?: number;
 afterDate?: string;
+afterId?: string;
 };
 
 export type ListChoresParams = {
