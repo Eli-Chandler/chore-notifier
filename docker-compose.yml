@@ -27,7 +27,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:8080
       - ConnectionStrings__DefaultConnection=Host=postgres;Database=chorenotifier;Username=postgres;Password=postgres
-      - Cors__AllowedOrigins=http://localhost:3000,http://localhost:5173
+      - Cors__AllowedOrigins=${CORS_ALLOWED_ORIGINS:-http://localhost:3000,http://localhost:5173}
       - Tapo__Username=${TAPO_USERNAME}
       - Tapo__Password=${TAPO_PASSWORD}
       - Tapo__IpAddress=${TAPO_IP_ADDRESS}
