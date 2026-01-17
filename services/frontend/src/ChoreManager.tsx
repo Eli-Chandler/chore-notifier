@@ -1,6 +1,6 @@
 import {Link} from "react-router";
 import {Button} from "@/components/ui/button.tsx";
-import {ArrowBigLeft, BrushCleaning, Pencil, UserPlus, XIcon} from "lucide-react";
+import {ArrowBigLeft, BrushCleaning, Pencil, Trash2, UserPlus, XIcon} from "lucide-react";
 import {
     Dialog,
     DialogClose,
@@ -35,10 +35,12 @@ import {
     getListChoresInfiniteQueryKey,
     useAddChoreAssignee,
     useCreateChore,
+    useDeleteChore,
     useListChoresInfinite,
     useRemoveChoreAssignee,
     useUpdateChore
 } from "@/api/chores/chores.ts";
+import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover.tsx";
 import {useListUsersInfinite} from "@/api/users/users.ts";
 import {useQueryClient} from "@tanstack/react-query";
 import {useEffect, useState} from "react";
@@ -428,6 +430,48 @@ function ManageAssignees({choreId, initialAssignees, availableUsers}: ManageAssi
     );
 }
 
+interface DeleteChoreProps {
+    choreId: number;
+    choreTitle: string;
+}
+
+function DeleteChore({choreId, choreTitle}: DeleteChoreProps) {
+    const [isOpen, setIsOpen] = useState(false);
+    const queryClient = useQueryClient();
+    const {mutateAsync: deleteChore, isPending} = useDeleteChore();
+
+    async function handleDelete() {
+        await deleteChore({choreId});
+        await queryClient.invalidateQueries({queryKey: getListChoresInfiniteQueryKey()});
+        setIsOpen(false);
+    }
+
+    return (
+        <Popover open={isOpen} onOpenChange={setIsOpen}>
+            <PopoverTrigger asChild>
+                <Button variant="destructive" size="icon">
+                    <Trash2 className="size-4"/>
+                </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-64">
+                <div className="grid gap-4">
+                    <p className="text-sm">
+                        Delete <span className="font-semibold">{choreTitle}</span>?
+                    </p>
+                    <div className="flex justify-end gap-2">
+                        <Button variant="outline" size="sm" onClick={() => setIsOpen(false)}>
+                            Cancel
+                        </Button>
+                        <Button variant="destructive" size="sm" onClick={handleDelete} disabled={isPending}>
+                            {isPending ? "Deleting..." : "Delete"}
+                        </Button>
+                    </div>
+                </div>
+            </PopoverContent>
+        </Popover>
+    );
+}
+
 function DatePicker({label, date, setDate,}: {
     label: string
     date?: Date
@@ -512,6 +556,9 @@ function ChoreCard({chore, availableUsers}: { chore: ListChoresResponseItem; ava
                     </CardAction>
                     <CardAction>
                         <UpdateChore chore={chore}/>
+                    </CardAction>
+                    <CardAction>
+                        <DeleteChore choreId={chore.id} choreTitle={chore.title}/>
                     </CardAction>
                 </div>
             </CardHeader>

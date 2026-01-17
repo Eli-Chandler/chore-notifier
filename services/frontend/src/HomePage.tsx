@@ -17,6 +17,7 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
+import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover.tsx";
 import {Input} from "@/components/ui/input.tsx";
 import {Label} from "@/components/ui/label.tsx";
 import {useState} from "react";
@@ -158,16 +159,19 @@ type DeleteUserDialogProps = {
 };
 
 function DeleteUserDialog({ userName, onConfirm }: DeleteUserDialogProps) {
-    const [open, setOpen] = useState(false);
+    const [isOpen, setIsOpen] = useState(false);
+    const [isPending, setIsPending] = useState(false);
 
     async function handleDelete() {
+        setIsPending(true);
         await onConfirm();
-        setOpen(false);
+        setIsPending(false);
+        setIsOpen(false);
     }
 
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild>
+        <Popover open={isOpen} onOpenChange={setIsOpen}>
+            <PopoverTrigger asChild>
                 <Button
                     size="icon-lg"
                     variant="destructive"
@@ -175,29 +179,23 @@ function DeleteUserDialog({ userName, onConfirm }: DeleteUserDialogProps) {
                 >
                     <Trash2 />
                 </Button>
-            </DialogTrigger>
-
-            <DialogContent className="sm:max-w-[425px]">
-                <DialogHeader>
-                    <DialogTitle>Remove Tenant</DialogTitle>
-                    <DialogDescription>
-                        Are you sure you want to remove {userName}?
-                    </DialogDescription>
-                </DialogHeader>
-
-                <DialogFooter className="mt-6">
-                    <DialogClose asChild>
-                        <Button variant="outline">Cancel</Button>
-                    </DialogClose>
-                    <Button
-                        variant="default"
-                        onClick={handleDelete}
-                    >
-                        Remove
-                    </Button>
-                </DialogFooter>
-            </DialogContent>
-        </Dialog>
+            </PopoverTrigger>
+            <PopoverContent className="w-64">
+                <div className="grid gap-4">
+                    <p className="text-sm">
+                        Remove <span className="font-semibold">{userName}</span>?
+                    </p>
+                    <div className="flex justify-end gap-2">
+                        <Button variant="outline" size="sm" onClick={() => setIsOpen(false)}>
+                            Cancel
+                        </Button>
+                        <Button variant="destructive" size="sm" onClick={handleDelete} disabled={isPending}>
+                            {isPending ? "Removing..." : "Remove"}
+                        </Button>
+                    </div>
+                </div>
+            </PopoverContent>
+        </Popover>
     );
 }
 
