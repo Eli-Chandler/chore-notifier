@@ -29,7 +29,7 @@ RUN rm -rf ./*
 COPY --from=build /app/dist .
 
 # Copy nginx configuration (if you have a custom one, otherwise nginx default will work)
-# COPY nginx.conf /etc/nginx/nginx.conf
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
 
