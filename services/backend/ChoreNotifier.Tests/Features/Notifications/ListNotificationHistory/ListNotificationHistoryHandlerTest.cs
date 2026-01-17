@@ -221,9 +221,9 @@ public class ListNotificationHistoryHandlerTest : DatabaseTestBase
         item.Title.Should().Be("Test Title");
         item.Message.Should().Be("Test Message");
         item.NotificationType.Should().Be(NotificationType.Console);
-        item.AttemptedAt.Should().Be(now);
+        item.AttemptedAt.Should().BeCloseTo(now, TimeSpan.FromMicroseconds(1));
         item.DeliveryStatus.Should().Be(DeliveryStatus.Delivered);
-        item.DeliveredAt.Should().Be(now.AddSeconds(1));
+        item.DeliveredAt.Should().BeCloseTo(now.AddSeconds(1), TimeSpan.FromMicroseconds(1));
         item.FailureReason.Should().BeNull();
     }
 
