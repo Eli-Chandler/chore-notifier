@@ -521,6 +521,103 @@
         }
       }
     },
+    "/api/statistics/users/{userId}": {
+      "get": {
+        "tags": [
+          "Statistics"
+        ],
+        "operationId": "GetUserStatistics",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "startDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "endDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetUserStatisticsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/users/{userId}/notification-history": {
       "get": {
         "tags": [
@@ -1810,6 +1907,33 @@
           }
         }
       },
+      "GetUserStatisticsResponse": {
+        "required": [
+          "totalChoresAssigned",
+          "totalChoresCompleted",
+          "snoozeFrequency",
+          "averageCompletionTime"
+        ],
+        "type": "object",
+        "properties": {
+          "totalChoresAssigned": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalChoresCompleted": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "snoozeFrequency": {
+            "type": "number",
+            "format": "float"
+          },
+          "averageCompletionTime": {
+            "pattern": "^-?(\\d+\\.)?\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,7})?$",
+            "type": "string"
+          }
+        }
+      },
       "KeysetPageOfListChoresResponseItemAndint": {
         "required": [
           "items",
@@ -2295,6 +2419,9 @@
   "tags": [
     {
       "name": "Users"
+    },
+    {
+      "name": "Statistics"
     },
     {
       "name": "Notifications"
