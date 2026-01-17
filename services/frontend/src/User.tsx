@@ -60,7 +60,7 @@ function User() {
                         <ArrowBigLeft className="left-6"/>
                     </Button>
                 </Link>
-                <h1 className="text-5xl font-bitcount">{user.name}</h1>
+                <h1 className="text-5xl text-primary font-bitcount">{user.name}</h1>
                 <NotificationPreference/>
             </div>
             <div>
