@@ -69,7 +69,7 @@ function ChoreManager() {
                         <ArrowBigLeft className="left-6"/>
                     </Button>
                 </Link>
-                <h1 className="text-5xl font-bitcount">Chores</h1>
+                <h1 className="text-5xl text-primary font-bitcount">Chores</h1>
                 <div></div>
             </div>
             <div className="mt-6">

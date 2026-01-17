@@ -22,7 +22,7 @@ import {Label} from "@/components/ui/label.tsx";
 import {useState} from "react";
 import {useQueryClient} from "@tanstack/react-query";
 
-const buttonFormat = "w-full h-12 text-xl flex items-center justify-center font-cabin";
+const buttonFormat = "w-full h-12 text-xl flex items-center justify-center";
 
 function ChoreManagement() {
     return (
