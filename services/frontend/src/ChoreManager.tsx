@@ -27,7 +27,7 @@ import {
 import {
     Card,
     CardAction,
-    CardDescription,
+    CardDescription, CardFooter,
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
@@ -545,12 +545,12 @@ function Assignment({availableUsers, selectedUsers, onSelectedUsersChange}: Assi
 function ChoreCard({chore, availableUsers}: { chore: ListChoresResponseItem; availableUsers: { id: number; name: string }[] }) {
     return (
         <Card>
-            <CardHeader className="flex justify-between gap-3">
-                <div className="text-left">
-                    <CardTitle>{chore.title}</CardTitle>
+            <CardHeader className="text-left">
+                    <CardTitle >{chore.title}</CardTitle>
                     {chore.description && <CardDescription>{chore.description}</CardDescription>}
-                </div>
-                <div className="flex gap-2">
+            </CardHeader>
+            <CardFooter>
+                <div className="flex gap-2 justify-end w-full">
                     <CardAction>
                         <ManageAssignees choreId={chore.id} initialAssignees={chore.assignedUsers} availableUsers={availableUsers}/>
                     </CardAction>
@@ -561,7 +561,9 @@ function ChoreCard({chore, availableUsers}: { chore: ListChoresResponseItem; ava
                         <DeleteChore choreId={chore.id} choreTitle={chore.title}/>
                     </CardAction>
                 </div>
-            </CardHeader>
+            </CardFooter>
+
+
         </Card>
     );
 }
