@@ -29,5 +29,5 @@ public record UpdateChoreDto(
     string Title,
     string? Description,
     CreateChore.CreateChoreScheduleRequest? ChoreSchedule,
-    TimeSpan SnoozeDuration
+    TimeSpan? SnoozeDuration
 );

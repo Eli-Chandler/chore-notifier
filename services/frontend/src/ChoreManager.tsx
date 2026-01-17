@@ -1,6 +1,6 @@
 import {Link} from "react-router";
 import {Button} from "@/components/ui/button.tsx";
-import {ArrowLeft, BellIcon, BrushCleaning, Pencil, UserIcon, XIcon} from "lucide-react";
+import {ArrowLeft, BrushCleaning, Pencil, UserPlus, XIcon} from "lucide-react";
 import {
     Dialog,
     DialogClose,
@@ -14,17 +14,11 @@ import {
 import {Input} from "@/components/ui/input";
 import {Label} from "@/components/ui/label";
 import {Textarea} from "@/components/ui/textarea.tsx";
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover";
 import * as React from "react";
 import {ChevronDownIcon} from "lucide-react";
 import {DateTimePicker} from "@/components/ui/date-time-picker.tsx";
 import {
     DropdownMenu,
-    DropdownMenuCheckboxItem,
     DropdownMenuContent, DropdownMenuItem,
     DropdownMenuLabel,
     DropdownMenuSeparator,
@@ -39,17 +33,19 @@ import {
 } from "@/components/ui/card";
 import {
     getListChoresInfiniteQueryKey,
-    getListChoresQueryKey,
+    useAddChoreAssignee,
     useCreateChore,
-    useListChoresInfinite
+    useListChoresInfinite,
+    useRemoveChoreAssignee,
+    useUpdateChore
 } from "@/api/chores/chores.ts";
 import {useListUsersInfinite} from "@/api/users/users.ts";
 import {useQueryClient} from "@tanstack/react-query";
-import {useState} from "react";
+import {useEffect, useState} from "react";
+import type {ListChoresResponseItem} from "@/api/choreNotifierV1.schemas.ts";
 
 function ChoreManager() {
-    const queryClient = useQueryClient();
-    const {data: choresData, fetchNextPage, hasNextPage, isPending: choresPending} = useListChoresInfinite(
+    const {data: choresData, isPending: choresPending} = useListChoresInfinite(
         undefined,
         {query: {getNextPageParam: (lastPage) => lastPage.data.nextCursor}}
     );
@@ -80,7 +76,7 @@ function ChoreManager() {
                 {choresPending && <p>Loading Chores...</p>}
                 {chores.map((chore) => (
                     <div key={chore.id} className="mb-4">
-                        <ChoreCard title={chore.title} description={chore.description ?? null}/>
+                        <ChoreCard chore={chore} availableUsers={users}/>
                     </div>
                 ))}
                 {!usersPending && <AddChore availableUsers={users}/>}
@@ -104,7 +100,7 @@ function AddChore({availableUsers}: AddChoreProps) {
     const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
 
     const queryClient = useQueryClient();
-    const {mutateAsync: createChore, isPending} = useCreateChore();
+    const {mutateAsync: createChore} = useCreateChore();
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
@@ -207,6 +203,231 @@ function AddChore({availableUsers}: AddChoreProps) {
     );
 }
 
+interface UpdateChoreProps {
+    chore: ListChoresResponseItem;
+}
+
+export function UpdateChore({chore}: UpdateChoreProps) {
+    const [title, setTitle] = useState(chore.title);
+    const [description, setDescription] = useState(chore.description ?? "");
+    const [intervalDays, setIntervalDays] = useState<number | "">(chore.choreSchedule.intervalDays);
+    const [startDate, setStartDate] = useState<Date | undefined>(new Date(chore.choreSchedule.start));
+    const [endDate, setEndDate] = useState<Date | undefined>(
+        chore.choreSchedule.until ? new Date(chore.choreSchedule.until) : undefined
+    );
+
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+    const queryClient = useQueryClient();
+    const {mutateAsync: updateChore, isPending} = useUpdateChore();
+
+    // Reset form when chore prop changes or dialog opens
+    useEffect(() => {
+        if (isDialogOpen) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
+            setTitle(chore.title);
+            setDescription(chore.description ?? "");
+            setIntervalDays(chore.choreSchedule.intervalDays);
+            setStartDate(new Date(chore.choreSchedule.start));
+            setEndDate(chore.choreSchedule.until ? new Date(chore.choreSchedule.until) : undefined);
+        }
+    }, [isDialogOpen, chore]);
+
+    async function handleSubmit(e: React.FormEvent) {
+        e.preventDefault();
+        if (!title || !intervalDays || !startDate) return;
+
+        await updateChore({
+            choreId: chore.id,
+            data: {
+                title,
+                description: description || null,
+                choreSchedule: {
+                    start: startDate.toISOString(),
+                    intervalDays: Number(intervalDays),
+                    until: endDate ? endDate.toISOString() : null,
+                },
+                snoozeDuration: chore.snoozeDuration,
+            },
+        });
+
+        await queryClient.invalidateQueries({queryKey: getListChoresInfiniteQueryKey()});
+        setIsDialogOpen(false);
+    }
+
+    return (
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+                <Button variant="secondary" size="icon">
+                    <Pencil className="size-4"/>
+                </Button>
+            </DialogTrigger>
+
+            <DialogContent className="sm:max-w-[425px]">
+                <form onSubmit={handleSubmit}>
+                    <DialogHeader>
+                        <DialogTitle>Edit Chore</DialogTitle>
+                        <DialogDescription>
+                            Update the chore details below and save.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-4 mt-3">
+                        <div className="grid gap-3">
+                            <Label className="font-bold" htmlFor="name-edit">Name</Label>
+                            <Input
+                                id="name-edit"
+                                value={title}
+                                onChange={(e) => setTitle(e.target.value)}
+                                placeholder="E.g. Empty Recycling"
+                            />
+                        </div>
+                        <div className="grid gap-3">
+                            <Label className="font-bold" htmlFor="description-edit">Description</Label>
+                            <Textarea
+                                id="description-edit"
+                                value={description}
+                                onChange={(e) => setDescription(e.target.value)}
+                                placeholder="E.g. Empty both the recycling bin and box to the communal bins outside."
+                                className="min-h-32 resize-none"
+                            />
+                        </div>
+                        <div className="flex flex-col gap-4">
+                            <DatePicker label="Start" date={startDate} setDate={setStartDate}/>
+                            <DatePicker label="End" date={endDate} setDate={setEndDate}/>
+                        </div>
+                        <div className="grid gap-3">
+                            <Label className="font-bold" htmlFor="interval-edit">Intervals (Days)</Label>
+                            <Input
+                                id="interval-edit"
+                                type="number"
+                                value={intervalDays}
+                                onChange={(e) =>
+                                    setIntervalDays(e.target.value === "" ? "" : Number(e.target.value))
+                                }
+                                placeholder="E.g. 2"
+                            />
+                        </div>
+                    </div>
+                    <DialogFooter className="mt-10">
+                        <DialogClose asChild>
+                            <Button type="button" variant="outline">Cancel</Button>
+                        </DialogClose>
+                        <Button type="submit" disabled={isPending}>
+                            {isPending ? "Saving..." : "Save"}
+                        </Button>
+                    </DialogFooter>
+                </form>
+            </DialogContent>
+        </Dialog>
+    );
+}
+
+interface ManageAssigneesProps {
+    choreId: number;
+    initialAssignees: { id: number; name: string }[];
+    availableUsers: { id: number; name: string }[];
+}
+
+function ManageAssignees({choreId, initialAssignees, availableUsers}: ManageAssigneesProps) {
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [assignees, setAssignees] = useState(initialAssignees);
+
+    // Sync with prop changes (e.g., after query invalidation)
+    useEffect(() => {
+        setAssignees(initialAssignees);
+    }, [initialAssignees]);
+
+    const queryClient = useQueryClient();
+    const {mutateAsync: addAssignee, isPending: isAdding} = useAddChoreAssignee();
+    const {mutateAsync: removeAssignee, isPending: isRemoving} = useRemoveChoreAssignee();
+
+    const isPending = isAdding || isRemoving;
+
+    async function handleAddUser(userId: number) {
+        const result = await addAssignee({choreId, userId});
+        setAssignees(result.data.assignees);
+        await queryClient.invalidateQueries({queryKey: getListChoresInfiniteQueryKey()});
+    }
+
+    async function handleRemoveUser(userId: number) {
+        await removeAssignee({choreId, userId});
+        setAssignees(prev => prev.filter(a => a.id !== userId));
+        await queryClient.invalidateQueries({queryKey: getListChoresInfiniteQueryKey()});
+    }
+
+    const unassignedUsers = availableUsers.filter(
+        u => !assignees.some(a => a.id === u.id)
+    );
+
+    return (
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+                <Button variant="outline" size="icon">
+                    <UserPlus className="size-4"/>
+                </Button>
+            </DialogTrigger>
+
+            <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                    <DialogTitle>Manage Assignees</DialogTitle>
+                    <DialogDescription>
+                        Add or remove users assigned to this chore.
+                    </DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 mt-3">
+                    <div className="grid gap-3">
+                        <Label className="font-bold">Current Assignees</Label>
+                        {assignees.length === 0 ? (
+                            <p className="text-sm text-muted-foreground">No assignees yet</p>
+                        ) : (
+                            <div className="flex flex-wrap gap-2">
+                                {assignees.map(user => (
+                                    <Button
+                                        key={user.id}
+                                        variant="secondary"
+                                        size="sm"
+                                        disabled={isPending}
+                                        onClick={() => handleRemoveUser(user.id)}
+                                    >
+                                        {user.name} <XIcon/>
+                                    </Button>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                    {unassignedUsers.length > 0 && (
+                        <div className="grid gap-3">
+                            <Label className="font-bold">Add Assignee</Label>
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="outline" className="w-full justify-between" disabled={isPending}>
+                                        Select user to add
+                                        <ChevronDownIcon/>
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent className="w-56">
+                                    <DropdownMenuLabel>Available Users</DropdownMenuLabel>
+                                    <DropdownMenuSeparator/>
+                                    {unassignedUsers.map(user => (
+                                        <DropdownMenuItem key={user.id} onClick={() => handleAddUser(user.id)}>
+                                            {user.name}
+                                        </DropdownMenuItem>
+                                    ))}
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        </div>
+                    )}
+                </div>
+                <DialogFooter className="mt-6">
+                    <DialogClose asChild>
+                        <Button type="button">Done</Button>
+                    </DialogClose>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+    );
+}
+
 function DatePicker({label, date, setDate,}: {
     label: string
     date?: Date
@@ -277,18 +498,20 @@ function Assignment({availableUsers, selectedUsers, onSelectedUsersChange}: Assi
     );
 }
 
-function ChoreCard({title, description}: { title: string; description: string | null }) {
+function ChoreCard({chore, availableUsers}: { chore: ListChoresResponseItem; availableUsers: { id: number; name: string }[] }) {
     return (
         <Card>
             <CardHeader className="flex justify-between gap-3">
                 <div className="text-left">
-                    <CardTitle>{title}</CardTitle>
-                    {description && <CardDescription>{description}</CardDescription>}
-
+                    <CardTitle>{chore.title}</CardTitle>
+                    {chore.description && <CardDescription>{chore.description}</CardDescription>}
                 </div>
                 <div className="flex gap-2">
                     <CardAction>
-                        <Button variant="secondary"><Pencil/></Button>
+                        <ManageAssignees choreId={chore.id} initialAssignees={chore.assignedUsers} availableUsers={availableUsers}/>
+                    </CardAction>
+                    <CardAction>
+                        <UpdateChore chore={chore}/>
                     </CardAction>
                 </div>
             </CardHeader>

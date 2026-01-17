@@ -22,12 +22,11 @@ import {useQueryClient} from "@tanstack/react-query";
 import {Dialog, DialogHeader, DialogContent, DialogTitle, DialogTrigger} from "@/components/ui/dialog.tsx";
 import {
     getGetNotificationPreferenceQueryKey, getListNotificationHistoryQueryKey,
-    getNotificationPreference,
     useAddNotificationPreference,
     useGetNotificationPreference, useListNotificationHistory
 } from "@/api/notifications/notifications.ts";
 import {Input} from "@/components/ui/input.tsx";
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import {Label} from "@/components/ui/label.tsx";
 import {Skeleton} from "@/components/ui/skeleton.tsx";
 import type {DeliveryStatus} from "@/api/choreNotifierV1.schemas.ts";

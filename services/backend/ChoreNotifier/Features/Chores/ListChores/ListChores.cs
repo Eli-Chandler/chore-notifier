@@ -4,25 +4,35 @@ using ChoreNotifier.Features.Chores.CreateChore;
 using ChoreNotifier.Models;
 using FluentResults;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace ChoreNotifier.Features.Chores.ListChores;
 
-public sealed record ListChoresRequest(int PageSize, int? AfterId) : IRequest<Result<KeysetPage<ListChoresResponseItem, int>>>;
+public sealed record ListChoresRequest(int PageSize, int? AfterId)
+    : IRequest<Result<KeysetPage<ListChoresResponseItem, int>>>;
+
+public sealed record ListChoresResponseItemAssignedUser(
+    int Id,
+    string Name
+);
 
 public sealed record ListChoresResponseItem(
     int Id,
     string Title,
     string? Description,
-    ChoreScheduleResponse? ChoreSchedule,
-    TimeSpan? SnoozeDuration
+    ChoreScheduleResponse ChoreSchedule,
+    TimeSpan? SnoozeDuration,
+    IEnumerable<ListChoresResponseItemAssignedUser> AssignedUsers
 );
 
-public sealed class ListChoresHandler : IRequestHandler<ListChoresRequest, Result<KeysetPage<ListChoresResponseItem, int>>>
+public sealed class
+    ListChoresHandler : IRequestHandler<ListChoresRequest, Result<KeysetPage<ListChoresResponseItem, int>>>
 {
     private readonly ChoreDbContext _db;
     public ListChoresHandler(ChoreDbContext db) => _db = db;
 
-    public async Task<Result<KeysetPage<ListChoresResponseItem, int>>> Handle(ListChoresRequest req, CancellationToken ct = default)
+    public async Task<Result<KeysetPage<ListChoresResponseItem, int>>> Handle(ListChoresRequest req,
+        CancellationToken ct = default)
     {
         var validatePageSizeResult = ValidatePageSize(req.PageSize);
         if (validatePageSizeResult.IsFailed)
@@ -31,6 +41,8 @@ public sealed class ListChoresHandler : IRequestHandler<ListChoresRequest, Resul
         var result = await _db.Chores
             .OrderBy(c => c.Id)
             .Where(c => req.AfterId == null || c.Id > req.AfterId)
+            .Include(c => c.Assignees)
+            .ThenInclude(a => a.User)
             .ToKeysetPageAsync(
                 req.PageSize,
                 c => c.Id,
@@ -46,7 +58,12 @@ public sealed class ListChoresHandler : IRequestHandler<ListChoresRequest, Resul
                     c.ChoreSchedule.IntervalDays,
                     c.ChoreSchedule.Until
                 ),
-                c.SnoozeDuration
+                c.SnoozeDuration,
+                c.Assignees.Select(a => new ListChoresResponseItemAssignedUser(
+                        a.User.Id,
+                        a.User.Name
+                    )
+                )
             )
         );
     }

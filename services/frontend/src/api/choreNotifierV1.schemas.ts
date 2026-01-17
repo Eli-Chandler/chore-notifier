@@ -196,8 +196,6 @@ export interface KeysetPageOfListUserResponseItemAndint {
 
 export type ListChoresResponseItemDescription = null | string;
 
-export type ListChoresResponseItemChoreSchedule = null | ChoreScheduleResponse;
-
 /**
  * @pattern ^-?(\d+\.)?\d{2}:\d{2}:\d{2}(\.\d{1,7})?$
  */
@@ -207,9 +205,15 @@ export interface ListChoresResponseItem {
   id: number;
   title: string;
   description: ListChoresResponseItemDescription;
-  choreSchedule: ListChoresResponseItemChoreSchedule;
+  choreSchedule: ChoreScheduleResponse;
   /** @pattern ^-?(\d+\.)?\d{2}:\d{2}:\d{2}(\.\d{1,7})?$ */
   snoozeDuration: ListChoresResponseItemSnoozeDuration;
+  assignedUsers: ListChoresResponseItemAssignedUser[];
+}
+
+export interface ListChoresResponseItemAssignedUser {
+  id: number;
+  name: string;
 }
 
 export type ListNotificationHistoryResponseItemNotificationType = null | NotificationType;
@@ -296,12 +300,17 @@ export type UpdateChoreDtoDescription = null | string;
 
 export type UpdateChoreDtoChoreSchedule = null | CreateChoreScheduleRequest;
 
+/**
+ * @pattern ^-?(\d+\.)?\d{2}:\d{2}:\d{2}(\.\d{1,7})?$
+ */
+export type UpdateChoreDtoSnoozeDuration = null | string;
+
 export interface UpdateChoreDto {
   title: string;
   description: UpdateChoreDtoDescription;
   choreSchedule: UpdateChoreDtoChoreSchedule;
   /** @pattern ^-?(\d+\.)?\d{2}:\d{2}:\d{2}(\.\d{1,7})?$ */
-  snoozeDuration: string;
+  snoozeDuration: UpdateChoreDtoSnoozeDuration;
 }
 
 export type UpdateChoreResponseDescription = null | string;

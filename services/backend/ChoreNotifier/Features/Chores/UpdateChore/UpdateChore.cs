@@ -12,7 +12,7 @@ public sealed record UpdateChoreRequest(
     string Title,
     string? Description,
     CreateChoreScheduleRequest? ChoreSchedule,
-    TimeSpan SnoozeDuration) : IRequest<Result<UpdateChoreResponse>>;
+    TimeSpan? SnoozeDuration) : IRequest<Result<UpdateChoreResponse>>;
 
 public sealed record UpdateChoreResponse(
     int Id,

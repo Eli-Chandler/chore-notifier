@@ -1940,7 +1940,8 @@
           "title",
           "description",
           "choreSchedule",
-          "snoozeDuration"
+          "snoozeDuration",
+          "assignedUsers"
         ],
         "type": "object",
         "properties": {
@@ -1958,14 +1959,7 @@
             ]
           },
           "choreSchedule": {
-            "oneOf": [
-              {
-                "type": "null"
-              },
-              {
-                "$ref": "#/components/schemas/ChoreScheduleResponse"
-              }
-            ]
+            "$ref": "#/components/schemas/ChoreScheduleResponse"
           },
           "snoozeDuration": {
             "pattern": "^-?(\\d+\\.)?\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,7})?$",
@@ -1973,6 +1967,28 @@
               "null",
               "string"
             ]
+          },
+          "assignedUsers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ListChoresResponseItemAssignedUser"
+            }
+          }
+        }
+      },
+      "ListChoresResponseItemAssignedUser": {
+        "required": [
+          "id",
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string"
           }
         }
       },
@@ -2205,7 +2221,10 @@
           },
           "snoozeDuration": {
             "pattern": "^-?(\\d+\\.)?\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,7})?$",
-            "type": "string"
+            "type": [
+              "null",
+              "string"
+            ]
           }
         }
       },

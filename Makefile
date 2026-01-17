@@ -1,5 +1,5 @@
 backend:
-	docker compose up -d postgres backend
+	docker compose build backend && docker compose up -d postgres backend
 
 db:
 	docker compose up -d postgres
