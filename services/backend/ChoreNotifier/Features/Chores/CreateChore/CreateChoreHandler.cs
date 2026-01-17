@@ -42,9 +42,10 @@ public sealed class CreateChoreHandler(ChoreDbContext db, ChoreSchedulingService
 
         db.Chores.Add(chore);
 
-        foreach (var user in users)
+        var usersById = users.ToDictionary(u => u.Id);
+        foreach (var userId in req.AssigneeUserIds)
         {
-            chore.AddAssignee(user);
+            chore.AddAssignee(usersById[userId]);
         }
 
         await choreSchedulingService.ScheduleNextOccurrenceIfNeeded(db, chore, clock.UtcNow);
