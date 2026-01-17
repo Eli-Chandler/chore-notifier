@@ -1,6 +1,6 @@
 import {Link} from "react-router";
 import {Button} from "@/components/ui/button.tsx";
-import {ArrowLeft, BrushCleaning, Pencil, UserPlus, XIcon} from "lucide-react";
+import {ArrowBigLeft, BrushCleaning, Pencil, UserPlus, XIcon} from "lucide-react";
 import {
     Dialog,
     DialogClose,
@@ -63,14 +63,14 @@ function ChoreManager() {
 
     return (
         <>
-            <div className="flex flex-row gap-6">
+            <div className="flex flex-row items-center justify-between">
                 <Link to="/">
-                    <Button className="bg-secondary text-primary">
-                        <ArrowLeft className="left-6"/>
-                        Back
+                    <Button size="icon-lg" variant="secondary">
+                        <ArrowBigLeft className="left-6"/>
                     </Button>
                 </Link>
-                <h1 className="text-4xl">Chores</h1>
+                <h1 className="text-5xl font-bitcount">Chores</h1>
+                <div></div>
             </div>
             <div className="mt-6">
                 {choresPending && <p>Loading Chores...</p>}
@@ -435,7 +435,7 @@ function DatePicker({label, date, setDate,}: {
 }) {
     return (
         <div className="flex flex-col gap-3">
-            <Label className="px-1">{label}</Label>
+            <Label className="px-1 font-bold">{label}</Label>
             <DateTimePicker
                 value={date}
                 onChange={setDate}

@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/tabs"
 import {ScrollArea} from "@/components/ui/scroll-area.tsx";
 import {getListUserChoreOccurrencesQueryKey, useGetUser, useListUserChoreOccurrences} from "@/api/users/users.ts";
-import {ArrowLeft, BellIcon, Check, ClockPlus} from "lucide-react";
+import {ArrowBigLeft, BellIcon, Check, ClockPlus} from "lucide-react";
 import {
     Card,
     CardContent,
@@ -56,12 +56,11 @@ function User() {
         <>
             <div className="flex flex-row justify-between">
                 <Link to="/">
-                    <Button className="bg-secondary text-primary">
-                        <ArrowLeft className="left-6"/>
-                        Back
+                    <Button size="icon-lg" variant="secondary">
+                        <ArrowBigLeft className="left-6"/>
                     </Button>
                 </Link>
-                <h1 className="text-4xl">{user.name}</h1>
+                <h1 className="text-5xl font-bitcount">{user.name}</h1>
                 <NotificationPreference/>
             </div>
             <div>

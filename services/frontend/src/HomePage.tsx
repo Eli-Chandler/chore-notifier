@@ -22,7 +22,7 @@ import {Label} from "@/components/ui/label.tsx";
 import {useState} from "react";
 import {useQueryClient} from "@tanstack/react-query";
 
-const buttonFormat = "w-full h-12 text-xl flex items-center justify-center";
+const buttonFormat = "w-full h-12 text-xl flex items-center justify-center font-cabin";
 
 function ChoreManagement() {
     return (
@@ -71,7 +71,7 @@ function HomePage() {
                 className="mx-auto mb-4 mt-5 w-48"
             />
             <div className="flex flex-col gap-10 items-center h-screen">
-                <h1 className="text-4xl text-primary">Who Are You?</h1>
+                <h1 className="text-4xl text-primary font-bitcount">Who Are You?</h1>
                 {isPending && <p>Loading tenants...</p>}
                 {users && users.map((user) => (
                     <div key={user.id} className="flex w-full gap-2">
@@ -81,14 +81,10 @@ function HomePage() {
                             </Button>
                         </Link>
 
-                        <Button
-                            variant="destructive"
-                            className="h-12 w-12 flex items-center justify-center"
-                            onClick={() => handleDeleteUser(user.id)}
-                        >
-                            <Trash2 />
-                        </Button>
-
+                        <DeleteUserDialog
+                            userName={user.name}
+                            onConfirm={() => handleDeleteUser(user.id)}
+                        />
                     </div>
                 ))}
 
@@ -151,6 +147,55 @@ function AddTenant({onAddTenant}: Props) {
                         <Button type="submit">Save</Button>
                     </DialogFooter>
                 </form>
+            </DialogContent>
+        </Dialog>
+    );
+}
+
+type DeleteUserDialogProps = {
+    userName: string;
+    onConfirm: () => Promise<void>;
+};
+
+function DeleteUserDialog({ userName, onConfirm }: DeleteUserDialogProps) {
+    const [open, setOpen] = useState(false);
+
+    async function handleDelete() {
+        await onConfirm();
+        setOpen(false);
+    }
+
+    return (
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+                <Button
+                    size="icon-lg"
+                    variant="destructive"
+                    className="h-12 w-12 flex items-center justify-center"
+                >
+                    <Trash2 />
+                </Button>
+            </DialogTrigger>
+
+            <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                    <DialogTitle>Remove Tenant</DialogTitle>
+                    <DialogDescription>
+                        Are you sure you want to remove {userName}?
+                    </DialogDescription>
+                </DialogHeader>
+
+                <DialogFooter className="mt-6">
+                    <DialogClose asChild>
+                        <Button variant="outline">Cancel</Button>
+                    </DialogClose>
+                    <Button
+                        variant="default"
+                        onClick={handleDelete}
+                    >
+                        Remove
+                    </Button>
+                </DialogFooter>
             </DialogContent>
         </Dialog>
     );
