@@ -11,8 +11,6 @@ export default defineConfig({
             override: {
                 query: {
                     useQuery: true,
-                    useInfinite: true,
-                    useInfiniteQueryParam: 'afterId',
                     useMutation: true,
                     useInvalidate: false
                 }

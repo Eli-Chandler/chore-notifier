@@ -158,6 +158,14 @@ export interface GetUserResponse {
   name: string;
 }
 
+export interface GetUserStatisticsResponse {
+  totalChoresAssigned: number;
+  totalChoresCompleted: number;
+  snoozeFrequency: number;
+  /** @pattern ^-?(\d+\.)?\d{2}:\d{2}:\d{2}(\.\d{1,7})?$ */
+  averageCompletionTime: string;
+}
+
 export type KeysetPageOfListChoresResponseItemAndintNextCursor = null | number;
 
 export interface KeysetPageOfListChoresResponseItemAndint {
@@ -349,10 +357,14 @@ afterId?: number;
 filter?: ChoreOccurenceFilter;
 };
 
+export type GetUserStatisticsParams = {
+startDate?: string;
+endDate?: string;
+};
+
 export type ListNotificationHistoryParams = {
 pageSize?: number;
 afterDate?: string;
-afterId?: string;
 };
 
 export type ListChoresParams = {

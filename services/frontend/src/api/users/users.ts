@@ -5,23 +5,18 @@
  * OpenAPI spec version: 1.0.0
  */
 import {
-  useInfiniteQuery,
   useMutation,
   useQuery
 } from '@tanstack/react-query';
 import type {
   DataTag,
   DefinedInitialDataOptions,
-  DefinedUseInfiniteQueryResult,
   DefinedUseQueryResult,
-  InfiniteData,
   MutationFunction,
   QueryClient,
   QueryFunction,
   QueryKey,
   UndefinedInitialDataOptions,
-  UseInfiniteQueryOptions,
-  UseInfiniteQueryResult,
   UseMutationOptions,
   UseMutationResult,
   UseQueryOptions,
@@ -177,81 +172,11 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
 
 
 
-export const getListUsersInfiniteQueryKey = (params?: ListUsersParams,) => {
-    return [
-    'infinite', `/api/users`, ...(params ? [params]: [])
-    ] as const;
-    }
-
 export const getListUsersQueryKey = (params?: ListUsersParams,) => {
     return [
     `/api/users`, ...(params ? [params]: [])
     ] as const;
     }
-
-
-export const getListUsersInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof listUsers>>, ListUsersParams['afterId']>, TError = AxiosError<ProblemDetails>>(params?: ListUsersParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof listUsers>>, TError, TData, QueryKey, ListUsersParams['afterId']>>, axios?: AxiosRequestConfig}
-) => {
-
-const {query: queryOptions, axios: axiosOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getListUsersInfiniteQueryKey(params);
-
-
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof listUsers>>, QueryKey, ListUsersParams['afterId']> = ({ signal, pageParam }) => listUsers({...params, 'afterId': pageParam || params?.['afterId']}, { signal, ...axiosOptions });
-
-
-
-
-
-   return  { queryKey, queryFn, ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof listUsers>>, TError, TData, QueryKey, ListUsersParams['afterId']> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type ListUsersInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof listUsers>>>
-export type ListUsersInfiniteQueryError = AxiosError<ProblemDetails>
-
-
-export function useListUsersInfinite<TData = InfiniteData<Awaited<ReturnType<typeof listUsers>>, ListUsersParams['afterId']>, TError = AxiosError<ProblemDetails>>(
- params: undefined |  ListUsersParams, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof listUsers>>, TError, TData, QueryKey, ListUsersParams['afterId']>> & Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof listUsers>>,
-          TError,
-          Awaited<ReturnType<typeof listUsers>>, QueryKey
-        > , 'initialData'
-      >, axios?: AxiosRequestConfig}
- , queryClient?: QueryClient
-  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListUsersInfinite<TData = InfiniteData<Awaited<ReturnType<typeof listUsers>>, ListUsersParams['afterId']>, TError = AxiosError<ProblemDetails>>(
- params?: ListUsersParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof listUsers>>, TError, TData, QueryKey, ListUsersParams['afterId']>> & Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof listUsers>>,
-          TError,
-          Awaited<ReturnType<typeof listUsers>>, QueryKey
-        > , 'initialData'
-      >, axios?: AxiosRequestConfig}
- , queryClient?: QueryClient
-  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListUsersInfinite<TData = InfiniteData<Awaited<ReturnType<typeof listUsers>>, ListUsersParams['afterId']>, TError = AxiosError<ProblemDetails>>(
- params?: ListUsersParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof listUsers>>, TError, TData, QueryKey, ListUsersParams['afterId']>>, axios?: AxiosRequestConfig}
- , queryClient?: QueryClient
-  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-
-export function useListUsersInfinite<TData = InfiniteData<Awaited<ReturnType<typeof listUsers>>, ListUsersParams['afterId']>, TError = AxiosError<ProblemDetails>>(
- params?: ListUsersParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof listUsers>>, TError, TData, QueryKey, ListUsersParams['afterId']>>, axios?: AxiosRequestConfig}
- , queryClient?: QueryClient
- ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-
-  const queryOptions = getListUsersInfiniteQueryOptions(params,options)
-
-  const query = useInfiniteQuery(queryOptions, queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
-}
-
-
 
 
 export const getListUsersQueryOptions = <TData = Awaited<ReturnType<typeof listUsers>>, TError = AxiosError<ProblemDetails>>(params?: ListUsersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listUsers>>, TError, TData>>, axios?: AxiosRequestConfig}
@@ -389,88 +314,12 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
 
 
 
-export const getListUserChoreOccurrencesInfiniteQueryKey = (userId?: number,
-    params?: ListUserChoreOccurrencesParams,) => {
-    return [
-    'infinite', `/api/users/${userId}/chore-occurrences`, ...(params ? [params]: [])
-    ] as const;
-    }
-
 export const getListUserChoreOccurrencesQueryKey = (userId?: number,
     params?: ListUserChoreOccurrencesParams,) => {
     return [
     `/api/users/${userId}/chore-occurrences`, ...(params ? [params]: [])
     ] as const;
     }
-
-
-export const getListUserChoreOccurrencesInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof listUserChoreOccurrences>>, ListUserChoreOccurrencesParams['afterId']>, TError = AxiosError<ProblemDetails>>(userId: number,
-    params?: ListUserChoreOccurrencesParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof listUserChoreOccurrences>>, TError, TData, QueryKey, ListUserChoreOccurrencesParams['afterId']>>, axios?: AxiosRequestConfig}
-) => {
-
-const {query: queryOptions, axios: axiosOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getListUserChoreOccurrencesInfiniteQueryKey(userId,params);
-
-
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof listUserChoreOccurrences>>, QueryKey, ListUserChoreOccurrencesParams['afterId']> = ({ signal, pageParam }) => listUserChoreOccurrences(userId,{...params, 'afterId': pageParam || params?.['afterId']}, { signal, ...axiosOptions });
-
-
-
-
-
-   return  { queryKey, queryFn, enabled: !!(userId), ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof listUserChoreOccurrences>>, TError, TData, QueryKey, ListUserChoreOccurrencesParams['afterId']> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type ListUserChoreOccurrencesInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof listUserChoreOccurrences>>>
-export type ListUserChoreOccurrencesInfiniteQueryError = AxiosError<ProblemDetails>
-
-
-export function useListUserChoreOccurrencesInfinite<TData = InfiniteData<Awaited<ReturnType<typeof listUserChoreOccurrences>>, ListUserChoreOccurrencesParams['afterId']>, TError = AxiosError<ProblemDetails>>(
- userId: number,
-    params: undefined |  ListUserChoreOccurrencesParams, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof listUserChoreOccurrences>>, TError, TData, QueryKey, ListUserChoreOccurrencesParams['afterId']>> & Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof listUserChoreOccurrences>>,
-          TError,
-          Awaited<ReturnType<typeof listUserChoreOccurrences>>, QueryKey
-        > , 'initialData'
-      >, axios?: AxiosRequestConfig}
- , queryClient?: QueryClient
-  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListUserChoreOccurrencesInfinite<TData = InfiniteData<Awaited<ReturnType<typeof listUserChoreOccurrences>>, ListUserChoreOccurrencesParams['afterId']>, TError = AxiosError<ProblemDetails>>(
- userId: number,
-    params?: ListUserChoreOccurrencesParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof listUserChoreOccurrences>>, TError, TData, QueryKey, ListUserChoreOccurrencesParams['afterId']>> & Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof listUserChoreOccurrences>>,
-          TError,
-          Awaited<ReturnType<typeof listUserChoreOccurrences>>, QueryKey
-        > , 'initialData'
-      >, axios?: AxiosRequestConfig}
- , queryClient?: QueryClient
-  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListUserChoreOccurrencesInfinite<TData = InfiniteData<Awaited<ReturnType<typeof listUserChoreOccurrences>>, ListUserChoreOccurrencesParams['afterId']>, TError = AxiosError<ProblemDetails>>(
- userId: number,
-    params?: ListUserChoreOccurrencesParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof listUserChoreOccurrences>>, TError, TData, QueryKey, ListUserChoreOccurrencesParams['afterId']>>, axios?: AxiosRequestConfig}
- , queryClient?: QueryClient
-  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-
-export function useListUserChoreOccurrencesInfinite<TData = InfiniteData<Awaited<ReturnType<typeof listUserChoreOccurrences>>, ListUserChoreOccurrencesParams['afterId']>, TError = AxiosError<ProblemDetails>>(
- userId: number,
-    params?: ListUserChoreOccurrencesParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof listUserChoreOccurrences>>, TError, TData, QueryKey, ListUserChoreOccurrencesParams['afterId']>>, axios?: AxiosRequestConfig}
- , queryClient?: QueryClient
- ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-
-  const queryOptions = getListUserChoreOccurrencesInfiniteQueryOptions(userId,params,options)
-
-  const query = useInfiniteQuery(queryOptions, queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
-}
-
-
 
 
 export const getListUserChoreOccurrencesQueryOptions = <TData = Awaited<ReturnType<typeof listUserChoreOccurrences>>, TError = AxiosError<ProblemDetails>>(userId: number,
@@ -555,81 +404,11 @@ export const getUser = (
 
 
 
-export const getGetUserInfiniteQueryKey = (id?: number,) => {
-    return [
-    'infinite', `/api/users/${id}`
-    ] as const;
-    }
-
 export const getGetUserQueryKey = (id?: number,) => {
     return [
     `/api/users/${id}`
     ] as const;
     }
-
-
-export const getGetUserInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof getUser>>>, TError = AxiosError<ProblemDetails>>(id: number, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getUser>>, TError, TData>>, axios?: AxiosRequestConfig}
-) => {
-
-const {query: queryOptions, axios: axiosOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getGetUserInfiniteQueryKey(id);
-
-
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getUser>>> = ({ signal }) => getUser(id, { signal, ...axiosOptions });
-
-
-
-
-
-   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof getUser>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type GetUserInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof getUser>>>
-export type GetUserInfiniteQueryError = AxiosError<ProblemDetails>
-
-
-export function useGetUserInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getUser>>>, TError = AxiosError<ProblemDetails>>(
- id: number, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getUser>>, TError, TData>> & Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getUser>>,
-          TError,
-          Awaited<ReturnType<typeof getUser>>
-        > , 'initialData'
-      >, axios?: AxiosRequestConfig}
- , queryClient?: QueryClient
-  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetUserInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getUser>>>, TError = AxiosError<ProblemDetails>>(
- id: number, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getUser>>, TError, TData>> & Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getUser>>,
-          TError,
-          Awaited<ReturnType<typeof getUser>>
-        > , 'initialData'
-      >, axios?: AxiosRequestConfig}
- , queryClient?: QueryClient
-  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetUserInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getUser>>>, TError = AxiosError<ProblemDetails>>(
- id: number, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getUser>>, TError, TData>>, axios?: AxiosRequestConfig}
- , queryClient?: QueryClient
-  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-
-export function useGetUserInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getUser>>>, TError = AxiosError<ProblemDetails>>(
- id: number, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getUser>>, TError, TData>>, axios?: AxiosRequestConfig}
- , queryClient?: QueryClient
- ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-
-  const queryOptions = getGetUserInfiniteQueryOptions(id,options)
-
-  const query = useInfiniteQuery(queryOptions, queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
-}
-
-
 
 
 export const getGetUserQueryOptions = <TData = Awaited<ReturnType<typeof getUser>>, TError = AxiosError<ProblemDetails>>(id: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUser>>, TError, TData>>, axios?: AxiosRequestConfig}

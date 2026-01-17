@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/tabs"
 import {ScrollArea} from "@/components/ui/scroll-area.tsx";
 import {getListUserChoreOccurrencesQueryKey, useGetUser, useListUserChoreOccurrences} from "@/api/users/users.ts";
+import {useGetUserStatistics} from "@/api/statistics/statistics.ts";
 import {ArrowBigLeft, BellIcon, Check, ClockPlus} from "lucide-react";
 import {
     Card,
@@ -193,7 +194,7 @@ function ChoreTabs({userId}: { userId: number }) {
     return (
         <div className="w-full">
             <Tabs defaultValue="Due" className="mt-3 w-full">
-                <TabsList className="w-full grid grid-cols-3">
+                <TabsList className="w-full grid grid-cols-4">
                     <TabsTrigger value="Due" className={TabFormat}>
                         Due
                     </TabsTrigger>
@@ -202,6 +203,9 @@ function ChoreTabs({userId}: { userId: number }) {
                     </TabsTrigger>
                     <TabsTrigger value="Completed" className={TabFormat}>
                         Completed
+                    </TabsTrigger>
+                    <TabsTrigger value="Stats" className={TabFormat}>
+                        Stats
                     </TabsTrigger>
                 </TabsList>
 
@@ -221,6 +225,10 @@ function ChoreTabs({userId}: { userId: number }) {
                     <ScrollArea className="h-screen">
                         <CompletedChores userId={userId}/>
                     </ScrollArea>
+                </TabsContent>
+
+                <TabsContent value="Stats">
+                    <UserStats userId={userId}/>
                 </TabsContent>
             </Tabs>
         </div>
@@ -412,6 +420,98 @@ function CompletedChoreCard({title, description, completedAt}: { title: string, 
             </Card>
         </div>
     )
+}
+
+function formatTimeSpan(timeSpan: string): string {
+    // Format: [-][d.]hh:mm:ss[.fffffff]
+    const match = timeSpan.match(/^-?(?:(\d+)\.)?(\d{2}):(\d{2}):(\d{2})/);
+    if (!match) return timeSpan;
+
+    const days = match[1] ? parseInt(match[1]) : 0;
+    const hours = parseInt(match[2]);
+    const minutes = parseInt(match[3]);
+
+    const parts: string[] = [];
+    if (days > 0) parts.push(`${days}d`);
+    if (hours > 0) parts.push(`${hours}h`);
+    if (minutes > 0 || parts.length === 0) parts.push(`${minutes}m`);
+
+    return parts.join(" ");
+}
+
+function UserStats({userId}: { userId: number }) {
+    const {data, isPending} = useGetUserStatistics(userId);
+
+    if (isPending) {
+        return <div className="mt-6 text-center text-muted-foreground">Loading stats... 📊</div>;
+    }
+
+    const stats = data?.data;
+
+    if (!stats) {
+        return <div className="mt-6 text-center text-muted-foreground">No statistics available 😢</div>;
+    }
+
+    const completionRate = stats.totalChoresAssigned > 0
+        ? (stats.totalChoresCompleted / stats.totalChoresAssigned) * 100
+        : 0;
+
+    return (
+        <div className="mt-3 grid grid-cols-2 gap-4">
+            <Card className="border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-white">
+                <CardHeader className="pb-2">
+                    <CardTitle className="text-lg flex items-center gap-2">
+                        📋 Assigned
+                    </CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <p className="text-4xl font-bold text-blue-600">{stats.totalChoresAssigned}</p>
+                    <p className="text-sm text-muted-foreground">total chores</p>
+                </CardContent>
+            </Card>
+
+            <Card className="border-2 border-green-200 bg-gradient-to-br from-green-50 to-white">
+                <CardHeader className="pb-2">
+                    <CardTitle className="text-lg flex items-center gap-2">
+                        ✅ Completed
+                    </CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <p className="text-4xl font-bold text-green-600">{stats.totalChoresCompleted}</p>
+                    <p className="text-sm text-muted-foreground">
+                        {completionRate.toFixed(0)}% completion rate 🎯
+                    </p>
+                </CardContent>
+            </Card>
+
+            <Card className="border-2 border-amber-200 bg-gradient-to-br from-amber-50 to-white">
+                <CardHeader className="pb-2">
+                    <CardTitle className="text-lg flex items-center gap-2">
+                        😴 Snooze Rate
+                    </CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <p className="text-4xl font-bold text-amber-600">{(stats.snoozeFrequency * 100).toFixed(0)}%</p>
+                    <p className="text-sm text-muted-foreground">
+                        {stats.snoozeFrequency < 0.2 ? "Great discipline! 💪" :
+                         stats.snoozeFrequency < 0.5 ? "Not bad! 👍" : "Snooze master 😅"}
+                    </p>
+                </CardContent>
+            </Card>
+
+            <Card className="border-2 border-purple-200 bg-gradient-to-br from-purple-50 to-white">
+                <CardHeader className="pb-2">
+                    <CardTitle className="text-lg flex items-center gap-2">
+                        ⏱️ Avg Time
+                    </CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <p className="text-4xl font-bold text-purple-600">{formatTimeSpan(stats.averageCompletionTime)}</p>
+                    <p className="text-sm text-muted-foreground">to complete chores 🚀</p>
+                </CardContent>
+            </Card>
+        </div>
+    );
 }
 
 export function formatRelativeDate(input: string | Date): string {

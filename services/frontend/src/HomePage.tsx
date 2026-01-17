@@ -4,8 +4,8 @@ import {Trash2, UserPlus} from "lucide-react";
 import {
     useDeleteUser,
     useCreateUser,
-    useListUsersInfinite,
-    getListUsersInfiniteQueryKey
+    useListUsers,
+    getListUsersQueryKey
 } from "@/api/users/users.ts";
 import {
     Dialog,
@@ -36,29 +36,22 @@ function ChoreManagement() {
 
 function HomePage() {
     const queryClient = useQueryClient();
-    const { data, isPending } = useListUsersInfinite(
-        undefined,
-        {
-            query: {
-                getNextPageParam: (lastPage) => lastPage.data.nextCursor ?? undefined,
-            }
-        }
-    );
+    const { data, isPending } = useListUsers();
     const {mutateAsync: deleteUser} = useDeleteUser();
     const {mutateAsync: createUser} = useCreateUser();
 
-    const users = data?.pages.flatMap(x => x.data.items);
+    const users = data?.data.items;
 
 
     async function handleAddTenant(name: string) {
         await createUser({data: {name}});
-        await queryClient.invalidateQueries({queryKey: getListUsersInfiniteQueryKey()});
+        await queryClient.invalidateQueries({queryKey: getListUsersQueryKey()});
     }
 
     // Handler to delete a tenant
     async function handleDeleteUser(id: number) {
         await deleteUser({userId: id});
-        await queryClient.invalidateQueries({queryKey: getListUsersInfiniteQueryKey()});
+        await queryClient.invalidateQueries({queryKey: getListUsersQueryKey()});
     }
 
     if (isPending) return null;

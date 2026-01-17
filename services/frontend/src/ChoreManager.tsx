@@ -32,36 +32,25 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import {
-    getListChoresInfiniteQueryKey,
+    getListChoresQueryKey,
     useAddChoreAssignee,
     useCreateChore,
     useDeleteChore,
-    useListChoresInfinite,
+    useListChores,
     useRemoveChoreAssignee,
     useUpdateChore
 } from "@/api/chores/chores.ts";
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover.tsx";
-import {useListUsersInfinite} from "@/api/users/users.ts";
+import {useListUsers} from "@/api/users/users.ts";
 import {useQueryClient} from "@tanstack/react-query";
 import {useEffect, useState} from "react";
 import type {ListChoresResponseItem} from "@/api/choreNotifierV1.schemas.ts";
 
 function ChoreManager() {
-    const {data: choresData, isPending: choresPending} = useListChoresInfinite(
-        undefined,
-        {query: {getNextPageParam: (lastPage) => lastPage.data.nextCursor}}
-    );
-
-    const {data: usersData, isPending: usersPending} = useListUsersInfinite(
-        undefined,
-        {
-            query: {
-                getNextPageParam: (lastPage) => lastPage.data.nextCursor ?? undefined,
-            }
-        }
-    );
-    const chores = choresData?.pages.flatMap(x => x.data.items) ?? [];
-    const users = usersData?.pages.flatMap(x => x.data.items) ?? [];
+    const {data: choresData, isPending: choresPending} = useListChores();
+    const {data: usersData, isPending: usersPending} = useListUsers();
+    const chores = choresData?.data.items ?? [];
+    const users = usersData?.data.items ?? [];
 
     return (
         <>
@@ -121,7 +110,7 @@ function AddChore({availableUsers}: AddChoreProps) {
                 assigneeUserIds: assignees.map(a => a.id),
             },
         });
-        await queryClient.invalidateQueries({queryKey: getListChoresInfiniteQueryKey()});
+        await queryClient.invalidateQueries({queryKey: getListChoresQueryKey()});
         setIsDialogOpen(false);
         // Reset form
         setTitle("");
@@ -253,7 +242,7 @@ export function UpdateChore({chore}: UpdateChoreProps) {
             },
         });
 
-        await queryClient.invalidateQueries({queryKey: getListChoresInfiniteQueryKey()});
+        await queryClient.invalidateQueries({queryKey: getListChoresQueryKey()});
         setIsDialogOpen(false);
     }
 
@@ -348,13 +337,13 @@ function ManageAssignees({choreId, initialAssignees, availableUsers}: ManageAssi
     async function handleAddUser(userId: number) {
         const result = await addAssignee({choreId, userId});
         setAssignees(result.data.assignees);
-        await queryClient.invalidateQueries({queryKey: getListChoresInfiniteQueryKey()});
+        await queryClient.invalidateQueries({queryKey: getListChoresQueryKey()});
     }
 
     async function handleRemoveUser(userId: number) {
         await removeAssignee({choreId, userId});
         setAssignees(prev => prev.filter(a => a.id !== userId));
-        await queryClient.invalidateQueries({queryKey: getListChoresInfiniteQueryKey()});
+        await queryClient.invalidateQueries({queryKey: getListChoresQueryKey()});
     }
 
     const unassignedUsers = availableUsers.filter(
@@ -442,7 +431,7 @@ function DeleteChore({choreId, choreTitle}: DeleteChoreProps) {
 
     async function handleDelete() {
         await deleteChore({choreId});
-        await queryClient.invalidateQueries({queryKey: getListChoresInfiniteQueryKey()});
+        await queryClient.invalidateQueries({queryKey: getListChoresQueryKey()});
         setIsOpen(false);
     }
 

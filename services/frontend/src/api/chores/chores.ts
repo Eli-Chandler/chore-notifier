@@ -5,23 +5,18 @@
  * OpenAPI spec version: 1.0.0
  */
 import {
-  useInfiniteQuery,
   useMutation,
   useQuery
 } from '@tanstack/react-query';
 import type {
   DataTag,
   DefinedInitialDataOptions,
-  DefinedUseInfiniteQueryResult,
   DefinedUseQueryResult,
-  InfiniteData,
   MutationFunction,
   QueryClient,
   QueryFunction,
   QueryKey,
   UndefinedInitialDataOptions,
-  UseInfiniteQueryOptions,
-  UseInfiniteQueryResult,
   UseMutationOptions,
   UseMutationResult,
   UseQueryOptions,
@@ -285,81 +280,11 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
 
 
 
-export const getListChoresInfiniteQueryKey = (params?: ListChoresParams,) => {
-    return [
-    'infinite', `/api/chores`, ...(params ? [params]: [])
-    ] as const;
-    }
-
 export const getListChoresQueryKey = (params?: ListChoresParams,) => {
     return [
     `/api/chores`, ...(params ? [params]: [])
     ] as const;
     }
-
-
-export const getListChoresInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof listChores>>, ListChoresParams['afterId']>, TError = AxiosError<ProblemDetails>>(params?: ListChoresParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof listChores>>, TError, TData, QueryKey, ListChoresParams['afterId']>>, axios?: AxiosRequestConfig}
-) => {
-
-const {query: queryOptions, axios: axiosOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getListChoresInfiniteQueryKey(params);
-
-
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof listChores>>, QueryKey, ListChoresParams['afterId']> = ({ signal, pageParam }) => listChores({...params, 'afterId': pageParam || params?.['afterId']}, { signal, ...axiosOptions });
-
-
-
-
-
-   return  { queryKey, queryFn, ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof listChores>>, TError, TData, QueryKey, ListChoresParams['afterId']> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type ListChoresInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof listChores>>>
-export type ListChoresInfiniteQueryError = AxiosError<ProblemDetails>
-
-
-export function useListChoresInfinite<TData = InfiniteData<Awaited<ReturnType<typeof listChores>>, ListChoresParams['afterId']>, TError = AxiosError<ProblemDetails>>(
- params: undefined |  ListChoresParams, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof listChores>>, TError, TData, QueryKey, ListChoresParams['afterId']>> & Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof listChores>>,
-          TError,
-          Awaited<ReturnType<typeof listChores>>, QueryKey
-        > , 'initialData'
-      >, axios?: AxiosRequestConfig}
- , queryClient?: QueryClient
-  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListChoresInfinite<TData = InfiniteData<Awaited<ReturnType<typeof listChores>>, ListChoresParams['afterId']>, TError = AxiosError<ProblemDetails>>(
- params?: ListChoresParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof listChores>>, TError, TData, QueryKey, ListChoresParams['afterId']>> & Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof listChores>>,
-          TError,
-          Awaited<ReturnType<typeof listChores>>, QueryKey
-        > , 'initialData'
-      >, axios?: AxiosRequestConfig}
- , queryClient?: QueryClient
-  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListChoresInfinite<TData = InfiniteData<Awaited<ReturnType<typeof listChores>>, ListChoresParams['afterId']>, TError = AxiosError<ProblemDetails>>(
- params?: ListChoresParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof listChores>>, TError, TData, QueryKey, ListChoresParams['afterId']>>, axios?: AxiosRequestConfig}
- , queryClient?: QueryClient
-  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-
-export function useListChoresInfinite<TData = InfiniteData<Awaited<ReturnType<typeof listChores>>, ListChoresParams['afterId']>, TError = AxiosError<ProblemDetails>>(
- params?: ListChoresParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof listChores>>, TError, TData, QueryKey, ListChoresParams['afterId']>>, axios?: AxiosRequestConfig}
- , queryClient?: QueryClient
- ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-
-  const queryOptions = getListChoresInfiniteQueryOptions(params,options)
-
-  const query = useInfiniteQuery(queryOptions, queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
-}
-
-
 
 
 export const getListChoresQueryOptions = <TData = Awaited<ReturnType<typeof listChores>>, TError = AxiosError<ProblemDetails>>(params?: ListChoresParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listChores>>, TError, TData>>, axios?: AxiosRequestConfig}
