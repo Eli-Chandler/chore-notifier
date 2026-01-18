@@ -160,7 +160,7 @@ function AddChore({availableUsers}: AddChoreProps) {
                         </div>
                         <div className="flex flex-col gap-4">
                             <DatePicker label="Start" date={startDate} setDate={setStartDate}/>
-                            <DatePicker label="End" date={endDate} setDate={setEndDate}/>
+                            <DatePicker label="End (optional)" date={endDate} setDate={setEndDate}/>
                         </div>
                         <div className="grid gap-3">
                             <Label className="font-bold" htmlFor="interval-1">Intervals (Days)</Label>

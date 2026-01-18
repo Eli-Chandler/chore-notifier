@@ -188,7 +188,7 @@ function NotificationCard({title, message, attemptedAt, deliveryStatus, failureR
 
 }
 
-const TabFormat = "w-full text-lg";
+const TabFormat = "w-full text-sm flex justify-center";
 
 function ChoreTabs({userId}: { userId: number }) {
     return (
